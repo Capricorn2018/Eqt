@@ -1,0 +1,10 @@
+    T = length(p.all_trading_dates );
+    N = length(p.stk_codes);
+    
+    AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5
+    
+    
+    
+    book  = h5read([a.input_data_path,'\DB\winAShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'],'/TOT_SHRHLDR_EQY_INCL_MIN_INT');  
+    r_p   = h5read([a.input_data_path,'\DB\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'],'/report_period');  
+    scode = h5read([a.input_data_path,'\DB\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'],'/stk_code');  
