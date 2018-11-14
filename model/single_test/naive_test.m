@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [simulated_nav_table,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
+function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -90,6 +90,7 @@ function [simulated_nav_table,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebala
         
     end
     
-    simulated_nav_table = array2table([rtn_table(:,1),array2table(simulated_nav_grp)],'VariableNames',['DATEN' group_names]);
+    nav_grp = [rtn_table(:,1),array2table(simulated_nav_grp)];
+    nav_grp.Properties.VariableNames = ['DATEN' group_names];
     
 end

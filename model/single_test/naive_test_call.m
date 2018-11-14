@@ -32,4 +32,4 @@ rtn_table.Properties.VariableNames = ['DATEN',var_names'];
 rebalance_idx = 5000:20:height(rtn_table);
 rebalance_dates = table2array(rtn_table(rebalance_idx',1));
 
-[simulated_nav_table,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
+[nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
