@@ -1,11 +1,11 @@
-function [simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,rebalance_idx,rtn_table)
+function [simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,direction,rebalance_idx,rtn_table)
+    
+    %%%%% 分组个数 %%%%%%%
+    N_grp = 5;
 
     %T = length(p.all_trading_dates);
     N = length(p.stk_codes);
-    
-    % 分组个数
-    N_grp = 5;
-    
+   
     % 调仓日个数
     N_reb = size(rebalance_idx,1);
     rebalance_dates = table2array(rtn_table(rebalance_idx,1));
@@ -17,7 +17,7 @@ function [simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,rebalance_idx,
     for i=1:N_reb
     
         j = rebalance_idx(i);
-        [~,idx] = sort(style(j,:),'descend');
+        [~,idx] = sort(style(j,:),direction);
         
         % 当日因子非空的股票个数
         n_stk = length(idx(~isnan(style(j,:))));

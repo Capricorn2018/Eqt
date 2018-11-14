@@ -12,6 +12,8 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 tgt_tag = 'hl';
 tgt_file = 'hl_21-1.h5';
 
+direction = 'ascend'
+
 adj_prices = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')';
 rtn_array = adj_prices(2:end,:)./adj_prices(1:end-1,:) - 1;
 
@@ -30,4 +32,4 @@ rebalance_idx = 5000:20:height(rtn_table);
 rebalance_idx = rebalance_idx';
 %rebalance_dates = array2table(rebalance_dates);
 
-[simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,rebalance_idx,rtn_table);
+[simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,direction,rebalance_idx,rtn_table);
