@@ -23,7 +23,8 @@ var_names = strcat('A',var_names);
 var_names = mat2cell(var_names,ones(length(var_names),1),7);
 
 trading_dates = p.all_trading_dates_(2:end);
-trading_dates = int32(str2double(trading_dates));
+trading_dates = str2double(trading_dates);
+%trading_dates = int32(str2double(trading_dates));
 
 rtn_table = [ array2table(trading_dates), array2table(rtn_array)];
 rtn_table.Properties.VariableNames = ['DATEN',var_names'];
@@ -31,4 +32,4 @@ rtn_table.Properties.VariableNames = ['DATEN',var_names'];
 rebalance_idx = 5000:20:height(rtn_table);
 rebalance_dates = table2array(rtn_table(rebalance_idx',1));
 
-[simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
+[simulated_nav_table,weight_grp] = naive_test(p,a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
