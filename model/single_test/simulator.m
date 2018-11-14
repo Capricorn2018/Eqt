@@ -1,3 +1,16 @@
+
+%%%%%%%%%% ×¢ÒâÊ¾Àý %%%%%%%%%%
+% all_dates = [datenum(2018,1,1):datenum(2018,12,1)]';
+% secs = {'stk1','stk2','stk3','stk4'};
+% rtn_table   = array2table  ( [ all_dates,randn(length(all_dates),4)],'VariableNames',['DATEN',secs]);
+% 
+% w = [[0.2,0.3,0.1,0];[0.5,-0.1,-0.2,0.2]];
+% weight_table  = array2table  ( [ all_dates([1,11]),w],'VariableNames',['DATEN',secs]);
+% 
+% cost_table  = array2table  ( [ all_dates([1,11]),zeros(2,4)],'VariableNames',['DATEN',secs]);
+% 
+% [simulated_nav,weight] = simulator(rtn_table,weight_table,cost_table)
+
 function [simulated_nav,weight] = simulator(rtn_table,weight_table,cost_table)
    
        % rtn_table     [all_dates, returns]

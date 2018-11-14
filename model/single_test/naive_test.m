@@ -1,52 +1,73 @@
-function [simulated_nav,weight] = naive_test(p,a,tgt_tag,tgt_file,direction,rebalance_idx,rtn_table)
+% 最简单的单因子测试, 用单因子分组分别计算历史收益曲线
+% rtn_table是每只股票历史每日复权后收益table, 第一列是对应的日期int
+
+function [simulated_nav_table,weight_grp] = naive_test(p,a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
     
     %%%%% 分组个数 %%%%%%%
-    N_grp = 5;
+    N_grp = 10;
 
-    %T = length(p.all_trading_dates);
-    N = length(p.stk_codes);
+    T = height(rtn_table);
+    N = width(rtn_table)-1;
    
     % 调仓日个数
-    N_reb = size(rebalance_idx,1);
-    rebalance_dates = table2array(rtn_table(rebalance_idx,1));
+    N_reb = size(rebalance_dates,1);
+    %rebalance_dates = table2array(rtn_table(rebalance_idx,1));
     
     style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
     
-    w = zeros(N_reb,N);
+    w = zeros(N_grp,N_reb,N);
     
+    % 每个调仓日计算组内持仓目标
     for i=1:N_reb
-    
-        j = rebalance_idx(i);
-        [~,idx] = sort(style(j,:),direction);
+
+        j = find(table2array(rtn_table(:,1))==rebalance_dates(i,1),1,'first');
+
+        %[~,idx] = sort(style(j,:),direction);
         
+        % cross sectional style, 当日因子截面
+        cs = squeeze(style(j,:));
+
         % 当日因子非空的股票个数
-        n_stk = length(idx(~isnan(style(j,:))));
+        n_stk = length(cs(~isnan(cs)));
         
-        if(n_stk==0) 
+        if(n_stk==0)
             continue;
         end
         
-        % 择股组内股票个数
-        n_sel = ceil(n_stk/N_grp);
+        quantile_grp = [-Inf,quantile(cs,N_grp-1),Inf];
         
-        long_idx = idx(idx <= n_sel);
-        short_idx = idx(idx >= n_stk - n_sel);
+        % 对每一个分组计算simulated_nav
+        for grp=1:N_grp
+            
+            
+            is_in_grp = cs>quantile_grp(grp) & cs<=quantile_grp(grp+1);
+            n_in_grp = length(cs(is_in_grp));
+            
+            if(n_in_grp==0)
+                continue;
+            end
+            
+            w(grp,i,is_in_grp) = 1./n_in_grp;
+        end
+
+    end
         
-        w(i,long_idx) = w(i,long_idx) + 1./n_sel;
-        w(i,short_idx) = w(i,short_idx) - 1./n_sel;
+    simulated_nav_grp = ones(T,N_grp);
+    weight_grp = struct;
+    for grp=1:N_grp
+        
+        weights_table = [array2table(rebalance_dates),array2table(squeeze(w(grp,:,:)))];
+        weights_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+        cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N))];
+        cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+
+        [simulated_nav,weight] = simulator(rtn_table,weights_table,cost_table);
+        
+        eval(['weight_grp.group',num2str(grp),'= table2array(weight);']);
+        simulated_nav_grp(:,grp) = table2array(simulated_nav(:,2));
         
     end
-    
-    var_names = cell2mat(p.stk_codes_);
-    var_names = var_names(:,1:6);
-    var_names = strcat('S',var_names);
-    var_names = mat2cell(var_names,ones(length(var_names),1),7);
-    
-    weights_table = [array2table(rebalance_dates),array2table(w)];
-    weights_table.Properties.VariableNames = ['DATEN',var_names'];
-    cost_table =[array2table(rebalance_dates),array2table(zeros(size(w)),'VariableNames',var_names)];
-    cost_table.Properties.VariableNames = ['DATEN',var_names'];
-    
-    [simulated_nav,weight] = simulator(rtn_table,weights_table,cost_table);
         
+    simulated_nav_table = [rtn_table(:,1),array2table(simulated_nav_grp)];
+    
 end
