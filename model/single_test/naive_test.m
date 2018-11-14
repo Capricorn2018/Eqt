@@ -1,7 +1,7 @@
 % 最简单的单因子测试, 用单因子分组分别计算历史收益曲线
 % rtn_table是每只股票历史每日复权后收益table, 第一列是对应的日期int
 
-function [simulated_nav_table,weight_grp] = naive_test(p,a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
+function [simulated_nav_table,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
