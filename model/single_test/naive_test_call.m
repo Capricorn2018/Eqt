@@ -31,8 +31,9 @@ rtn_table.Properties.VariableNames = ['DATEN',var_names'];
 rebalance_idx = 5000:20:height(rtn_table);
 rebalance_dates = table2array(rtn_table(rebalance_idx',1));
 
-industry = h5read([a.input_data_path,'\fdata\base_data\citics_stk_sectors_all.h5'],'/citics_stk_sectors_1');
-industry_table = [ array2table(trading_dates), array2table(industry(:,2:end)') ];
-industry_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+sectors = h5read([a.input_data_path,'\fdata\base_data\citics_stk_sectors_all.h5'],'/citics_stk_sectors_1');
+sectors_table = [ array2table(trading_dates), array2table(sectors(:,2:end)') ];
+sectors_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
+[nav_grp1,weight_grp1] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table);

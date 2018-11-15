@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table)
+function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -20,6 +20,7 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
     
     % 读取对应的因子数据
     style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
+    sectors = table2array(sectors_table(:,2:end));
         
     % w用来存储
     w = zeros(N_grp,N_reb,N);
@@ -39,6 +40,8 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
         
         % cross sectional style, 当日因子截面
         cs = squeeze(style(j,:));
+        ss = squeeze(sectors(j,:));
+        tbl = [array2table(cs), array2table(ss)];
 
         % 当日因子非空的股票个数
         n_stk = length(cs(~isnan(cs)));
@@ -49,7 +52,8 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
         end
         
         % 计算分组的划分点
-        quantile_grp = [-Inf,quantile(cs,N_grp-1),Inf];
+        func = @(x) [-Inf,quantile(x,N_grp-1),Inf];
+        quantile_table = grpstats(tbl,'ss',func);
         
         % 对每一个分组计算simulated_nav
         for grp=1:N_grp            
@@ -101,3 +105,4 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
     nav_grp.Properties.VariableNames = ['DATEN' group_names];
     
 end
+
