@@ -1,5 +1,4 @@
-
-%%%%%%%%%% 注意示例 %%%%%%%%%%
+%%%%%% 注意示例 %%%%%%
 % all_dates = [datenum(2018,1,1):datenum(2018,12,1)]';
 % secs = {'stk1','stk2','stk3','stk4'};
 % rtn_table   = array2table  ( [ all_dates,randn(length(all_dates),4)],'VariableNames',['DATEN',secs]);

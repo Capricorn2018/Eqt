@@ -20,14 +20,22 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
     
     % 读取对应的因子数据
     style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
-    
+        
     % w用来存储
     w = zeros(N_grp,N_reb,N);
     
     % 每个调仓日计算组内持仓目标
     for i=1:N_reb
 
+        % 在rtn_table对应的所有交易日终寻找调仓日对应的下标j
         j = find(table2array(rtn_table(:,1))==rebalance_dates(i,1),1,'first');
+        
+        % 需要取前一天的因子截面, j=j-1
+        if(j>1)
+            j = j - 1;
+        else
+            continue;
+        end
 
         %[~,idx] = sort(style(j,:),direction);
         
@@ -90,6 +98,7 @@ function [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rt
         
     end
     
+    % 调整结果, 加入一列日期double
     nav_grp = [rtn_table(:,1),array2table(simulated_nav_grp)];
     nav_grp.Properties.VariableNames = ['DATEN' group_names];
     
