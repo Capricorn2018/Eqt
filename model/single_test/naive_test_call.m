@@ -36,4 +36,4 @@ sectors_table = [ array2table(trading_dates), array2table(sectors(:,2:end)') ];
 sectors_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 [nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
-[nav_grp1,weight_grp1] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table);
+[nav_grp1,weight_grp1] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table,freecap_table);

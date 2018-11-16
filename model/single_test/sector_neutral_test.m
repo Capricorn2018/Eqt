@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table)
+function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table,freecap_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -20,7 +20,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
     
     % 读取对应的因子数据
     style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
-    sectors = table2array(sectors_table(:,2:end));
+    %sectors = table2array(sectors_table(:,2:end));
         
     % w用来存储
     w = zeros(N_grp,N_reb,N);
@@ -40,7 +40,9 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         
         % cross sectional style, 当日因子截面
         cs = squeeze(style(j,:));
-        ss = squeeze(sectors(j,:));
+        ss = table2array(sectors_table(j,2:end));
+        freecap = table2array(freecap_table(j,2:end));
+        
         tbl = [array2table(cs), array2table(ss)];
 
         % 当日因子非空的股票个数
@@ -52,28 +54,37 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         end
         
         % 计算分组的划分点
-        func = @(x) [-Inf,quantile(x,N_grp-1),Inf];
+        func = @(x) [-Inf,quantile(x,N_grp-1),Inf]';
         quantile_table = grpstats(tbl,'ss',func);
         quantile_array = table2array(quantile_table(:,3));
+        quantile_table = array2table(quantile_array,'RowNames',quantile_table.Properties.RowNames);
+        
+        tbl = [array2table(ss), array2table(freecap)];
+        sector_cap = grpstats(tbl,'ss','nansum');
+        sector_cap_array = table2array(sector_cap(:,2:3));
+        sector_weight = 1./sum(sector_cap_array(:,2)) / sector_cap_array(:,1);
+        sector_weight = array2table(sector_weight,'RowNames',sector_cap.Properties.RowNames);
         
         % 对每一个分组计算simulated_nav
         for grp=1:N_grp            
             
             % 判断哪些股票在第grp个分组内
-            lower_bound = quantile_array(sectors,grp);
-            upper_bound = quantile_array(sectors,grp+1);
-            is_in_grp = cs>lowerbound & cs<=upper_bound;
+            lower_bound = NaN(length(ss),1);
+            upper_bound = NaN(length(ss),1);
+            is_in_grp = NaN(length(ss),1);
             
-            % 分组内股票个数
-            n_in_grp = length(cs(is_in_grp));
+            sectors_dbl = sectors(~isnan(ss));
+            sectors_str = num2str(sectors_dbl);
+            sectors_str = cellstr(sectors_str);
             
-            % 若分组内没有股票则默认权重都为0
-            if(n_in_grp==0)
-                continue;
-            end
+            lower_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp);
+            upper_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp+1);
             
+            is_in_grp(~isnan(sectors)) = cs(~isnan(sectors))>lower_bound(~isnan(sectors)) & cs(~isnan(sectors))<=upper_bound(~isnan(sectors));
+                                   
             % 这里先假设组内等权！！！
-            w(grp,i,is_in_grp) = 1./n_in_grp;
+            
+            w(grp,i,is_in_grp) = sector_weight(sectors_str(is_in_grp,1);
         end
 
     end
@@ -108,4 +119,6 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
     nav_grp.Properties.VariableNames = ['DATEN' group_names];
     
 end
+
+function get_cap_weights
 
