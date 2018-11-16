@@ -128,3 +128,86 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
     
 end
 
+
+function weight_mtx = factor_group(x,N_grp)
+
+    n = length(x(~isnan(x)));
+    q = [-Inf,quantile(x,N_grp-1)]';
+    
+    weight_mtx = zeros(length(x),N_grp);
+    
+    for grp=1:N_grp
+        
+        w = zeros(length(x),1);
+       
+        left_interval = q(grp);
+        right_interval = q(grp+1);
+        
+        k_left = left_point(x,left_interval);
+        x_left = x(k_left(1)); % 防止多个数重合的情况
+        k_right = right_point(x,right_interval);
+        x_right = x(k_right(1));
+        
+        %k_in = find(x <= right_interval & x > left_interval);
+        
+        if(isempty(kin))
+            continue;
+        end
+        
+        k_left_next = find_next(x,x_left);
+        k_right_last = find_last(x,x_right);
+        
+        x_left_next = x(k_left_next(1));
+        x_right_last = x(k_right_last(1));
+        
+        w(x <= right_interval & x > left_interval) = 1;
+        w(k_left_next) = (x_left_next-left_interval)/(x_left_next-x_left);
+        w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
+        
+        w = w ./ sum(w);
+        
+        weight_mtx(:,grp) = w;
+        
+    end
+
+end
+
+function k = left_point(x,left_interval)
+
+    y=x;
+    
+    y(x>left_interval) = -Inf;
+    
+    [~,k] = max(y);
+
+end
+
+function k = right_point(x,right_interval)
+
+    y=x;
+    
+    y(x<=right_interval) = Inf;
+    
+    [~,k] = min(y);
+
+end
+
+function k = find_next(x,point)
+
+    y = x;
+    
+    y(x<=point) = Inf;
+    
+    [~,k] = min(y);
+
+end
+
+function k = find_last(x,point)
+
+    y = x;
+    
+    y(x>=point) = -Inf;
+    
+    [~,k] = max(y);
+
+end

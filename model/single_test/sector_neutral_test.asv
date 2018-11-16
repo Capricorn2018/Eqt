@@ -43,6 +43,10 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         ss = table2array(sectors_table(j,2:end));
         freecap = table2array(freecap_table(j,2:end));
         
+        cs = cs';
+        ss = ss';
+        freecap = freecap';
+        
         tbl = [array2table(cs), array2table(ss)];
 
         % 当日因子非空的股票个数
@@ -62,7 +66,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         tbl = [array2table(ss), array2table(freecap)];
         sector_cap = grpstats(tbl,'ss','nansum');
         sector_cap_array = table2array(sector_cap(:,2:3));
-        sector_weight = 1./sum(sector_cap_array(:,2));
+        sector_weight = sector_cap_array(:,2) ./ sum(sector_cap_array(:,2));
         sector_weight = array2table(sector_weight,'RowNames',sector_cap.Properties.RowNames);
         
         % 对每一个分组计算simulated_nav
@@ -71,20 +75,24 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
             % 判断哪些股票在第grp个分组内
             lower_bound = NaN(length(ss),1);
             upper_bound = NaN(length(ss),1);
-            is_in_grp = repmat(False,length(ss),1);
+            is_in_grp = false(length(ss),1);
             
-            sectors_dbl = sectors(~isnan(ss));
-            sectors_str = num2str(sectors_dbl);
+            sectors_str = num2str(ss);
             sectors_str = cellstr(sectors_str);
             
-            lower_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp);
-            upper_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp+1);
+            lower_bound(~isnan(ss)) = table2array(quantile_table(sectors_str(~isnan(ss)),grp));
+            upper_bound(~isnan(ss)) = table2array(quantile_table(sectors_str(~isnan(ss)),grp+1));
             
-            is_in_grp(~isnan(sectors)) = cs(~isnan(sectors))>lower_bound(~isnan(sectors)) & cs(~isnan(sectors))<=upper_bound(~isnan(sectors));
+            is_in_grp(~isnan(ss)) = cs(~isnan(ss))>lower_bound(~isnan(ss)) & cs(~isnan(ss))<=upper_bound(~isnan(ss));
                                    
-            % 这里先假设组内等权！！！
+            tbl = [array2table(ss),array2table(is_in_grp)];
+            grp_sector_count = grpstats(tbl,'ss','nansum');
+            sector_weight_array = table2array(sector_weight(:,1)) ./ table2array(grp_sector_count(:,3));
+            sector_weight = array2table(sector_weight_array,'RowNames',sector_weight.Properties.RowNames);
             
-            w(grp,i,is_in_grp) = sector_weight(sectors_str(is_in_grp,1));
+            % 这里先假设组内等权！！！
+            w_table = sector_weight(sectors_str(is_in_grp),1);
+            w(grp,i,is_in_grp) = table2array(w_table);
         end
 
     end
@@ -120,3 +128,82 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
     
 end
 
+
+function weight_mtx = factor_group(x,N_grp)
+
+    n = length(x(~isnan(x)));
+    q = [-Inf,quantile(x,N_grp-1)]';
+    
+    weight_mtx = zeros()
+    
+    for grp=1:N_grp
+        
+        w = zeros(length(x),1);
+       
+        left_interval = q(grp);
+        right_interval = q(grp+1);
+        
+        k_left = left_point(x,left_interval);
+        x_left = x(k_left(1)); % 防止多个数重合的情况
+        k_right = right_point(x,right_interval);
+        x_right = x(k_right(1));
+        
+        k_in = find(x <= right_interval & x > left_interval);
+        
+        if(isempty(kin))
+            continue;
+        end
+        
+        k_left_next = find_next(x,x_left);
+        k_right_last = find_last(x,x_right);
+        
+        x_left_next = x(k_left_next(1));
+        x_right_last = x(k_right_last(1));
+        
+        w(k_in) = 1;
+        w(k_left_next) = (x_left_next-left_interval)/(x_left_next-x_left);
+        w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
+        
+    end
+
+end
+
+function k = left_point(x,left_interval)
+
+    y=x;
+    
+    y(x>left_interval) = -Inf;
+    
+    [~,k] = max(y);
+
+end
+
+function k = right_point(x,right_interval)
+
+    y=x;
+    
+    y(x<=right_interval) = Inf;
+    
+    [~,k] = min(y);
+
+end
+
+function k = find_next(x,point)
+
+    y = x;
+    
+    y(x<=point) = Inf;
+    
+    [~,k] = min(y);
+
+end
+
+function k = find_last(x,point)
+
+    y = x;
+    
+    y(x>=point) = -Inf;
+    
+    [~,k] = max(y);
+
+end
