@@ -43,10 +43,6 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         ss = table2array(sectors_table(j,2:end));
         freecap = table2array(freecap_table(j,2:end));
         
-        cs = cs';
-        ss = ss';
-        freecap = freecap';
-        
         tbl = [array2table(cs), array2table(ss)];
 
         % 当日因子非空的股票个数
@@ -66,7 +62,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         tbl = [array2table(ss), array2table(freecap)];
         sector_cap = grpstats(tbl,'ss','nansum');
         sector_cap_array = table2array(sector_cap(:,2:3));
-        sector_weight = sector_cap_array(:,2) ./ sum(sector_cap_array(:,2));
+        sector_weight = 1./sum(sector_cap_array(:,2));
         sector_weight = array2table(sector_weight,'RowNames',sector_cap.Properties.RowNames);
         
         % 对每一个分组计算simulated_nav
@@ -75,24 +71,20 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
             % 判断哪些股票在第grp个分组内
             lower_bound = NaN(length(ss),1);
             upper_bound = NaN(length(ss),1);
-            is_in_grp = false(length(ss),1);
+            is_in_grp = repmat(False,length(ss),1);
             
-            sectors_str = num2str(ss);
+            sectors_dbl = sectors(~isnan(ss));
+            sectors_str = num2str(sectors_dbl);
             sectors_str = cellstr(sectors_str);
             
-            lower_bound(~isnan(ss)) = table2array(quantile_table(sectors_str(~isnan(ss)),grp));
-            upper_bound(~isnan(ss)) = table2array(quantile_table(sectors_str(~isnan(ss)),grp+1));
+            lower_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp);
+            upper_bound(~isnan(sectors)) = quantile_table(sectors_str(~isnan(ss)),grp+1);
             
-            is_in_grp(~isnan(ss)) = cs(~isnan(ss))>lower_bound(~isnan(ss)) & cs(~isnan(ss))<=upper_bound(~isnan(ss));
+            is_in_grp(~isnan(sectors)) = cs(~isnan(sectors))>lower_bound(~isnan(sectors)) & cs(~isnan(sectors))<=upper_bound(~isnan(sectors));
                                    
-            tbl = [array2table(ss),array2table(is_in_grp)];
-            grp_sector_count = grpstats(tbl,'ss','nansum');
-            sector_weight_array = table2array(sector_weight(:,1)) ./ table2array(grp_sector_count(:,3));
-            sector_weight = array2table(sector_weight_array,'RowNames',sector_weight.Properties.RowNames);
-            
             % 这里先假设组内等权！！！
-            w_table = sector_weight(sectors_str(is_in_grp),1);
-            w(grp,i,is_in_grp) = table2array(w_table);
+            
+            w(grp,i,is_in_grp) = sector_weight(sectors_str(is_in_grp,1));
         end
 
     end
