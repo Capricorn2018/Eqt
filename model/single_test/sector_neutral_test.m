@@ -57,17 +57,20 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
             continue;
         end
         
-        % 计算分组的划分点
-        func = @(x) [-Inf,quantile(x,N_grp-1),Inf]';
-        quantile_table = grpstats(tbl,'ss',func);
-        quantile_array = table2array(quantile_table(:,3));
-        quantile_table = array2table(quantile_array,'RowNames',quantile_table.Properties.RowNames);
-        
-        tbl = [array2table(ss), array2table(freecap)];
-        sector_cap = grpstats(tbl,'ss','nansum');
-        sector_cap_array = table2array(sector_cap(:,2:3));
-        sector_weight = sector_cap_array(:,2) ./ sum(sector_cap_array(:,2));
-        sector_weight = array2table(sector_weight,'RowNames',sector_cap.Properties.RowNames);
+%         % 计算分组的划分点
+%         func = @(x) [-Inf,quantile(x,N_grp-1),Inf]';
+%         quantile_table = grpstats(tbl,'ss',func);
+%         quantile_array = table2array(quantile_table(:,3));
+%         quantile_table = array2table(quantile_array,'RowNames',quantile_table.Properties.RowNames);
+%         
+%         tbl = [array2table(ss), array2table(freecap)];
+%         sector_cap = grpstats(tbl,'ss','nansum');
+%         sector_cap_array = table2array(sector_cap(:,2:3));
+%         sector_weight = sector_cap_array(:,2) ./ sum(sector_cap_array(:,2));
+%         sector_weight = array2table(sector_weight,'RowNames',sector_cap.Properties.RowNames);
+
+        func = @(x) factor_group(x,N_grp);
+        grp_weight = grpstats(tbl,'ss',func);
         
         % 对每一个分组计算simulated_nav
         for grp=1:N_grp            
@@ -151,6 +154,10 @@ function weight_mtx = factor_group(x,N_grp)
         %k_in = find(x <= right_interval & x > left_interval);
         
         if(isempty(kin))
+            w(k_right) = 1;
+            w = w ./ sum(w);
+            
+            weight_mtx(:,grp) = w;
             continue;
         end
         
