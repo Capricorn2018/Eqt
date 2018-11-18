@@ -133,6 +133,7 @@ end
 
 function sector_grp_weight = sector_group(x,N_grp)
 
+    n = length(x(~isnan(x)));
     q = [-Inf,quantile(x,N_grp-1)]';
     
     sector_grp_weight = zeros(length(x),N_grp);
