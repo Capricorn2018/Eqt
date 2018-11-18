@@ -78,7 +78,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         for k = 1:length(sector_names)
             
             is_in_sector = (ss==sector_names(k));
-            mtx = quantile_group(cs(is_in_sector),N_grp) ./ sector_weight(k);
+            mtx = quantile_group(cs(is_in_sector),N_grp) .* sector_weight(k);
             
             w(:,i,is_in_sector) = mtx';
             
