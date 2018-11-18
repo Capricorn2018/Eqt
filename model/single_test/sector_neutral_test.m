@@ -42,26 +42,30 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         cs = squeeze(style(j,:));
         ss = table2array(sectors_table(j,2:end));
         freecap = table2array(freecap_table(j,2:end));
-        idx = 1:length(cs);
         
         cs = cs';
         ss = ss';
         cap = freecap';
+        
+        tbl = [array2table(ss),array2table(cap)];
+        stats = grpstats(tbl,'ss','nansum');
+        sector_names = stats.ss;
+        sector_weight = stats.nansum_cap ./ sum(stats.nansum_cap);
                 
-        func1 = @(x) sector_group(x,N_grp);
-        func2 = @(x) x;
-        
-        tbl_1 = [array2table(ss), array2table(cs)];
-        sector_grp_weight = grpstats(tbl_1,'ss',func1);
-        sector_grp_weight = sector_grp_weight(:,3);
-        
-        tbl_2 = [array2table(ss), array2table(idx)];
-        grp_idx = grpstats(tbl_2,'ss',func2);
-        grp_idx = grp_idx(:,3);
-        
-        tbl_3 = [array2table(ss), array2table(cap)];
-        sector_cap = grpstats(tbl_3,'ss','nansum');
-        sector_cap = sector_cap(:,3);
+%         func1 = @(x) quantile_group(x,N_grp);
+%         func2 = @(x) x;
+%         
+%         tbl_1 = [array2table(ss), array2table(cs)];
+%         quantile_grp_weight = grpstats(tbl_1,'ss',func1);
+%         quantile_grp_weight = quantile_grp_weight(:,3);
+%         
+%         tbl_2 = [array2table(ss), array2table(idx)];
+%         grp_idx = grpstats(tbl_2,'ss',func2);
+%         grp_idx = grp_idx(:,3);
+%          
+%         tbl_3 = [array2table(ss), array2table(cap)];
+%         sector_cap = grpstats(tbl_3,'ss','nansum');
+%         sector_cap = sector_cap(:,3);
         
         % 当日因子非空的股票个数
         n_stk = length(cs(~isnan(cs)));
@@ -71,9 +75,15 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
             continue;
         end
         
-        w(:,i,:) = sector2actual(sector_grp_weight, grp_idx, sector_cap,N); 
+        for k = 1:length(sector_names)
+            
+            is_in_sector = (ss==sector_names(k));
+            mtx = quantile_group(cs(is_in_sector),N_grp) ./ sector_weight(k);
+            
+            w(:,i,is_in_sector) = mtx';
+            
+        end
         
-
     end
     
     % 初始化结果, weight_grp为一个struct, 把每个组的结果加进去
@@ -107,35 +117,12 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
     
 end
 
-% 从sector内权重到实际组内权重
-function weight = sector2actual(sector_grp_weight, grp_idx, sector_cap,N_stks)
 
-    sector_cap_array = table2array(sector_cap);
-    sector_pct = sector_cap_array ./ nansum(sector_cap_array);
-    %sector_pct = array2table(sector_pct, 'RowNames', sector_cap.Properties.RowNames);
-    
-    N_sectors = height(sector_cap);
-    N_grp = height(sector_grp_weight(1,1));
-    
-    weight = zeros(N_grp, N_stks);
-    
-    for i = 1:N_sectors
-    
-        w = table2array(sector_grp_weight(i,1)) ./ sector_pct(i,1);        
-        idx = table2array(grp_idx(i,1));
-        weight(:,idx) = w;
-        
-    end
-    
+function quantile_grp_weight = quantile_group(x,N_grp)
 
-end 
-
-
-function sector_grp_weight = sector_group(x,N_grp)
-
-    q = [-Inf,quantile(x,N_grp-1)]';
+    q = [-Inf,quantile(x,N_grp-1),Inf]';
     
-    sector_grp_weight = zeros(length(x),N_grp);
+    quantile_grp_weight = zeros(length(x),N_grp);
     
     for grp=1:N_grp
         
@@ -144,34 +131,38 @@ function sector_grp_weight = sector_group(x,N_grp)
         left_interval = q(grp);
         right_interval = q(grp+1);
         
-        k_left = left_point(x,left_interval);
-        x_left = x(k_left(1)); % 防止多个数重合的情况
-        k_right = right_point(x,right_interval);
-        x_right = x(k_right(1));
-        
         %k_in = find(x <= right_interval & x > left_interval);
         
-        if(isempty(kin))
+        if(all(~(x <= right_interval & x > left_interval)))
             w(k_right) = 1;
             w = w ./ sum(w);
             
-            sector_grp_weight(:,grp) = w;
+            quantile_grp_weight(:,grp) = w;
             continue;
         end
         
-        k_left_next = find_next(x,x_left);
-        k_right_last = find_last(x,x_right);
+        if(left_interval==-Inf)
+            k_left = left_point(x,left_interval);
+            x_left = x(k_left(1)); % 防止多个数重合的情况
+
+            k_left_next = find_next(x,x_left);
+            x_left_next = x(k_left_next(1));        
+            w(k_left_next) = (x_left_next-left_interval)/(x_left_next-x_left);
+        end
         
-        x_left_next = x(k_left_next(1));
-        x_right_last = x(k_right_last(1));
+        if(right_interval<Inf)            
+            k_right = right_point(x,right_interval);
+            x_right = x(k_right(1));
+            k_right_last = find_last(x,x_right);
+            x_right_last = x(k_right_last(1));
+            w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
+        end
         
         w(x <= right_interval & x > left_interval) = 1;
-        w(k_left_next) = (x_left_next-left_interval)/(x_left_next-x_left);
-        w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
         
         w = w ./ sum(w);
         
-        sector_grp_weight(:,grp) = w;
+        quantile_grp_weight(:,grp) = w;
         
     end
 
@@ -180,10 +171,13 @@ end
 function k = left_point(x,left_interval)
 
     y=x;
+    if(left_interval==-Inf)
+        y(x>left_interval) = -Inf;
     
-    y(x>left_interval) = -Inf;
-    
-    [~,k] = max(y);
+        [~,k] = max(y);
+    else
+        k = NaN;
+    end
 
 end
 
@@ -191,9 +185,13 @@ function k = right_point(x,right_interval)
 
     y=x;
     
-    y(x<=right_interval) = Inf;
+    if( right_interval < Inf)
+        y(x<=right_interval) = Inf;
     
-    [~,k] = min(y);
+        [~,k] = min(y);
+    else
+        k = NaN;
+    end
 
 end
 
