@@ -41,3 +41,5 @@ freecap_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 %[nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
 [nav_grp1,weight_grp1] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table,freecap_table);
+
+save('D:\Projects\Eqt\scratch_data\single_test\sector_neutral_test.mat','nav_grp1','weight_grp1');
