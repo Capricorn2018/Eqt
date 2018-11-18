@@ -55,7 +55,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         sector_grp_weight = grpstats(tbl_1,'ss',func1);
         sector_grp_weight = sector_grp_weight(:,3);
         
-        tbl_2 = [array2table(ss), array2table(idx];
+        tbl_2 = [array2table(ss), array2table(idx)];
         grp_idx = grpstats(tbl_2,'ss',func2);
         grp_idx = grp_idx(:,3);
         
@@ -115,7 +115,7 @@ function weight = sector2actual(sector_grp_weight, grp_idx, sector_cap,N_stks)
     %sector_pct = array2table(sector_pct, 'RowNames', sector_cap.Properties.RowNames);
     
     N_sectors = height(sector_cap);
-    N_grp = height(sector_grp_weight(1,1);
+    N_grp = height(sector_grp_weight(1,1));
     
     weight = zeros(N_grp, N_stks);
     
