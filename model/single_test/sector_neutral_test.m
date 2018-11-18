@@ -51,21 +51,6 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         stats = grpstats(tbl,'ss','nansum');
         sector_names = stats.ss;
         sector_weight = stats.nansum_cap ./ sum(stats.nansum_cap);
-                
-%         func1 = @(x) quantile_group(x,N_grp);
-%         func2 = @(x) x;
-%         
-%         tbl_1 = [array2table(ss), array2table(cs)];
-%         quantile_grp_weight = grpstats(tbl_1,'ss',func1);
-%         quantile_grp_weight = quantile_grp_weight(:,3);
-%         
-%         tbl_2 = [array2table(ss), array2table(idx)];
-%         grp_idx = grpstats(tbl_2,'ss',func2);
-%         grp_idx = grp_idx(:,3);
-%          
-%         tbl_3 = [array2table(ss), array2table(cap)];
-%         sector_cap = grpstats(tbl_3,'ss','nansum');
-%         sector_cap = sector_cap(:,3);
         
         % 当日因子非空的股票个数
         n_stk = length(cs(~isnan(cs)));
@@ -131,8 +116,6 @@ function quantile_grp_weight = quantile_group(x,N_grp)
         left_interval = q(grp);
         right_interval = q(grp+1);
         
-        %k_in = find(x <= right_interval & x > left_interval);
-        
         if(all(~(x <= right_interval & x > left_interval)))
             w(k_right) = 1;
             w = w ./ sum(w);
@@ -141,7 +124,7 @@ function quantile_grp_weight = quantile_group(x,N_grp)
             continue;
         end
         
-        if(left_interval==-Inf)
+        if(left_interval>-Inf)
             k_left = left_point(x,left_interval);
             x_left = x(k_left(1)); % 防止多个数重合的情况
 
@@ -171,7 +154,7 @@ end
 function k = left_point(x,left_interval)
 
     y=x;
-    if(left_interval==-Inf)
+    if(left_interval>-Inf)
         y(x>left_interval) = -Inf;
     
         [~,k] = max(y);
