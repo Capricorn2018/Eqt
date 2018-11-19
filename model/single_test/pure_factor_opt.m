@@ -1,4 +1,4 @@
-function w = min_vol_pf(style, risk_factors, sectors, markcap,stk_cov)
+function w = pure_factor_opt(style, risk_factors, sectors, markcap, stk_cov)
 
     cvx_solver Mosek;
     
