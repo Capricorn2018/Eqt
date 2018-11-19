@@ -39,7 +39,12 @@ freecap = h5read([a.input_data_path,'\fdata\base_data\free_shares.h5'],'/free_ca
 freecap_table = [ array2table(trading_dates), array2table(freecap(:,2:end)') ];
 freecap_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
-%[nav_grp,weight_grp] = naive_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table);
-[nav_grp1,weight_grp1] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table,freecap_table);
+% 读取对应的因子数据
+style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
+style_table = [array2table(trading_dates), array2table(style(:,2:end)')];
+style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+
+%[nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table);
+[nav_grp1,weight_grp1] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
 
 save('D:\Projects\Eqt\scratch_data\single_test\sector_neutral_test.mat','nav_grp1','weight_grp1');

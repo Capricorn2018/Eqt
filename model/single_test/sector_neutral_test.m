@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance_dates,rtn_table,sectors_table,freecap_table)
+function [nav_grp,weight_grp] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,markcap_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -16,10 +16,9 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
    
     % 调仓日个数
     N_reb = size(rebalance_dates,1);
-    %rebalance_dates = table2array(rtn_table(rebalance_idx,1));
     
-    % 读取对应的因子数据
-    style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
+    style = style_table(:,2:end);
+    style = table2array(style);
         
     % w用来存储权重
     w = zeros(N_grp,N_reb,N_stk);
@@ -44,7 +43,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(a,tgt_tag,tgt_file,rebalance
         ss = table2array(sectors_table(j,2:end));
         
         % 当日所有股票的自由流通市值
-        cap = table2array(freecap_table(j,2:end));
+        cap = table2array(markcap_table(j,2:end));
         
         % 转为列向量
         cs = cs';
