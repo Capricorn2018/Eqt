@@ -40,20 +40,20 @@ function [nav_grp,weight_grp] = sector_neutral_test(rebalance_dates,rtn_table,st
         cs = squeeze(style(j,:));
         
         % 当日所有股票对应的行业
-        ss = table2array(sectors_table(j,2:end));
+        sec = table2array(sectors_table(j,2:end));
         
         % 当日所有股票的自由流通市值
         cap = table2array(markcap_table(j,2:end));
         
         % 转为列向量
         cs = cs';
-        ss = ss';
+        sec = sec';
         cap = cap';
         
         % 创建一个table, 用grpstats函数统计行业和行业总市值
-        tbl = [array2table(ss),array2table(cap)];
-        stats = grpstats(tbl,'ss','nansum');
-        sector_names = stats.ss; % 取得行业列表        
+        tbl = [array2table(sec),array2table(cap)];
+        stats = grpstats(tbl,'sec','nansum');
+        sector_names = stats.sec; % 取得行业列表        
         sector_weight = stats.nansum_cap ./ sum(stats.nansum_cap); % 用行业总市值占比计算该行业比例
         
         % 当日因子非空的股票个数
@@ -67,7 +67,7 @@ function [nav_grp,weight_grp] = sector_neutral_test(rebalance_dates,rtn_table,st
         for k = 1:length(sector_names)
             
             % 所有该行业的股票
-            is_in_sector = (ss==sector_names(k));
+            is_in_sector = (sec==sector_names(k));
             
             % 调用下面的quantile_group函数, 计算出该行业内每个group的权重
             mtx = quantile_group(cs(is_in_sector),N_grp) .* sector_weight(k);
