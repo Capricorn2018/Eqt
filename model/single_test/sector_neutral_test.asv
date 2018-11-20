@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,markcap_table)
+function [nav_grp,weight_grp] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,markcap_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -28,7 +28,6 @@ function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rt
         
     % w用来存储权重
     w = zeros(N_grp,N_reb,N_stk);
-    bench_w = zeros(N_reb,N_stk);
     
     % 每个调仓日计算组内持仓目标
     for i=1:N_reb
@@ -52,9 +51,10 @@ function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rt
         % 当日所有股票的自由流通市值
         cap = markcap(j,2:end);
         
-        % 用当日股票的自由流通市值计算基准权重
-        bench_w(i,~isnan(cap)) = cap(~isnan(cap)) ./ nansum(cap);
-                
+        % 当日按自由流通市值加权的benchmark权重
+        cap_weight = zeros(size(cap));
+        cap_weight(~isnan(cap
+        
         % 转为列向量
         cs = cs';
         sec = sec';
@@ -93,17 +93,16 @@ function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rt
     simulated_nav_grp = ones(T,N_grp);
     weight_grp = struct;
     
-    % 第grp组的交易成本table
-    cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N_stk))];
-    cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-    
     % 按组循环, 模拟净值
     group_names = cell(1,N_grp);
     for grp=1:N_grp
         % 第grp组的权重table
         weights_table = [array2table(rebalance_dates),array2table(squeeze(w(grp,:,:)))];
         weights_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-        
+        % 第grp组的交易成本table
+        cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N_stk))];
+        cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+
         % 模拟nav和生成weight
         [simulated_nav,weight] = simulator(rtn_table,weights_table,cost_table); %#ok<ASGLU>
         
@@ -114,11 +113,6 @@ function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rt
         simulated_nav_grp(:,grp) = table2array(simulated_nav(:,2));
         
     end
-    
-    % 基准收益率
-    bench_w_table = [array2table(rebalance_dates),array2table(bench_w)];
-    bench_w_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-    [nav_bench,~] = simulator(rtn_table,bench_w_table,cost_table);
     
     % 调整结果, 加入一列日期double
     nav_grp = [rtn_table(:,1),array2table(simulated_nav_grp)];

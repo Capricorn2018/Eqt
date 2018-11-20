@@ -6,7 +6,7 @@
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table)
+function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table,markcap_table)
     
     %%%%% 分组个数 %%%%%%%
     N_grp = 10;
@@ -19,12 +19,18 @@ function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table
     %rebalance_dates = table2array(rtn_table(rebalance_idx,1));
     
     % 读取对应的因子数据
-    % style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
     style = style_table(:,2:end);
     style = table2array(style);
+    
+    % 读取市值数据
+    markcap = markcap_table(:,2:end);
+    markcap = table2array(markcap);
         
     % w用来存储
     w = zeros(N_grp,N_reb,N);
+    
+    % 基准权重
+    bench_w = zeros(N_reb,N);
     
     % 每个调仓日计算组内持仓目标
     for i=1:N_reb
@@ -41,6 +47,12 @@ function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table
         
         % cross sectional style, 当日因子截面
         cs = squeeze(style(j,:));
+        
+        % 当日市值截面
+        cap = squeeze(markcap(j,:));
+        
+        % 按市值加权的基准权重
+        bench_w(i,~isnan(cap)) = cap(~isnan(cap)) ./ nansum(cap);
 
         % 当日因子非空的股票个数
         n_stk = length(cs(~isnan(cs)));
@@ -79,13 +91,15 @@ function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table
     
     % 按组循环, 模拟净值
     group_names = cell(1,N_grp);
+    
+    % 第grp组的交易成本table
+    cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N))];
+    cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+    
     for grp=1:N_grp
         % 第grp组的权重table
         weights_table = [array2table(rebalance_dates),array2table(squeeze(w(grp,:,:)))];
         weights_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-        % 第grp组的交易成本table
-        cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N))];
-        cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
         % 模拟nav和生成weight
         [simulated_nav,weight] = simulator(rtn_table,weights_table,cost_table); %#ok<ASGLU>
@@ -97,6 +111,12 @@ function [nav_grp,weight_grp] = naive_test(rebalance_dates,rtn_table,style_table
         simulated_nav_grp(:,grp) = table2array(simulated_nav(:,2));
         
     end
+    
+    % 基准权重table
+    bench_w_table = [array2table(rebalance_dates),array2table(bench_w)];
+    bench_w_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+    % 模拟nav和生成weight
+    [nav_bench,~] = simulator(rtn_table,bench_w_table,cost_table); %#ok<ASGLU>
     
     % 调整结果, 加入一列日期double
     nav_grp = [rtn_table(:,1),array2table(simulated_nav_grp)];

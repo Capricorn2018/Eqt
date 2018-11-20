@@ -1,6 +1,4 @@
-function w = pure_factor_opt(style, risk_factors, sectors, markcap, stk_cov)
-
-    cvx_solver Mosek;
+function w = pure_factor(style, risk_factors, sectors, markcap, stk_cov)
     
     w = zeros(length(style),1);
     
@@ -16,8 +14,10 @@ function w = pure_factor_opt(style, risk_factors, sectors, markcap, stk_cov)
     stk_cov = stk_cov(notnan_all,notnan_all);
     risk_factors = risk_factors(notnan_all,:);
         
+    cvx_solver Mosek;
+        
     % 这里还要考虑去NaN        
-    n = length(style);
+    n = length(style); %#ok<NASGU>
     cvx_begin
         variable x(n)
         minimize(quad_form(x,stk_cov))

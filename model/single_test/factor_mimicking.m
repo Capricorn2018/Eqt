@@ -1,4 +1,4 @@
-function w = pure_factor_f(X, markcap)
+function w = factor_mimicking(X, markcap)
 
     notnan_X = any(~isnan(X),2);
     notnan_markcap = ~isnan(markcap);

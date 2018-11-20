@@ -1,0 +1,45 @@
+function [ic, ic_ir] = style_ic(rebalance_dates, style_table, rtn_table)
+
+    rebalance_str = cellstr(num2str(rebalance_dates));
+    
+    style_table.Properties.RowNames = cellstr(num2str(rtn_table.DATEN));
+    
+    style = table2array(style_table(rebalance_str,2:end));
+    
+    nav = rtn2nav(rtn_table);
+    
+    nav_table = array2table(nav,'RowNames',cellstr(numstr(rtn_table.DATEN)));
+    
+    nav_reb = nav_table(rebalance_str,:);
+    nav_reb = table2array(nav_reb);
+    rtn_reb = nav_reb(2:end,:)./nav_reb(1:end-1) - 1;
+    
+    ic = zeros(size(rtn_reb,1)-1),1);
+    
+    for i = 1:length(ic)
+        kendall_tau(style,rtn_reb);
+    end
+    
+
+end
+
+function nav = rtn2nav(rtn_table)
+
+    rtn = rtn_table(:,2:end);
+    
+    rtn = rtn + 1;
+    
+    nav = cumprod(rtn,1);
+
+end
+
+function cor = kendall_tau(style, r)
+
+    not_nan = (~isnan(style)) & (~isnan(r));
+    
+    style = style(not_nan);
+    r = r(not_nan);
+
+    cor = corr(style,r,'type','Kendall');
+
+end

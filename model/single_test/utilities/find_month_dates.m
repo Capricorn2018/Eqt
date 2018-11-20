@@ -33,9 +33,9 @@ function  [dates, dates_idx] = find_month_dates( num, trading_dates, direction)
     % ·µ»Ø¸³Öµ
     dates = ds.Fun1_dates_num;
     
-    idx = zeros(length(dates,1);
+    dates_idx = zeros(length(dates),1);
     for i = 1:length(dates)
-       idx(i) = find(trading_dates == dates(i),1,'first');
+       dates_idx(i) = find(trading_dates == dates(i),1,'first');
     end
     
     %dates = dates(~isnan(rebalance_dates));

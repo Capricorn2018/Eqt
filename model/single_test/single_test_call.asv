@@ -9,7 +9,6 @@ p.all_trading_dates  = datenum_h5 (h5read([a.input_data_path,'\fdata\base_data\s
 p.stk_codes_         = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code'); 
 p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code')); 
 
-% ÉèÖÃMosekµÄMatlab Fusion
 javaaddpath 'D:/Program Files/Mosek/8/tools/platform/win64x86/bin/mosekmatlab.jar'
 
 tgt_tag = 'hl';

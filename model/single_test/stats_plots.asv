@@ -1,4 +1,4 @@
-function stats_plots(nav_grp)
+function stats_plots(nav_grp,rebalance_dates)
 
     N_grp = size(nav_grp,2)-1;
     
@@ -10,8 +10,13 @@ function stats_plots(nav_grp)
 
         plot(cum_rtn);
         hold on;
+        
     end
 
     hold off;
+    
+    rebalance_str = cellstr(num2str(rebalance_dates));
+    
+    nav_grp.Properties.RowNames = cellstr(num2str(nav_grp
     
 end
