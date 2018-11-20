@@ -5,7 +5,7 @@
 %            'first'即从每个月最初寻找第num个交易日
 %            'last'即从每个月最末寻找倒数第num个交易日
 
-function [ find_dates ] = find_month_dates( num, trading_dates, direction)
+function  [dates, dates_idx] = find_month_dates( num, trading_dates, direction)
 
     % 若不传入第三个参数direction, 则默认为'first'
     % 即寻找每个月第num个交易日
@@ -31,8 +31,14 @@ function [ find_dates ] = find_month_dates( num, trading_dates, direction)
     ds = grpstats(ds,'yr_mth',func);   
     
     % 返回赋值
-    find_dates = ds.Fun1_dates_num;
-    %find_dates = find_dates(~isnan(find_dates));
+    dates = ds.Fun1_dates_num;
+    
+    idx = zeros(length(dates,1);
+    for i = 1:length(dates)
+       idx(i) = find(trading_dates == dates(i),1,'first');
+    end
+    
+    %dates = dates(~isnan(rebalance_dates));
 
 end
 
