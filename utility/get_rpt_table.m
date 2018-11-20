@@ -1,7 +1,7 @@
 function    [x,y,d] = get_rpt_table(table_name, word_name, q_adj,input_data_path,stks)
 
     N = length(stks);   
-    file_name  = [input_data_path,'\DB\wind\',table_name,'.',word_name,'.h5'];
+    file_name  = [input_data_path,'\DB\wind\ybl\',table_name,'.',word_name,'.h5'];
     c = h5read(file_name,['/',word_name])';
     d = datenum_h5(h5read(file_name,'/report_period'));
     s = h5read(file_name,'/stk_code');

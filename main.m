@@ -1,4 +1,7 @@
 clear;clc;
+
+project_path       = 'D:\Projects\Eqt'; 
+cd(project_path); addpath(genpath(project_path));
 %%
 update_data;
 descriptor;  % o: D:\Capricorn\descriptors
@@ -8,3 +11,5 @@ build_index;  %  i:  set_index  o: D:\Capricorn\index\all_A.mat  'D:\Projects\Eq
 risk_model;   %  i:  set_risk_model  o: D:\Capricorn\model\risk
 single_test;
 protfolio_construction;
+
+

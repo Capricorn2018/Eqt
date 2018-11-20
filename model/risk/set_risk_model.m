@@ -92,9 +92,9 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
     p.cov.nwlag_vol   = 10;  % newty
     p.cov.nwlag_corr    = 3; % ·½²î°ëË¥ÆÚ 
     
-    p.cov.N   = 21;
+   % p.cov.N   = 21;
     
-    p.cov.simtimes = 2000;
+    p.cov.simtimes = 10000;
       
     p.cov.small_eigen   = 1e-5;
 

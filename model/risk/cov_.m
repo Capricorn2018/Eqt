@@ -24,7 +24,6 @@ function c = cov_(x,y,factor_vol_hl,factor_corr_hl)
         l_vol_hl        = (1/2)^(1/factor_vol_hl); % weight at t0,...,tn  = (1-lam)*lam^(n-1)
         l_corr_hl       = (1/2)^(1/factor_corr_hl);
 
-        % calculate time-decay weights
         lam_l_vol_hl     =   power(l_vol_hl, ((t-1):-1:0))';
         lam_l_vol_hl     =   lam_l_vol_hl/sum(lam_l_vol_hl);
         lam_l_corr_hl    =   power(l_corr_hl,((t-1):-1:0))';
@@ -66,7 +65,6 @@ function c = localcov_elementwise(x,y,hl)
         
 end
 
-% hl: weights in calculating covariance
 function f = cal_var(x,y,hl)
       % x and y must be a n*1 vector we have no error checking here
          f =  sum((x - x.*hl).*(y - y.*hl).*hl);

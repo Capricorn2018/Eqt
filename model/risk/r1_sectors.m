@@ -69,7 +69,7 @@ function    r1_sectors(p,a,K1,K2)
                stocks_cap_freecap_sector = [data_mktcap(idx-1,:)',data_freecap(idx-1,:)',data_sector(idx-1,:)']; % 今天存储的是昨天EOD的市值。
                T_stocks_cap_freecap_sector = array2table(stocks_cap_freecap_sector,'RowNames',p.model.stk_codes1,'VariableNames',{'total_cap','free_cap','sector'});
                T_stocks_cap_freecap_sector(~x,:) = [];
-                
+
                [G,R] = findgroups(T_stocks_cap_freecap_sector.sector);
                sum_free_cap_   =  array2table([R,splitapply(@sum,T_stocks_cap_freecap_sector.free_cap,G)], 'VariableNames',{'sector','free_cap'});
                sum_total_cap_  =  array2table([R,splitapply(@sum,T_stocks_cap_freecap_sector.total_cap,G)],'VariableNames',{'sector','total_cap'});

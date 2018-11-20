@@ -6,7 +6,7 @@ function  cfpttm(p,a)
        [S,cfpttm] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
        
        if S>0
-           value = [a.input_data_path,'\DB\wind\AShareTTMHis.NET_CASH_FLOWS_OPER_ACT_TTM.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareTTMHis.NET_CASH_FLOWS_OPER_ACT_TTM.h5'];  
            tags = '/stk_code';
            tagn = '/NET_CASH_FLOWS_OPER_ACT_TTM';
            tagr = '/report_period';

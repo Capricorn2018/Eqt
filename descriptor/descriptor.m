@@ -11,6 +11,61 @@ p.stk_codes_         = h5read([a.input_data_path,'\fdata\base_data\securites_dat
 p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code')); 
 %%
 
+% ====beta
+%cal_stk_beta(p,a,252,63,1,{'windA'})
+%====book-to-price
+bp(p,a)
+% ==== dvd
+dvd_his(p,a)
+% 预期股息率没做
+% ====  Earnings quality
+accrual1(p,a) % 简化版本
+% ==== Earnings variability
+% std(分析师预期)没做，因为覆盖率太低了
+cal_egro(p,a,4,8,16,12,8,20,8);
+cal_sgro(p,a,4,8,16,12,8,20,8);
+cal_cfgro(p,a,4,8,16,12,8,20,8);
+% ====Yield
+eepntm(p,a)
+epttm(p,a)
+cfpttm(p,a) % 比barra 多了一个cash flow
+espntm(p,a)
+%没弄ebit2ev 
+% ====growth 
+eeg(p,a) % 短期预期
+ee2g(p,a) % 长期预期
+% eps growth 见 cal_egro
+% sps growth 见 cal_sgro
+% ====Investment quality 这个没做，主要是因子定义中要五年的数据
+% ====leverage
+mlev(p,a)
+blev(p,a)
+cal_dtoa(p,a,4,8,16,12,8,20,8);
+% --- liquidity
+cal_stk_sto(p,a,21,1)
+cal_stk_sto(p,a,63,1)
+cal_stk_sto(p,a,252,1)
+% 没做ATO
+% ====Long term reversal 这一组没做
+% ====cap and midcap
+tcap(p,a)
+% ==== momentum
+cal_stk_rtn(p,a,21,252,1)
+%-==== Profotablity
+cal_roe(p,a,4,8,16,12,8,20,8);
+cal_roa(p,a,4,8,16,12,8,20,8);
+cal_gp(p,a,4,8,16,12,8,20,8);
+cal_ato(p,a,4,8,16,12,8,20,8);
+%==== volatility
+cal_stk_hl(p,a,63,1)
+cal_stk_vol(p,a,63,16,1)
+cal_stk_ivol(p,a,63,16,1,{'windA'})
+%==== 国企
+soe_(p,a)
+%====不确定性
+mutual_funds_holdigns(p,a)
+report_num_q(p,a)
+%%
 % tcap(p,a)
 % bp(p,a)
 % epttm(p,a)
@@ -43,9 +98,9 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 %  cal_stk_rtn(p,a,0,252,1)
 %  cal_stk_rtn(p,a,21,252,1)
 % 
-  cal_stk_hl(p,a,252,1)
-  cal_stk_hl(p,a,63,1)
-  cal_stk_hl(p,a,21,1)
+%  cal_stk_hl(p,a,252,1)
+%  cal_stk_hl(p,a,63,1)
+%  cal_stk_hl(p,a,21,1)
 %  
 %  cal_stk_mv(p,a,5,120,1)
 %  cal_stk_mv(p,a,5,240,1)
@@ -110,14 +165,14 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 %accrual1(p,a)
 % cal_egro(p,a,4,8,16,12,8,20,8);
 % cal_sgro(p,a,4,8,16,12,8,20,8);
-% cal_cfgro(p,a,4,8,16,12,8,20,8);
-% mlev(p,a)
-% blev(p,a)
-% cal_ato(p,a,4,8,16,12,8,20,8);
-% cal_dtoa(p,a,4,8,16,12,8,20,8);
+%cal_cfgro(p,a,4,8,16,12,8,20,8);
+%mlev(p,a)
+%blev(p,a)
+ %cal_ato(p,a,4,8,16,12,8,20,8);
+%cal_dtoa(p,a,4,8,16,12,8,20,8);
 % cal_gp(p,a,4,8,16,12,8,20,8);
 % cal_fee_ratio(p,a,4,8,16,12,8,20,8);
 % cal_turnover_asset(p,a,4,8,16,12,8,20,8);
 % cal_turnover_inventory(p,a,4,8,16,12,8,20,8);
-% mutual_funds_holdigns(p,a)
-report_num_q(p,a)
+%mutual_funds_holdigns(p,a)
+ %report_num_q(p,a)

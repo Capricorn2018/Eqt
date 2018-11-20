@@ -7,7 +7,7 @@ function  bp(p,a)
   
     
        if S>0
-           value = [a.input_data_path,'\DB\wind\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'];  
            tags = '/stk_code';
            tagn = '/TOT_SHRHLDR_EQY_INCL_MIN_INT';
            tagr = '/report_period';

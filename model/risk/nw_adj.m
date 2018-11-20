@@ -30,7 +30,8 @@ function   [c_nw,c_daily] = nw_adj(f,p)
      end
      c = c + tril(c,-1)';
      
-     c = p.cov.N*(c_daily + c);
+    % c = p.cov.N*(c_daily + c);
+     c = (c_daily + c);
      not_nan_flag = ~isnan(c(:,1));
      [u,s,v] = svd(c(not_nan_flag,not_nan_flag));     
      s(s<0)  =  p.cov.small_eigen ;

@@ -1,6 +1,6 @@
 function  dvd_his(p,a)
 
-    load ([a.input_data_path ,'\DB\wind\his_dvd.mat']);
+    load ([a.input_data_path ,'\DB\wind\ybl\his_dvd.mat']);
      
 
     T = length(p.all_trading_dates);

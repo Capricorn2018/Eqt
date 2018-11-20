@@ -10,7 +10,7 @@ function  ee2g(p,a)
        if S>0
            ee2g = update_zyyx_tables(S,T,ee2g,p,a,table_name,tagn);
            if  exist(tgt_file,'file')==2
-               delete tgt_file
+                eval(['delete ',tgt_file]);
            end
 
            eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  

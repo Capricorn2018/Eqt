@@ -6,7 +6,7 @@ function  accrual1(p,a)
        [S,accrual1] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
        
        if S>0
-           value = [a.input_data_path,'\DB\wind\AShareTTMHis.S_FA_OP_TTM.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareTTMHis.S_FA_OP_TTM.h5'];  
            tags = '/stk_code';
            tagn = '/S_FA_OP_TTM';
            tagr = '/report_period';
@@ -14,7 +14,7 @@ function  accrual1(p,a)
            X = load_single_value(S,T,N,p,value,tags,tagn,tagr);
            
            
-           value = [a.input_data_path,'\DB\wind\AShareBalanceSheet.TOT_ASSETS.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareBalanceSheet.TOT_ASSETS.h5'];  
            tags = '/stk_code';
            tagn = '/TOT_ASSETS';
            tagr = '/report_period';

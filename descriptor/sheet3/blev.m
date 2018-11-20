@@ -6,7 +6,7 @@ function  blev(p,a)
        [S,blev] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
        
        if S>0
-           value = [a.input_data_path,'\DB\wind\AShareBalanceSheet.TOT_NON_CUR_LIAB.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareBalanceSheet.TOT_NON_CUR_LIAB.h5'];  
            tags = '/stk_code';
            tagn = '/TOT_NON_CUR_LIAB';
            tagr = '/report_period';
@@ -14,7 +14,7 @@ function  blev(p,a)
            X = load_single_value(S,T,N,p,value,tags,tagn,tagr);
            
            
-           value = [a.input_data_path,'\DB\wind\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'];  
+           value = [a.input_data_path,'\DB\wind\ybl\AShareBalanceSheet.TOT_SHRHLDR_EQY_INCL_MIN_INT.h5'];  
            tags = '/stk_code';
            tagn = '/TOT_SHRHLDR_EQY_INCL_MIN_INT';
            tagr = '/report_period';

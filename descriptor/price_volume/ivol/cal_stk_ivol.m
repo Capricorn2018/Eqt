@@ -19,9 +19,9 @@ function  cal_stk_ivol(p,a,D,HL,if_mix,index_names)
        tgt_file4 = [a.output_data_path,'\','ieskew_',index_names{index},'_',num2str(D),'_',num2str(HL),'-',num2str(if_mix),'.h5'];
    
        [S,ivol]   =  check_exist(tgt_file1,['/',tgt_tag1],p,T,N);
-       [~,ievol]  =  check_exist(tgt_file2,['/',tgt_tag1],p,T,N);
-       [~,iskew]  =  check_exist(tgt_file3,['/',tgt_tag1],p,T,N);
-       [~,ieskew] =  check_exist(tgt_file4,['/',tgt_tag1],p,T,N);
+       [~,ievol]  =  check_exist(tgt_file2,['/',tgt_tag2],p,T,N);
+       [~,iskew]  =  check_exist(tgt_file3,['/',tgt_tag3],p,T,N);
+       [~,ieskew] =  check_exist(tgt_file4,['/',tgt_tag4],p,T,N);
 
        if S>0                 
            if if_mix
