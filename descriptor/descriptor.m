@@ -59,7 +59,7 @@ cal_ato(p,a,4,8,16,12,8,20,8);
 %==== volatility
 cal_stk_hl(p,a,63,1)
 cal_stk_vol(p,a,63,16,1)
-cal_stk_ivol(p,a,63,16,1,{'windA'})
+%cal_stk_ivol(p,a,63,16,1,{'windA'})
 %==== 国企
 soe_(p,a)
 %====不确定性
