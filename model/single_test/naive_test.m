@@ -6,7 +6,7 @@
 
 % 2018-11-21: 需要考虑style是不是在停牌日已经设为NaN, 如果不是的话要改code
 
-function [nav_grp,weight_grp] = naive_test(N_grp,rebalance_dates,rtn_table,style_table,markcap_table)
+function [nav_grp,weight_grp,nav_bench] = naive_test(N_grp,rebalance_dates,rtn_table,style_table,markcap_table)
     
     T = height(rtn_table);
     N = width(rtn_table)-1;

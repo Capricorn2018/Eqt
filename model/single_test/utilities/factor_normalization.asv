@@ -1,0 +1,16 @@
+function f = factor_normalization(style)
+
+    
+
+end
+
+function f = outlier(style)
+
+    md = median(style);
+    mad = 1.483 * median(abs(style-md));
+    
+    f(f>md+mad) = md+mad;
+    f(f<md+m
+
+end
+

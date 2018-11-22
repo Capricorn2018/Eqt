@@ -22,7 +22,7 @@ r2_styles(p,a,0,0);
 toc;
 
 tic;
- r3_reg(p,a,0,0);
+r3_reg(p,a,0,0);
 toc;
 
 

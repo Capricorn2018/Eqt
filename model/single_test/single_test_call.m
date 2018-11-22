@@ -12,8 +12,8 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 % 设置Mosek的Matlab Fusion
 javaaddpath 'D:/Program Files/Mosek/8/tools/platform/win64x86/bin/mosekmatlab.jar'
 
-tgt_tag = 'hl';
 tgt_file = 'hl_21-1.h5';
+tgt_tag = file2tag(tgt_file); % 取变量名
 
 adj_prices = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')';
 rtn_array = adj_prices(2:end,:)./adj_prices(1:end-1,:) - 1;

@@ -26,8 +26,8 @@ function [ic, ic_ir] = style_ic(rebalance_dates, style_table, rtn_table)
     ic = zeros(size(rtn_reb,1)-1,1);
     
     for i = 1:length(ic)
-        % 用kendall tau做ranked ic
-        ic(i) = kendall_tau(style(i,:),rtn_reb(i,:));
+        % 用spearman rho做ranked ic
+        ic(i) = spearman_rho(style(i,:),rtn_reb(i,:));
     end
     
     % 计算ic/std(ic)用以衡量ic的稳定意义
@@ -56,7 +56,7 @@ end
 
 
 % 计算kendall tau用于ranked ic, style即当日因子截面, r即下一区间的收益
-function cor = kendall_tau(style, r)
+function cor = spearman_rho(style, r)
 
     % 寻找style和r都不是空值的位置
     not_nan = (~isnan(style)) & (~isnan(r));
@@ -66,6 +66,6 @@ function cor = kendall_tau(style, r)
     r_num = r(not_nan);
 
     % 计算Kendall tau
-    cor = corr(style_num',r_num','type','Kendall');
+    cor = corr(style_num',r_num','type','Spearman');
 
 end

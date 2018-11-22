@@ -1,0 +1,62 @@
+% 风格(行业)中性调整
+% style是待评估的alpha因子
+% risk_factors是用于回归的矩阵, 其中每一列是一个做过去极值和归一化的风险因子, 或行业因子
+
+% 2018-11-21: 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
+
+function adj_style_table = risk_adj_factor(a,style_table)
+
+    dt = style_table(:,1);
+    dt = table2array(dt);
+    
+    style_array = table2array(style_table(:,2:end));
+    
+    adj_style = nan(size(style_array));
+    
+    for i=1:length(dt)
+        
+       date = datestr(dt(i),'yyyy-mm-dd'); 
+       filename = [a.style,'Index0_',date,'.mat'];
+       if exist(filename)
+       load(filename);
+       
+       risk_factors = table2array(T_sector_style);
+       
+       style = mad_zscore(style_array);
+       
+       adj_style(i,:) = calc_residual(style,risk_factors);
+        
+    end
+    
+    adj_style_table = [style_table(:,1),array2table(adj_style)];
+    adj_style_table.Properties.VariableNames = style_table.Properties.VariableNames;
+    
+
+end
+
+
+function res_factor = calc_residual(style, risk_factors, weight_array)
+
+    if nargin==2
+       weight_array = ones(length(style),1); 
+    end
+
+    % 先用raw factor算zscore
+    % 这里用的MAD, risk model里面是boxplot
+    zscore = mad_zscore(style);
+
+    % 这里默认用weight_array的1/2次方作为weight矩阵的对角线
+    weight_matrix = diag(sqrt(weight_array));
+    
+    % 在risk_factors中加入一列截距项
+    X = [ones(size(risk_factors,1),1),risk_factors];
+
+    % 纯线性回归, 这个matlab函数会自动去掉有空值的列
+    % 这里不知道是不是要考虑做稳健回归
+    mdl = fitlm(weight_matrix * X, weight_matrix * zscore);
+        
+    % 在residual上乘以weight_matrix的逆就是最终结果
+    weight_matrix_inv = diag(1/sqrt(weight_array));
+    res_factor = mdl.Residuals * weight_matrix_inv;
+
+end
