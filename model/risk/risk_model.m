@@ -27,5 +27,5 @@ toc;
 
 
 tic;
-r4_cov(p,a,0,0)
+%r4_cov(p,a,0,0)
 toc;

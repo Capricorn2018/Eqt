@@ -63,7 +63,7 @@ cal_stk_vol(p,a,63,16,1)
 %==== 国企
 soe_(p,a)
 %====不确定性
-mutual_funds_holdigns(p,a)
+mutual_funds_holdings(p,a)
 report_num_q(p,a)
 %%
 % tcap(p,a)

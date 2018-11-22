@@ -67,4 +67,4 @@ stats_plot(reblanace_dates,nav_grp,nav_bench);
 
 
 
-save('D:\Projects\Eqt\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');
+save('D:\Projects\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');
