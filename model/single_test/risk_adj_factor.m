@@ -41,8 +41,6 @@ function adj_style_table = risk_adj_factor(a,style_table)
         
     end
     
-    disp;
-
 end
 
 
