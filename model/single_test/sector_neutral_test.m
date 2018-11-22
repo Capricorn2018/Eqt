@@ -1,16 +1,13 @@
 % 最简单的单因子测试, 用单因子分组分别计算历史收益曲线
 % rtn_table是每只股票历史每日复权后收益table, 第一列是对应的日期int
-% a: 存储各种路径
-% tgt_tag: 因子名称
-% tgt_file: 读取因子数据的文件名称
+% N_grp: 分组的个数, 一般用5组即可
 % rebalance_dates: 一个array, 里面存着需要做调仓的日期double
 % rtn_table: 一个table, 第一列DATEN是每一个交易日double, 后面的列是每个股票的每日复权收益
 
-function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,markcap_table)
-    
-    %%%%% 分组个数 %%%%%%%
-    N_grp = 10;
+% 2018-11-21: 需要考虑style是不是在停牌日已经设为NaN, 如果不是的话要改code
 
+function [nav_grp,weight_grp,nav_bench] = sector_neutral_test(N_grp,rebalance_dates,rtn_table,style_table,sectors_table,markcap_table)
+    
     T = height(rtn_table);
     N_stk = width(rtn_table)-1;
    

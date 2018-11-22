@@ -2,7 +2,7 @@
 % style是待评估的alpha因子
 % risk_factors是用于回归的矩阵, 其中每一列是一个做过去极值和归一化的风险因子, 或行业因子
 
-% 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
+% 2018-11-21: 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
 
 function res_factor = risk_adj_factor(style, risk_factors, weight_array)
 

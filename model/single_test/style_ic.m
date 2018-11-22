@@ -1,3 +1,5 @@
+% 2018-11-21: 需要考虑style是不是在停牌日已经设为NaN, 如果不是的话要改code
+
 function [ic, ic_ir] = style_ic(rebalance_dates, style_table, rtn_table)
 
     % rebalance_dates变cellstr方便后续使用字符串索引

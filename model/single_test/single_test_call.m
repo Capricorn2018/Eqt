@@ -18,6 +18,18 @@ tgt_file = 'hl_21-1.h5';
 adj_prices = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')';
 rtn_array = adj_prices(2:end,:)./adj_prices(1:end-1,:) - 1;
 
+stk_status   = h5read([a.input_data_path,'\fdata\base_data\stk_status.h5'],'/stk_status')'; 
+is_suspended = double(h5read([a.input_data_path,'\fdata\base_data\suspended.h5'],'/is_suspended')');
+
+is_suspended(isnan(stk_status)) = NaN;
+is_suspended(is_suspended==1) = NaN;
+is_suspended(isnan(is_suspended)) =1;
+
+is_suspended = is_suspended(2:end,:);
+
+% 把当日停牌的日期收益全都设为空值, 以避免后续单因子分析时造成扰动
+rtn_array(is_suspended==1) = NaN;
+
 var_names = cell2mat(p.stk_codes_);
 var_names = var_names(:,1:6);
 var_names = strcat('A',var_names);
@@ -43,10 +55,16 @@ freecap_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 % 读取对应的因子数据
 style = h5read([a.output_data_path,'\',tgt_file],['/',tgt_tag]);
-style_table = [array2table(trading_dates), array2table(style(2:end,:))];
+style = style(2:end,:);
+style(is_suspended==1) = NaN;
+style_table = [array2table(trading_dates), array2table(style)];
 style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
-%[nav_grp,weight_grp,nav_bench] = naive_test(rebalance_dates,rtn_table,freecap_table);
-[nav_grp,weight_grp,nav_bench] = sector_neutral_test(rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
+%[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,freecap_table);
+[nav_grp,weight_grp,nav_bench] = sector_neutral_test(5,rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
+
+stats_plot(reblanace_dates,nav_grp,nav_bench);
+
+
 
 save('D:\Projects\Eqt\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');
