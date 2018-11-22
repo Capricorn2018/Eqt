@@ -44,7 +44,8 @@ function plot_DD(Date,Price,X,DD)
     h(1).FaceAlpha = 0.2;
 
     plot(Date,Price)
-    ylim([0, max(Price)+0.1*u2])
+    %ylim([0, max(Price)+0.1*u2])
+    ylim([min(Price)-0.1*u2, max(Price)+0.1*u2])
     xlim([Date(1,1),Date(end,1)])
     title('指数走势')
     
