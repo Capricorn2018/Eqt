@@ -62,7 +62,10 @@ style(is_suspended==1) = NaN;
 style_table = [array2table(trading_dates), array2table(style)];
 style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
-adj_style_table = risk_adj_factor(a,style_table);
+risk_factor_names = {'beta','tcap'};
+
+adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
 
 [nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
 
+save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
