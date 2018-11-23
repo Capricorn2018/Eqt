@@ -40,8 +40,6 @@ function weight_table = factor_mimicking(a,style_table,risk_factor_names)
         
     end
     
-    disp('end');
-
 end
 
 
