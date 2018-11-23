@@ -1,6 +1,6 @@
 % 风格(行业)中性调整
-% style是待评估的alpha因子
-% risk_factors_names是用于回归计算风险中性因子所使用的风险因子名称, 对应风险模型数据中的列名
+% style_table: 待评估的alpha因子table, 第一列是日期, 列名是SZ000001这种格式
+% risk_factors_names: cell, 用于回归计算风险中性因子所使用的风险因子名称, 对应风险模型数据中的列名
 
 % 2018-11-21: 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
 
@@ -17,15 +17,20 @@ function adj_style_table = risk_adj_factor(a,style_table,risk_factor_names)
     for i=1:length(dt)
         
        date = datestr(dt(i),'yyyy-mm-dd'); 
-       filename = [a.style,'Index0_',date,'.mat'];
+       filename = [a.style,'\Index0_',date,'.mat'];
        if(exist(filename,'file')==2)
            load(filename);
        else
            continue;
        end
        
-       risk_factors = table2array(T_sector_style);
-       risk_factors = risk_factors(:,risk_factor_names);
+       try
+           T_sector_style(1,risk_factor_names); %#ok<NODEF>
+       catch
+           continue;
+       end
+       
+       risk_factors = table2array(T_sector_style(:,risk_factor_names)); 
        if(all(any(isnan(risk_factors),2)))
            continue;
        end       
@@ -41,10 +46,10 @@ function adj_style_table = risk_adj_factor(a,style_table,risk_factor_names)
     
 end
 
-
+% style是待评估的alpha因子
 function res_factor = calc_residual(style, risk_factors, weight_array)
 
-    if nargin==2
+    if(nargin==2)
        weight_array = ones(length(style),1); 
     end
 

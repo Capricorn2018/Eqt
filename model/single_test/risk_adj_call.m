@@ -3,7 +3,8 @@ a.project_path       = 'D:\Projects\Eqt';
 %cd(a.project_path); addpath(genpath(a.project_path));
 a.input_data_path    = 'D:\Capricorn';
 a.output_data_path   = 'D:\Capricorn\descriptors';
-a.style = 'D:\Capricorn\model\risk\style\';
+a.style = 'D:\Capricorn\model\risk\style';
+a.regression = 'D:\Capricorn\model\risk\regression';
 %%
 p.all_trading_dates_ = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date');     
 p.all_trading_dates  = datenum_h5 (h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date'));  
@@ -64,8 +65,10 @@ style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 risk_factor_names = {'beta','tcap'};
 
-adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
+weight_table = factor_mimicking(a,style_table,risk_factor_names);
 
-[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
+%adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
 
-save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
+%[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
+
+%save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
