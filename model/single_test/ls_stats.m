@@ -1,3 +1,13 @@
+% 这个函数用来统计单因子分组中long一组short一组的净值曲线状态
+% rebalance_dates: 一列datenum, 传给函数每个调仓日期
+% nav_grp: 一个table, 第一列是datenum, 后面每一列是一个分组的nav
+% ls_rtn: long第一组short最后一组的每个区间收益
+% ls_nav: long第一组short最后一组的净值曲线
+% mean_rt: 调仓期区间的平均收益
+% hit_ratio: 多空组合的区间胜率
+% ls_ir: 策略的IR
+% max_dd: 策略的最大回撤
+
 function [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = ls_stats(rebalance_dates,nav_grp)
 
     % 把rebalance_dates变为cellstr方便后续用字符串索引
