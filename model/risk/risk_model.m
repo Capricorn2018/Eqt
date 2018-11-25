@@ -5,7 +5,7 @@ project_path       = 'D:\Projects\Eqt';
 cd(project_path); addpath(genpath(project_path));
 
 %%
-input_data_path    = 'D3:\Capricorn';
+input_data_path    = 'D:\Capricorn';
 output_data_path   = 'D:\Capricorn\model';
 % 
 

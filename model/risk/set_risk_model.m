@@ -107,5 +107,6 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
     p.spk.vra_N  = 126;
     p.spk.h = 252;
     p.spk.E0 = 1.05;
+    p.spk.groups = 10;
 end
 

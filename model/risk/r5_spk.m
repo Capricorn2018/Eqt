@@ -120,8 +120,23 @@
                   residuals.str = p.spk.E0*exp(mtimes( table2array(pre_reg(:,2:end)),table2array(f)'));
                   residuals.structured  = residuals.gamma.*residuals.nw + (1-residuals.gamma).*residuals.str;
                     
-                  %% bayesian shrinkage
-                        
+                %% bayesian shrinkage
+                   [residuals.sn,residuals.dn,residuals.gn,residuals.sh] = deal(NaN(height(residuals),1));
+                  
+                  G = p.spk.groups;
+                  qtiles =  quantile(1:height(residuals),1/G:1/G:1);
+                  [floorg,ceilg] = deal(G,1);
+                  
+                  T_cap = outerjoin(residuals,)
+                  T_cap = sortrows(T_stocks_cap_freecap_sector,{'total_cap'});
+                  for m = 1 : G
+                     if m==1
+                         floorg(m,1) = 1;
+                     else
+                         floorg(m,1) = floor(qtiles(m-1));
+                     end
+                     ceilg(m,1) = ceil(qtiles(m));
+                  end
                     
                   %% vra
                  end  % end  if i>D+1          
