@@ -67,6 +67,6 @@ end
 
 function f = cal_var(x,y,hl)
       % x and y must be a n*1 vector we have no error checking here
-         f =  sum((x - x.*hl).*(y - y.*hl).*hl);
+         f =  nansum((x - x.*hl).*(y - y.*hl).*hl);
      
 end

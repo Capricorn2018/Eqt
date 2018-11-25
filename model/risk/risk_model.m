@@ -1,11 +1,11 @@
-build_index;
+%build_index;
 clear;clc;
 
 project_path       = 'D:\Projects\Eqt'; 
 cd(project_path); addpath(genpath(project_path));
 
 %%
-input_data_path    = 'D:\Capricorn';
+input_data_path    = 'D3:\Capricorn';
 output_data_path   = 'D:\Capricorn\model';
 % 
 
@@ -27,5 +27,5 @@ toc;
 
 
 tic;
-%r4_cov(p,a,0,0)
+r4_cov(p,a,0,0)
 toc;

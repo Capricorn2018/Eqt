@@ -24,7 +24,7 @@ function  p = set_index(input_data_path)
      p.file.sector    = 'D:\Projects\Eqt\files\sector_table.csv';
      p.file.codes     = 'D:\Projects\Eqt\files\sector_codes.csv';
 
-     %%
+    %%
      p.freecap.quantile = 0;
      p.tradingamt.quantile = 0;
      p.lagdays = 42;

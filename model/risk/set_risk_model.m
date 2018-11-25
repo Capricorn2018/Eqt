@@ -1,19 +1,19 @@
 function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
-    %% 
+    %%  设路径
      a.data         =  [input_data_path,'\fdata'];
-     %a.utility      =  [project_path,'\utility'];                       %  mkdir_(a.utility);
-     a.sector       =  [output_data_path,'\risk\sector'];                %  mkdir_(a.sector);
-     a.style        =  [output_data_path,'\risk\style'];                 %  mkdir_(a.style);
-     a.reggression  =  [output_data_path,'\risk\regression'];           %  mkdir_(a.reggression);
-     a.cov          =  [output_data_path,'\risk\cov'];                   %  mkdir_(a.cov);
-     a.spk          =  [output_data_path,'\risk\spk'];                   %  mkdir_(a.spk);
-     a.backtest     =  [output_data_path,'\risk\backtest'];              %  mkdir_(a.backtest);
+     a.sector       =  [output_data_path,'\risk\sector'];                  mkdir_(a.sector);
+     a.style        =  [output_data_path,'\risk\style'];                   mkdir_(a.style);
+     a.reggression  =  [output_data_path,'\risk\regression'];              mkdir_(a.reggression);
+     a.cov          =  [output_data_path,'\risk\cov'];                     mkdir_(a.cov);
+     a.spk          =  [output_data_path,'\risk\spk'];                     mkdir_(a.spk);
+     a.backtest     =  [output_data_path,'\risk\backtest'];                mkdir_(a.backtest);
+     mkdir_([output_data_path,'\risk\backtest\regression']);
+     mkdir_([output_data_path,'\risk\backtest\style']);
    %  a.index
-    %%
+    %%  模型的基准;T和N，都由securites_dates.h5 来决定
      p.model.all_trading_dates = datenum_h5 (h5read([a.data,'\base_data\securites_dates.h5'],'/date'));      T = length(p.model.all_trading_dates);
      p.model.stk_codes         = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code'));  N = length(p.model.stk_codes);
-  
-     %% file check
+     %% file check： 
      p.file.stk  =      [a.data,'\base_data\stk_prices.h5'];              err_chk(p.file.stk,T,N);
      p.file.ind  =      [a.data,'\base_data\citics_stk_sectors_all.h5'];  err_chk(p.file.ind,T,N); % 中信行业分类  
      p.file.totalshrs = [a.data,'\base_data\capital.h5'];                 err_chk(p.file.totalshrs,T,N); % 总市值
@@ -26,34 +26,31 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
      p.file.style_file   = 'D:\Projects\Eqt\files\styles.xlsx';
      %%   
      x = [];
-     for k = 1 : length(p.model.stk_codes)
-        z = cell2mat(p.model.stk_codes(k));
-        x = [x,cellstr(z([8:9,1:6]))];
-     end
-     p.model.stk_codes1 = x;
+     for k = 1 : length(p.model.stk_codes),z = cell2mat(p.model.stk_codes(k)); x = [x,cellstr(z([8:9,1:6]))]; end
+     p.model.stk_codes1 = x;  %  市场代码|股票代码 e.g. SZ000001
      p.model.start_date  = datenum(2005,01,01);
      p.model.end_date    = datenum(2018,09,21);
      p.model.model_trading_dates  = p.model.all_trading_dates(p.model.all_trading_dates>= p.model.start_date&p.model.all_trading_dates<=p.model.end_date);
      load(p.file.base_index)
-     p.model.indexlev  = index_self; % 基准和子指数的点位，基准是index0
-     p.model.indexmemb = index_membs;    % 基准和子字数的成分，基准是index0
-     p.model.alpha_factors = alpha_factors; % 几（7）个“大类行业”
-     %%
-      x = readtable(p.file.sector_table);
-      y = readtable(p.file.sector_codes);
+     p.model.indexlev  = index_self;     % 指数点位
+     p.model.indexmemb = index_membs;    % 指数权重
+     p.model.index_names = index_names;  % 指数名称
+     %%  行业分类
+      x = readtable(p.file.sector_table,'ReadRowNames',false,'ReadVariableNames',false);
+      y = readtable(p.file.sector_codes,'ReadRowNames',false,'ReadVariableNames',false);
       snames  = cell(size(x,1),1);
       for i  = 1: size(x,1)
          snames{i,1} = strcat('Ind',num2str(i));
          tmp = table2array(y(i,:));
-         p.model.ind_subcode.(['Ind',num2str(i)]) = tmp(~isnan(tmp))';  % “risk model 行业”包含的三级子行业代码
+         p.model.ind_subcode.(['Ind',num2str(i)]) = tmp(~isnan(tmp))';  % risk model 中每个行业（IndexX) 和 三级行业代码的mapping  X = 1,2,...
       end
       p.model.ind_names = table(snames,x.Var2,'VariableNames',{'Eng','Chn'});% risk model 中每个行业的中文名称
-       
-      for i = 1 : length(alpha_factors)
-         tmp = ismember(p.model.ind_names.Chn,x.Var2(ismember(x.Var1,alpha_factors(i)),:));
-         p.model.alpha_code.(['Index',num2str(i)]) = p.model.ind_names(tmp,:); % 每个“大类行业”中的“risk model 行业”
+      
+      for i = 1 : length(index_names)-1
+         tmp = ismember(p.model.ind_names.Chn,x.Var2(ismember(x.Var1,index_names(i+1)),:));
+         p.model.alpha_code.(['Index',num2str(i)]) = p.model.ind_names(tmp,:); %IndexX中的“risk model 行业”
       end
-      p.model.alpha_code.Index0 =  p.model.ind_names ; % 第0个“大类行业”，也就是指数总体（基准是index0）
+      p.model.alpha_code.Index0 =  p.model.ind_names ; % Index0就是指数总体（基准是index0）
     %% styles, 每个 descriptor 对应一个 factor 然后检查 descriptor\descriptor.h5 是不是存在
       p.style.styles01 = {'soe'};
       p.style.sty = readtable(p.file.style_file) ;
@@ -84,38 +81,31 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
     
     %% cov ： factor covariance matrix estimation parameters  all values are reported in trading days
     p.cov.vol_HL   = 84;  % factor volatility half-life
+    p.cov.nwlag_vol   = 10;  % newey-west volatility lags
+    
     p.cov.corr_HL  = 504; % factor correlation half- life
+    p.cov.nwlag_corr    = 3; % newey-west correlation lags
+    
+    p.cov.vra_HL = 21;  % 波动率乘数半衰期  half-life vol regrime adjustment 
+    
     p.cov.cov_N   = 504; 
-    p.cov.corr_N   = 504; 
-
-    % Nw adj for cov
-    p.cov.nwlag_vol   = 10;  % newty
-    p.cov.nwlag_corr    = 3; % 方差半衰期 
-    
-   % p.cov.N   = 21;
-    
-    p.cov.simtimes = 10000;
-      
-    p.cov.small_eigen   = 1e-5;
-
-    p.cov.vra_HL = 21;  % 波动率乘数半衰期  
+    p.cov.corr_N   = 504;   
     p.cov.vra_N = 126; 
+    p.cov.simtimes = 10000;
+    p.cov.small_eigen   = 1e-10;
+
     %% spk
-    % ewma spk
-%     p.ewmaspk.h       = 252; % 样本长度
-%     p.ewmaspk.t   = 90;      % 半衰期 
-% 
-%     % nw spk
-%     p.nwspk.l    = 5;  % 滞后期数
-% 
-%     % stuctured adj 
-%     p.struspk.e = 1.05;  % 调整系数 
-% 
-%     % 贝叶斯压缩 
-%     p.bysspk.q = 1;  %压缩系数
-% 
-%     % vra for spk
-%     p.vraspk.h = 252; % 样本长度 
-%     p.vraspk.t = 42;  % 波动率乘数半衰期  
+    
+    p.spk.spk_HL = 84;
+    p.spk.nwlag  = 5;
+    p.spk.nw_HL  = 252;
+    p.spk.bayes  = 0.15;
+    p.spk.vra_HL = 21;
+    
+    p.spk.spk_N  = 504;
+    p.spk.nw_N   = 504;
+    p.spk.vra_N  = 126;
+    p.spk.h = 252;
+    p.spk.E0 = 1.05;
 end
 
