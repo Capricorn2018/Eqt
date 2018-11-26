@@ -1,33 +1,44 @@
 % 计算纯因子组合权重, 即对style的暴露是1, risk factor和行业暴露都为0的最小风险组合
+%%
+% 若只想在一个指数成分范围内做分析, 则只需要把style_table中的其他票都设为NaN即可
+%% 问题
+% 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
+%%
 function weight_table = pure_factor(a,style_table,risk_factor_names)
 
+    % 日期序列
     dt = style_table(:,1);
     dt = table2array(dt);
     
-    weight = nan(height(style_table),width(style_table)-1);
-    
+    % 初始化weight
+    weight = nan(height(style_table),width(style_table)-1);    
     weight_table = [style_table(:,1),array2table(weight)];
     weight_table.Properties.VariableNames = style_table.Properties.VariableNames;
     
+    % 按日循环
     for i=1:length(dt)
         
+       % 日期字符串
        date = datestr(dt(i),'yyyy-mm-dd'); 
        % a.regression是读取回归所用矩阵的文件夹地址
        % 暂时看是D:\Capricorn\model\risk\regression\
        filename = [a.regression,'\Index0_',date,'.mat'];
+       
+       % 判断文件是否存在
        if(exist(filename,'file')==2)
            load(filename);
        else
            continue;
        end
        
+       % try catch避免当日对应的风险因子不存在
        try
            risk_factors = table2array(pre_reg(:,risk_factor_names));  %#ok<NODEF>
        catch
            continue;
        end
        
-       date = datestr(dt(i),'yyyymmdd');
+       % 东方金工风险因子数据文件名, 是用py扒下来的
        cov_filename = ['D:\Capricorn\model\dfquant_risk\cov\cov_',date,'.csv'];
        factor_filename = ['D:\Capricorn\model\dfquant_risk\factors\risk_factors_',date,'.csv'];
        spec_filename = ['D:\Capricorn\model\dfquant_risk\spec\spec_',date,'.csv'];
@@ -36,20 +47,24 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
            spec = readtable(spec_filename);
            factors = readtable(factor_filename);
            
+           % 把东方金工数据中的行名称从数字转到SH600018这种格式
            stk_num = factors(2:end,1);
-           
            stk_num = table2array(stk_num);
            stk_codes = df_stk_codes(stk_num);
            
+           % 东方金工数据
            cov = table2array(cov(2:end,2:end));
            spec = table2array(spec(:,2));
            factors = table2array(factors(2:end,2:end));
            
+           % 定义stk_cov即股票间cov矩阵, 行名列名都用SH600018格式股票代码
            stk_cov = nan(width(style_table));
            stk_cov = array2table(stk_cov,'VariableNames',style_table.Properties.VariableNames,'RowNames',style_table.Properties.VariableNames);
            
+           % 从东方金工数据中计算股票间cov
            df_stk_cov = factors * cov * factors' + diag(spec);
            
+           % 用格式化后的股票代码寻找正确位置赋值
            stk_cov(stk_codes,stk_codes) = array2table(df_stk_cov);
            
        else
@@ -61,17 +76,22 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
            continue;
        end       
        
+       % 当日回归矩阵中的股票代码
        stk_codes = pre_reg.Properties.RowNames;
+       
+       % 用股票代码筛选style中需要的数据
        style = style_table(i,stk_codes);
        style = table2array(style);
-       style = mad_zscore(style);
+       style = mad_zscore(style); % 正态化
        
+       % 对应的股票协方差矩阵
        stk_cov = stk_cov(stk_codes,stk_codes);
        stk_cov = table2array(stk_cov);
        
+       % 优化求解
        weight_table(i,stk_codes) = array2table(minvol_opt(style,risk_factors,stk_cov)');
         
-       disp(i);
+       disp(date);
     end
     
 end
