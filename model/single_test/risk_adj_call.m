@@ -65,8 +65,8 @@ style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 risk_factor_names = {'beta','tcap'};
 
-test = pure_factor(a,style_table,risk_factor_names);
-save('D:\Projects\scratch_data\single_test\pure_factor.mat','test');
+weight_table = pure_factor(a,style_table,risk_factor_names);
+save('D:\Projects\scratch_data\single_test\pure_factor.mat','weight_table');
 
 %weight_table = factor_mimicking(a,style_table,risk_factor_names);
 %save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
@@ -74,5 +74,4 @@ save('D:\Projects\scratch_data\single_test\pure_factor.mat','test');
 %adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
 
 %[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
-
 %save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');

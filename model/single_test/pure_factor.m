@@ -39,6 +39,9 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
        end
        
        % 东方金工风险因子数据文件名, 是用py扒下来的
+       % cov存在D;\Capricorn\model\dfquant_risk\cov\中
+       % risk factors存在D:\Capricorn\model\dfquant_risk\factors\中
+       % spec存在D:\Capricorn\model\dfquant_risk\spec中
        cov_filename = ['D:\Capricorn\model\dfquant_risk\cov\cov_',date,'.csv'];
        factor_filename = ['D:\Capricorn\model\dfquant_risk\factors\risk_factors_',date,'.csv'];
        spec_filename = ['D:\Capricorn\model\dfquant_risk\spec\spec_',date,'.csv'];
