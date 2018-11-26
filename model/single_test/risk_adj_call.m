@@ -65,8 +65,11 @@ style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 risk_factor_names = {'beta','tcap'};
 
-weight_table = factor_mimicking(a,style_table,risk_factor_names);
-save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
+test = pure_factor(a,style_table,risk_factor_names);
+save('D:\Projects\scratch_data\single_test\pure_factor.mat','test');
+
+%weight_table = factor_mimicking(a,style_table,risk_factor_names);
+%save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
 
 %adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
 

@@ -28,26 +28,33 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
        end
        
        date = datestr(dt(i),'yyyymmdd');
-       cov_filename = ['D:\Capricorn\model\DFrisk\cov\cov_',date,'.csv'];
-       factor_filename = ['D:\Capricorn\model\DFrisk\factors\risk_factors_',date,'.csv'];
-       spec_filename = ['D:\Capricorn\model\DFrisk\spec\spec_',date,'.csv'];
-       if(exist(cov_filename,'file')==2 && exist(factor_filename,'file')==2 && exist(spec_filename,'file')==2))
+       cov_filename = ['D:\Capricorn\model\dfquant_risk\cov\cov_',date,'.csv'];
+       factor_filename = ['D:\Capricorn\model\dfquant_risk\factors\risk_factors_',date,'.csv'];
+       spec_filename = ['D:\Capricorn\model\dfquant_risk\spec\spec_',date,'.csv'];
+       if(exist(cov_filename,'file')==2 && exist(factor_filename,'file')==2 && exist(spec_filename,'file')==2)
            cov = readtable(cov_filename);
            spec = readtable(spec_filename);
            factors = readtable(factor_filename);
            
-           stk_num = cov(2:end,1);
-           stk_cell = 
-           cov = cov(2:end,2:end);
-           spec = spec(2:end,2);
-           factors = factors(2:end,2:end);
+           stk_num = factors(2:end,1);
            
-           stk_cov = 
+           stk_num = table2array(stk_num);
+           stk_codes = df_stk_codes(stk_num);
+           
+           cov = table2array(cov(2:end,2:end));
+           spec = table2array(spec(:,2));
+           factors = table2array(factors(2:end,2:end));
+           
+           stk_cov = nan(width(style_table));
+           stk_cov = array2table(stk_cov,'VariableNames',style_table.Properties.VariableNames,'RowNames',style_table.Properties.VariableNames);
+           
+           df_stk_cov = factors * cov * factors' + diag(spec);
+           
+           stk_cov(stk_codes,stk_codes) = array2table(df_stk_cov);
            
        else
            continue;
        end
-       
        
        
        if(all(any(isnan(risk_factors),2)))
@@ -59,8 +66,12 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
        style = table2array(style);
        style = mad_zscore(style);
        
-       weight_table(i,stk_codes) = array2table(minvol_opt(style,risk_factors)');
+       stk_cov = stk_cov(stk_codes,stk_codes);
+       stk_cov = table2array(stk_cov);
+       
+       weight_table(i,stk_codes) = array2table(minvol_opt(style,risk_factors,stk_cov)');
         
+       disp(i);
     end
     
 end
@@ -71,8 +82,8 @@ function stk_codes = df_stk_codes(stk_num)
     for i=1:length(stk_num)
         stk_str = num2str(stk_num(i));
         if(length(stk_str)<6)
-            stk_str = ['000000',stk_str];
-            stk_str = ['SZ',stk_str(end-5:end)];
+            stk_str = [repmat('0',1,8-length(stk_str)),stk_str]; %#ok<AGROW>
+            stk_str(1:2) = 'SZ';
         else
             if(stk_str(1)=='6')
                 stk_str = ['SH',stk_str]; %#ok<AGROW>
@@ -99,17 +110,20 @@ function w = minvol_opt(style, risk_factors, stk_cov)
     
     % 取得所有有nan的行并去掉
     notnan_risk_factors = ~any(isnan(risk_factors),2);
-    notnan_styles = ~any(isnan(styles),2);
-    notnan_cov = ~any(isnan(cov),2);
+    notnan_style = ~any(isnan(style),2);
+    
+    notnan_cov = ~any(isnan(stk_cov),2) & ~any(isnan(stk_cov),1)';
     
     % 没有NaN出现的行
-    notnan_all = notnan_risk_factors & notnan_styles & notnan_cov;
+    notnan_all = notnan_risk_factors & notnan_style & notnan_cov;
     
     % 取得最后进入回归的行
     style = style(notnan_all);
-    stk_cov = stk_cov(notnan_all,notnan_all);
     risk_factors = risk_factors(notnan_all,:);
+    
+    stk_cov = stk_cov(notnan_all,notnan_all);
         
+    javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosek
     % 用mosek solver
     cvx_solver Mosek;
         
