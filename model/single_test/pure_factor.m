@@ -134,12 +134,12 @@ function w = minvol_opt(style, risk_factors, stk_cov)
         minimize(quad_form(x,stk_cov))
         subject to
         	%x >= 0; %#ok<VUNUS>
-            risk_factors * x == 0; %#ok<EQEFF>
-            style * x == 1; %#ok<EQEFF>
+            risk_factors' * x == 0; %#ok<EQEFF>
+            style' * x == 1; %#ok<EQEFF>
     cvx_end
     
     % ½á¹û
-    w(notnan_all) = x.Value;
+    w(notnan_all) = x;
     
 end
 
