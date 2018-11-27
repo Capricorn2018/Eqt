@@ -3,23 +3,15 @@ a.project_path       = 'D:\Projects\Eqt';
 %cd(a.project_path); addpath(genpath(a.project_path));
 a.input_data_path    = 'D:\Capricorn';
 a.output_data_path   = 'D:\Capricorn\descriptors';
-a.style = 'D:\Capricorn\model\risk\style';
-a.regression = 'D:\Capricorn\model\risk\regression';
 %%
 p.all_trading_dates_ = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date');     
 p.all_trading_dates  = datenum_h5 (h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date'));  
 p.stk_codes_         = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code'); 
 p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code')); 
 
-p.model.stk_codes         = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code'));
-x = [];
- for k = 1 : length(p.model.stk_codes)
-    z = cell2mat(p.model.stk_codes(k));
-    x = [x,cellstr(z([8:9,1:6]))];
- end
- p.model.stk_codes1 = x;
-%%
-%%
+% 设置Mosek的Matlab Fusion
+javaaddpath 'D:/Program Files/Mosek/8/tools/platform/win64x86/bin/mosekmatlab.jar'
+
 tgt_file = 'hl_21-1.h5';
 tgt_tag = file2tag(tgt_file); % 取变量名
 
@@ -38,11 +30,16 @@ is_suspended = is_suspended(2:end,:);
 % 把当日停牌的日期收益全都设为空值, 以避免后续单因子分析时造成扰动
 rtn_array(is_suspended==1) = NaN;
 
+var_names = cell2mat(p.stk_codes_);
+var_names = var_names(:,1:6);
+var_names = strcat('A',var_names);
+var_names = mat2cell(var_names,ones(length(var_names),1),7);
+
 trading_dates = p.all_trading_dates_(2:end);
 trading_dates = datenum(trading_dates,'yyyymmdd');
 
 rtn_table = [ array2table(trading_dates), array2table(rtn_array)];
-rtn_table.Properties.VariableNames = ['DATEN',p.model.stk_codes1];
+rtn_table.Properties.VariableNames = ['DATEN',var_names'];
 
 %% 选择计算起始日的下标和间隔 %%
 rebalance_dates = trading_dates(5000:end);
@@ -63,18 +60,11 @@ style(is_suspended==1) = NaN;
 style_table = [array2table(trading_dates), array2table(style)];
 style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
-risk_factor_names = {'beta','tcap'};
+%[nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,freecap_table);
+[nav_grp,weight_grp,nav_bench] = sector_neutral_test(5,rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
 
-% 设置CVX和Mosek
-%cvx_solver Mosek;
-%javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
-weight_table = pure_factor(a,style_table,risk_factor_names);
-save('D:\Projects\scratch_data\single_test\pure_factor.mat','weight_table');
+stats_plot(reblanace_dates,nav_grp,nav_bench);
 
-%weight_table = factor_mimicking(a,style_table,risk_factor_names);
-%save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
 
-%adj_style_table = risk_adj_factor(a,style_table,risk_factor_names);
 
-%[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
-%save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
+save('D:\Projects\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');

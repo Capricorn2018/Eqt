@@ -9,7 +9,7 @@
 % 2018-11-21: 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function adj_style_table = risk_adj_factor(a,style_table,risk_factor_names)
+function adj_style_table = risk_adj_factor(a,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -51,10 +51,12 @@ function adj_style_table = risk_adj_factor(a,style_table,risk_factor_names)
        % 从目标style中截取risk_factor中也存在的股票名
        style = style_table(i,stk_codes);
        style = table2array(style);
-       style = mad_zscore(style);
+       cap = markcap_table(i,stk_codes);
+       cap = table2array(cap);
+       %style = mad_zscore(style,cap);
        
        % 回归取残差即当日结果
-       adj_style_table(i,stk_codes) = array2table(calc_residual(style,risk_factors)');
+       adj_style_table(i,stk_codes) = array2table(calc_residual(style,cap,risk_factors)');
         
     end
     
@@ -62,24 +64,26 @@ end
 
 % 给一天的因子截面和当天的风险因子矩阵, 回归计算残差即risk adjusted factor
 % weight一般用sqrt(cap), 这里先不考虑加权重默认为1
-function res_factor = calc_residual(style, risk_factors, weight_array)
+function res_factor = calc_residual(style, cap, risk_factors)
 
-    if(nargin==2)
-       weight_array = ones(length(style),1); 
-    end
+    %if(nargin==2)
+    %   weight_array = ones(length(style),1); 
+    %end
 
+    non_nan = (~isnan(style)) & (~any(isnan(risk_factors),2)) & (~isnan(cap));
+    style = style(non_nan);
+    cap = cap(non_nan);
+    weight = sqrt(cap);
+    
     % 先用raw factor算zscore
     % 这里用的MAD, risk model里面是boxplot
-    zscore = mad_zscore(style);
+    zscore = mad_zscore(style,cap);
     
     % 在risk_factors中加入一列截距项
     X = [ones(size(risk_factors,1),1),risk_factors];
-    
-    X = X(:,~any(isnan(X),1));
-    
-    non_nan = (~isnan(style)) & (~any(isnan(X),2));
-    weight = weight_array(non_nan);
-    y = zscore(non_nan) .* weight;
+   
+    y = zscore .* weight;
+    % 回归矩阵也每一行乘以sqrt(cap)
     x = repmat(weight,1,size(X,2)) .* X(non_nan,:);
 
     % 这里不知道是不是要考虑做稳健回归

@@ -1,17 +1,19 @@
 % MAD去极值
 
-function f = mad_zscore(style)
+function f = mad_zscore(style,cap)
 
     style = style';
     
     f = nan(length(style),1);
     
-    x = style(~isnan(style));
-
-    f(~isnan(style)) = rm_outlier(x); % 去极值
+    notnan = (~isnan(style)) & (~isnan(cap));
+    x = style(notnan);
+    cap = cap(notnan);
     
-    f = (f - nanmean(f))/nanstd(f);  % 正态化
+    f = (f - nansum(f.*cap)/nansum(cap))/nanstd(f);  % 正态化
 
+    f(notnan) = rm_outlier(x); % 去极值
+    
 end
 
 function f = rm_outlier(x)

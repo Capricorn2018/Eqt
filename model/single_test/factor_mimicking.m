@@ -8,7 +8,7 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = factor_mimicking(a,style_table,risk_factor_names)
+function weight_table = factor_mimicking(a,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -52,10 +52,11 @@ function weight_table = factor_mimicking(a,style_table,risk_factor_names)
        % 截取style中同样代码股票
        style = style_table(i,stk_codes);
        style = table2array(style);
-       style = mad_zscore(style); % 正态化
+       cap = markcap_table(i,stk_codes);
+       cap = table2array(cap);
        
        % 计算factor mimicking portfolio
-       weight_table(i,stk_codes) = array2table(factor_mmck(style,risk_factors)');
+       weight_table(i,stk_codes) = array2table(factor_mmck(style,cap,risk_factors)');
         
     end
     
@@ -66,24 +67,24 @@ end
 % style: 需要评估的因子, 这里只要 原 始 因 子 即可
 % risk_factors：这个可以用risk model里面现成的回归矩阵
 % weight_array: 对应每只股票的weight, 通常是每只股票的总市值或流通市值
-function fm = factor_mmck(style, risk_factors, weight_array)
+function fm = factor_mmck(style, cap, risk_factors)
 
-    if(nargin==2)
-       weight_array = ones(length(style),1); 
-    end
+    %if(nargin==2)
+    %   weight_array = ones(length(style),1); 
+    %end
     
-    z = mad_zscore(style);
-    X = [ones(length(z),1),z,risk_factors];
-
     % 去NaN的行
-    notnan_X = ~any(isnan(X),2);
-    % 去markcap的NaN
-    notnan_weight = ~isnan(weight_array);    
-    % 所有的NaN
-    notnan_all = notnan_X & notnan_weight;
+    non_nan = (~isnan(style)) & (~any(isnan(risk_factors),2)) & (~isnan(cap));
     
-    weight = weight_array(notnan_all);
-    X = X(notnan_all,:);
+    style = style(non_nan);
+    cap = cap(non_nan);
+    weight = sqrt(cap);
+    
+    z = mad_zscore(style,cap);
+    % 因子收益回归中的矩阵, 如果加了所有行业因子则不需要加第一列1
+    X = [ones(length(z),1),z,risk_factors];
+    
+    X = X(non_nan,:);
 
     % W即回归方程中的weight, 通常用markcap
     W = diag(weight);
@@ -91,9 +92,9 @@ function fm = factor_mmck(style, risk_factors, weight_array)
     % 最后结果 H = (X' * W * X)^(-1) * X' * W
     H = (X' * W * X) \ (X'*W);
     
-    fm = nan(length(z),1);
+    fm = nan(length(style),1);
     % 取第2列即style对应的factor mimicking portfolio
-    fm(notnan_all) = H(2,:);
+    fm(non_nan) = H(2,:);
 
 end
 

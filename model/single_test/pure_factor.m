@@ -4,7 +4,7 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = pure_factor(a,style_table,risk_factor_names)
+function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -83,16 +83,18 @@ function weight_table = pure_factor(a,style_table,risk_factor_names)
        stk_codes = pre_reg.Properties.RowNames;
        
        % 用股票代码筛选style中需要的数据
+       % 截取style中同样代码股票
        style = style_table(i,stk_codes);
        style = table2array(style);
-       style = mad_zscore(style); % 正态化
+       cap = markcap_table(i,stk_codes);
+       cap = table2array(cap);
        
        % 对应的股票协方差矩阵
        stk_cov = stk_cov(stk_codes,stk_codes);
        stk_cov = table2array(stk_cov);
        
        % 优化求解
-       weight_table(i,stk_codes) = array2table(minvol_opt(style,risk_factors,stk_cov)');
+       weight_table(i,stk_codes) = array2table(minvol_opt(style,cap.risk_factors,stk_cov)');
         
        disp(date);
     end
@@ -126,29 +128,28 @@ end
 % sectors: 记录每日股票所在行业的矩阵
 % markcap: 每日市值数据
 % stk_cov: 股票间协方差矩阵, 可以用factor cov和residual vol算出来
-function w = minvol_opt(style, risk_factors, stk_cov)
+function w = minvol_opt(style, cap, risk_factors, stk_cov)
     
     % 初始化权重结果
     w = zeros(length(style),1);
     
     % 取得所有有nan的行并去掉
     notnan_risk_factors = ~any(isnan(risk_factors),2);
-    notnan_style = ~any(isnan(style),2);
-    
+    notnan_style = ~isnan(style);
+    notnan_cap = ~isnan(cap);
     notnan_cov = ~any(isnan(stk_cov),2) & ~any(isnan(stk_cov),1)';
     
     % 没有NaN出现的行
-    notnan_all = notnan_risk_factors & notnan_style & notnan_cov;
+    notnan_all = notnan_risk_factors & notnan_style & notnan_cov & notnan_cap;
     
     % 取得最后进入回归的行
     style = style(notnan_all);
     risk_factors = risk_factors(notnan_all,:);
-    
+    cap = cap(notnan_all);
     stk_cov = stk_cov(notnan_all,notnan_all);
-        
-    %javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
-    % 用mosek solver
-    %cvx_solver Mosek;
+    
+    style = mad_zscore(style,cap);
+    % 这里可能需要把risk factor也给正态化
         
     % 这里还要考虑去NaN        
     n = length(style); %#ok<NASGU>
