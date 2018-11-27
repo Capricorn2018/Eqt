@@ -1,5 +1,7 @@
 function [ datenum_matlab ] = datenum_h5( h5_string )
      
+    % 从yyyymmdd格式的datestr中截取年月日并转换为datenum
+    
     datenum_matlab = zeros(size(h5_string,1),1);
     for  i = 1: size(h5_string,1)
          x = cell2mat(h5_string(i));

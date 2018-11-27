@@ -101,6 +101,7 @@ function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_name
     
 end
 
+% 从东方金工的模型结果中读取的股票代码转为SH600018这种格式
 function stk_codes = df_stk_codes(stk_num)
 
     stk_codes = cell(length(stk_num),1);
@@ -110,7 +111,7 @@ function stk_codes = df_stk_codes(stk_num)
             stk_str = [repmat('0',1,8-length(stk_str)),stk_str]; %#ok<AGROW>
             stk_str(1:2) = 'SZ';
         else
-            if(stk_str(1)=='6')
+            if(stk_str(1)=='6' || stk_str(1)=='T')
                 stk_str = ['SH',stk_str]; %#ok<AGROW>
             else
                 stk_str = ['SZ',stk_str]; %#ok<AGROW>
