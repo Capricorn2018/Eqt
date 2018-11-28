@@ -9,23 +9,19 @@
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
 function weight_table = factor_mimicking(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
-
-    % 日期序列
-    dt = style_table(:,1);
-    dt = table2array(dt);
     
     % 初始化weight
-    weight = nan(height(style_table),width(style_table)-1);    
-    weight_table = [style_table(:,1),array2table(weight)];
+    weight = nan(rebalance_dates,width(style_table)-1);    
+    weight_table = [array2table(rebalance_dates),array2table(weight)];
     weight_table.Properties.VariableNames = style_table.Properties.VariableNames;
     
     % 按日循环
     for i=1:length(dt)
         
-       date = datestr(dt(i),'yyyy-mm-dd'); 
+       date = datestr(rebalance_dates(i),'yyyy-mm-dd'); 
        % a.regression是读取回归所用矩阵的文件夹地址
        % 暂时看是D:\Capricorn\model\risk\regression\
-       filename = [a.regression,'\Index0_',date,'.mat'];
+       filename = [a.single_test.regression,'\Index0_',date,'.mat'];
        
        % 判断文件是否存在, 不存在直接跳下一次循环
        if(exist(filename,'file')==2)
@@ -50,18 +46,17 @@ function weight_table = factor_mimicking(a,rebalance_dates,style_table,markcap_t
        stk_codes = pre_reg.Properties.RowNames;
        
        % 截取style中同样代码股票
-       style = style_table(i,stk_codes);
-       style = table2array(style);
-       cap = markcap_table(i,stk_codes);
-       cap = table2array(cap);
+       j = find(rebalance_dates(i),dt,'first');
+       style = style_table(j,stk_codes);
+       style = table2array(style)';
+       cap = markcap_table(j,stk_codes);
+       cap = table2array(cap)';
        
        % 计算factor mimicking portfolio
        weight_table(i,stk_codes) = array2table(factor_mmck(style,cap,risk_factors)');
         
     end
-    
-    weight_table = weight_table(ismember(dt,rebalance_dates),:);
-    
+        
 end
 
 

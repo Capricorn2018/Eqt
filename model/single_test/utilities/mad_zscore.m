@@ -1,8 +1,6 @@
 % MAD去极值
 
 function f = mad_zscore(style,cap)
-
-    style = style';
     
     f = nan(length(style),1);
     
@@ -10,15 +8,18 @@ function f = mad_zscore(style,cap)
     x = style(notnan);
     cap = cap(notnan);
     
-    f = (f - nansum(f.*cap)/nansum(cap))/nanstd(f);  % 正态化
-
+    mn = nansum(x.*cap)/nansum(cap);
+    sd = nanstd(x);
+    
     f(notnan) = rm_outlier(x); % 去极值
+    
+    f = (f - mn)/sd;  % 正态化   
     
 end
 
 function f = rm_outlier(x)
 
-    f = nan(length(x),1);
+    f = x;
 
     md = median(x);
     % 超过1.483倍的偏离中值距离的中值则为outlier

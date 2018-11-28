@@ -6,23 +6,21 @@
 %%
 function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
-    % 日期序列
-    dt = style_table(:,1);
-    dt = table2array(dt);
-    
+    dt = table2array(style_table(:,1));
+
     % 初始化weight
-    weight = nan(height(style_table),width(style_table)-1);    
-    weight_table = [style_table(:,1),array2table(weight)];
+    weight = nan(length(rebalance_dates),width(style_table)-1);    
+    weight_table = [array2table(rebalance_dates),array2table(weight)];
     weight_table.Properties.VariableNames = style_table.Properties.VariableNames;
     
     % 按日循环
-    for i=1:length(dt)
+    for i=1:length(rebalance_dates)
         
        % 日期字符串
-       date = datestr(dt(i),'yyyy-mm-dd'); 
+       date = datestr(rebalance_dates(i),'yyyy-mm-dd'); 
        % a.regression是读取回归所用矩阵的文件夹地址
        % 暂时看是D:\Capricorn\model\risk\regression\
-       filename = [a.regression,'\Index0_',date,'.mat'];
+       filename = [a.single_test.regression,'\Index0_',date,'.mat'];
        
        % 判断文件是否存在
        if(exist(filename,'file')==2)
@@ -42,9 +40,11 @@ function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,
        % cov存在D;\Capricorn\model\dfquant_risk\cov\中
        % risk factors存在D:\Capricorn\model\dfquant_risk\factors\中
        % spec存在D:\Capricorn\model\dfquant_risk\spec中
-       cov_filename = [a.dfquant_risk,'\cov\cov_',date,'.csv'];
-       factor_filename = [a.dfquant_risk,'\factors\risk_factors_',date,'.csv'];
-       spec_filename = [a.dfquant_risk,'\spec\spec_',date,'.csv'];
+       % 日期字符串换成yyyymmdd格式
+       date = datestr(rebalance_dates(i),'yyyymmdd'); 
+       cov_filename = [a.single_test.dfquant_risk,'\cov\cov_',date,'.csv'];
+       factor_filename = [a.single_test.dfquant_risk,'\factors\risk_factors_',date,'.csv'];
+       spec_filename = [a.single_test.dfquant_risk,'\spec\spec_',date,'.csv'];
        
        if(exist(cov_filename,'file')==2 && exist(factor_filename,'file')==2 && exist(spec_filename,'file')==2)
            cov = readtable(cov_filename);
@@ -85,23 +85,22 @@ function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,
        
        % 用股票代码筛选style中需要的数据
        % 截取style中同样代码股票
-       style = style_table(i,stk_codes);
-       style = table2array(style);
-       cap = markcap_table(i,stk_codes);
-       cap = table2array(cap);
+       j = find(ismember(dt,rebalance_dates(i)),1,'first');
+       style = style_table(j,stk_codes);
+       style = table2array(style)';
+       cap = markcap_table(j,stk_codes);
+       cap = table2array(cap)';
        
        % 对应的股票协方差矩阵
        stk_cov = stk_cov(stk_codes,stk_codes);
        stk_cov = table2array(stk_cov);
        
        % 优化求解
-       weight_table(i,stk_codes) = array2table(minvol_opt(style,cap.risk_factors,stk_cov)');
+       weight_table(i,stk_codes) = array2table(minvol_opt(style,cap,risk_factors,stk_cov)');
         
        disp(date);
     end
-    
-    weight_table = weight_table(ismember(dt,rebalance_dates),:);
-    
+        
 end
 
 % 从东方金工的模型结果中读取的股票代码转为SH600018这种格式

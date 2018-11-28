@@ -11,20 +11,16 @@
 %%
 function adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
-    % 日期序列
-    dt = style_table(:,1);
-    dt = table2array(dt);
-    
     % 初始化结果
-    adj_style = nan(height(style_table),width(style_table)-1);    
-    adj_style_table = [style_table(:,1),array2table(adj_style)];
+    adj_style = nan(rebalance_dates,width(style_table)-1);    
+    adj_style_table = [array2table(rebalance_dates),array2table(adj_style)];
     adj_style_table.Properties.VariableNames = style_table.Properties.VariableNames;
     
     % 按天循环回归
-    for i=1:length(dt)
+    for i=1:length(rebalance_dates)
        % 日期字符串生成读risk_factor的文件名
-       date = datestr(dt(i),'yyyy-mm-dd'); 
-       filename = [a.style,'\Index0_',date,'.mat'];
+       date = datestr(rebalance_dates(i),'yyyy-mm-dd'); 
+       filename = [a.single_test.style,'\Index0_',date,'.mat'];
        
        % 判断文件是否存在
        if(exist(filename,'file')==2)
@@ -49,18 +45,17 @@ function adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,markcap
        stk_codes = T_sector_style.Properties.RowNames;
        
        % 从目标style中截取risk_factor中也存在的股票名
-       style = style_table(i,stk_codes);
-       style = table2array(style);
-       cap = markcap_table(i,stk_codes);
-       cap = table2array(cap);
+       j = find(rebalance_dates(i),dt,'first');
+       style = style_table(j,stk_codes);
+       style = table2array(style)';
+       cap = markcap_table(j,stk_codes);
+       cap = table2array(cap)';
        %style = mad_zscore(style,cap);
        
        % 回归取残差即当日结果
        adj_style_table(i,stk_codes) = array2table(calc_residual(style,cap,risk_factors)');
         
     end
-    
-    adj_style_table = adj_style_table(ismember(dt,rebalance_dates),:);
     
 end
 
