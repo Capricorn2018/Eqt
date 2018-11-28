@@ -5,6 +5,7 @@ a.input_data_path    = 'D:\Capricorn';
 a.output_data_path   = 'D:\Capricorn\descriptors';
 a.style = 'D:\Capricorn\model\risk\style';
 a.regression = 'D:\Capricorn\model\risk\regression';
+a.dfquant_risk = 'D:\Capricorn\model\dfquant_risk';
 %%
 p.all_trading_dates_ = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date');     
 p.all_trading_dates  = datenum_h5 (h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date'));  
@@ -15,7 +16,7 @@ p.model.stk_codes         = stk_code_h5(h5read([a.input_data_path,'\fdata\base_d
 x = [];
  for k = 1 : length(p.model.stk_codes)
     z = cell2mat(p.model.stk_codes(k));
-    x = [x,cellstr(z([8:9,1:6]))];
+    x = [x,cellstr(z([8:9,1:6]))]; %#ok<AGROW>
  end
  p.model.stk_codes1 = x;
 %%

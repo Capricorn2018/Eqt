@@ -42,9 +42,10 @@ function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_name
        % cov存在D;\Capricorn\model\dfquant_risk\cov\中
        % risk factors存在D:\Capricorn\model\dfquant_risk\factors\中
        % spec存在D:\Capricorn\model\dfquant_risk\spec中
-       cov_filename = ['D:\Capricorn\model\dfquant_risk\cov\cov_',date,'.csv'];
-       factor_filename = ['D:\Capricorn\model\dfquant_risk\factors\risk_factors_',date,'.csv'];
-       spec_filename = ['D:\Capricorn\model\dfquant_risk\spec\spec_',date,'.csv'];
+       cov_filename = [a.dfquant_risk,'\cov\cov_',date,'.csv'];
+       factor_filename = [a.dfquant_risk,'\factors\risk_factors_',date,'.csv'];
+       spec_filename = [a.dfquant_risk,'\spec\spec_',date,'.csv'];
+       
        if(exist(cov_filename,'file')==2 && exist(factor_filename,'file')==2 && exist(spec_filename,'file')==2)
            cov = readtable(cov_filename);
            spec = readtable(spec_filename);
@@ -111,7 +112,7 @@ function stk_codes = df_stk_codes(stk_num)
             stk_str = [repmat('0',1,8-length(stk_str)),stk_str]; %#ok<AGROW>
             stk_str(1:2) = 'SZ';
         else
-            if(stk_str(1)=='6' || stk_str(1)=='T')
+            if(stk_str(1)=='6' || stk_str(1)=='T') % 还有个T00018是上港集箱后来退市, 不过东方的数据应该没影响
                 stk_str = ['SH',stk_str]; %#ok<AGROW>
             else
                 stk_str = ['SZ',stk_str]; %#ok<AGROW>

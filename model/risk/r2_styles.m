@@ -41,7 +41,7 @@ function  r2_styles(p,a,K1,K2)
                         eval(['T_des.(cell2mat(descriptors(k))) =' cell2mat(descriptors(k)),'(idx-1,idx_stk)'';']);% 取数，取的是昨天的exposure
                         z = z + wei(k)*cal_zscore(T_des.(cell2mat(descriptors(k))),weight_vector);  % cal zscore
                     end
-                   T_sector_style.(cell2mat(p.style.style(j))) = cal_zscore(z,weight_vector);
+                    T_sector_style.(cell2mat(p.style.style(j))) = cal_zscore(z,weight_vector);
                 end
              end
 

@@ -1,4 +1,7 @@
 function  b = yyyy2datenum(a)
+
+    % 从yyyymmdd格式的日期转换成datenum
+
      if  ~isempty(a)
          b = zeros(length(a),1);
          for i = 1: length(a)
