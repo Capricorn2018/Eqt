@@ -8,7 +8,7 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = factor_mimicking(a,style_table,markcap_table,risk_factor_names)
+function weight_table = factor_mimicking(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -59,6 +59,8 @@ function weight_table = factor_mimicking(a,style_table,markcap_table,risk_factor
        weight_table(i,stk_codes) = array2table(factor_mmck(style,cap,risk_factors)');
         
     end
+    
+    weight_table = weight_table(ismember(dt,rebalance_dates),:);
     
 end
 

@@ -4,7 +4,7 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_names)
+function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -68,7 +68,7 @@ function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_name
            % 从东方金工数据中计算股票间cov
            df_stk_cov = factors * cov * factors' + diag(spec);
            
-           % 用格式化后的股票代码寻找正确位置赋值
+           % 用格式化后的股票代码做indexing
            stk_cov(stk_codes,stk_codes) = array2table(df_stk_cov);
            
        else
@@ -99,6 +99,8 @@ function weight_table = pure_factor(a,style_table,markcap_table,risk_factor_name
         
        disp(date);
     end
+    
+    weight_table = weight_table(ismember(dt,rebalance_dates),:);
     
 end
 

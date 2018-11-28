@@ -9,7 +9,7 @@
 % 2018-11-21: 按照东方证券朱剑涛的做法, 财务因子要做行业中性和风格中性, 技术因子只做风格中性, 待讨论
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function adj_style_table = risk_adj_factor(a,style_table,markcap_table,risk_factor_names)
+function adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
     % 日期序列
     dt = style_table(:,1);
@@ -59,6 +59,8 @@ function adj_style_table = risk_adj_factor(a,style_table,markcap_table,risk_fact
        adj_style_table(i,stk_codes) = array2table(calc_residual(style,cap,risk_factors)');
         
     end
+    
+    adj_style_table = adj_style_table(ismember(dt,rebalance_dates),:);
     
 end
 

@@ -1,18 +1,20 @@
 %%
 a.project_path       = 'D:\Projects\Eqt'; 
-%cd(a.project_path); addpath(genpath(a.project_path));
+cd(a.project_path); addpath(genpath(a.project_path));
 a.input_data_path    = 'D:\Capricorn';
 a.output_data_path   = 'D:\Capricorn\descriptors';
-a.style = 'D:\Capricorn\model\risk\style';
-a.regression = 'D:\Capricorn\model\risk\regression';
-a.dfquant_risk = 'D:\Capricorn\model\dfquant_risk';
+a.style = 'D:\Capricorn\model\risk\style'; % 读取risk model中style/sector factor的路径
+a.regression = 'D:\Capricorn\model\risk\regression'; % 读取risk model中regression结果的路径
+a.dfquant_risk = 'D:\Capricorn\model\dfquant_risk'; % 读取东方证券risk model结果的路径
+
 %%
 p.all_trading_dates_ = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date');     
 p.all_trading_dates  = datenum_h5 (h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/date'));  
 p.stk_codes_         = h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code'); 
 p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code')); 
 
-p.model.stk_codes         = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\securites_dates.h5'],'/stk_code'));
+% 转换成SH600018这种格式
+p.model.stk_codes    = p.stk_codes;
 x = [];
  for k = 1 : length(p.model.stk_codes)
     z = cell2mat(p.model.stk_codes(k));
@@ -21,6 +23,7 @@ x = [];
  p.model.stk_codes1 = x;
 %%
 %%
+% 需要处理的单因子存储的文件名
 tgt_file = 'hl_21-1.h5';
 tgt_tag = file2tag(tgt_file); % 取变量名
 
@@ -69,13 +72,13 @@ risk_factor_names = {'beta','tcap'};
 % 设置CVX和Mosek
 %cvx_solver Mosek;
 %javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
-weight_table = pure_factor(a,style_table,freecap_table,risk_factor_names);
+weight_table = pure_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 save('D:\Projects\scratch_data\single_test\pure_factor.mat','weight_table');
 
-%weight_table = factor_mimicking(a,style_table,freecap_table,risk_factor_names);
+%weight_table = factor_mimicking(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 %save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
 
-%adj_style_table = risk_adj_factor(a,style_table,freecap_table,risk_factor_names);
+%adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 
 %[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
 %save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
