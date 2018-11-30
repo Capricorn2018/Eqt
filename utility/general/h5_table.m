@@ -11,6 +11,9 @@ function output_table = h5_table(h5_path, h5_file, tag_name)
         x = [x,cellstr(z([8:9,1:6]))]; %#ok<AGROW>
     end    
     
+    if(size(output,2)==length(dates))
+        output = output';
+    end
     output_table = array2table([datenum_h5(dates),output],'VariableNames',['DATEN',x]);
     
     

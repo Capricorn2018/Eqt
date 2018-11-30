@@ -46,12 +46,12 @@ rtn_table = price2rtn(price_table);
 % is_suspended = is_suspended(2:end,:);
 
 stk_status_table = h5_table(a.single_test.base_data,'stk_status.h5','stk_status');
-is_suspended_table = h5_table(a.single_test.base_data,'suspended.h5','is_suspended');
+is_suspended_table = h5_table(a.single_test.baase_data,'suspended.h5','is_suspended');
 
 rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
 
 % 把当日停牌的日期收益全都设为空值, 以避免后续单因子分析时造成扰动
-% rtn_array(is_suspended==1) = NaN;
+rtn_array(is_suspended==1) = NaN;
 
 trading_dates = p.all_trading_dates_;
 trading_dates = datenum(trading_dates,'yyyymmdd');
@@ -67,7 +67,7 @@ rebalance_dates = trading_dates(5000:end);
 % freecap_table = [ array2table(trading_dates), array2table(freecap(:,2:end)') ];
 % freecap_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
-freecap_table = h5_table(a.single_test.base_data,'free_shares.h5','free_cap');
+freecap_table = h5table(a.single_test.base_data,'free_shares.h5','free_cap');
 
 % 读取对应的因子数据
 % style = h5read([a.single_test.descriptors,'\',tgt_file],['/',tgt_tag]);
@@ -75,7 +75,7 @@ freecap_table = h5_table(a.single_test.base_data,'free_shares.h5','free_cap');
 % style(is_suspended==1) = NaN;
 % style_table = [array2table(trading_dates), array2table(style)];
 % style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-style_table = h5_table(a.single_test.descriptors,tgt_file,tgt_tag);
+style_table = h5_table(a.single_test,tgt_file,tgt_tag);
 style_table = del_suspended(style_table,stk_status_table,is_suspended_table);
 
 Ind_names=cell(1,36);
