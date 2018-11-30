@@ -1,4 +1,4 @@
-% load一个h5文件, 用stk_code命名列, 并把date加在第一列
+% load一个h5文件存入table, 用stk_code命名列, 并把date加在第一列
 function output_table = h5_table(h5_path, h5_file, tag_name)
 
     output = h5read([h5_path,'\',h5_file],['/',tag_name])';
