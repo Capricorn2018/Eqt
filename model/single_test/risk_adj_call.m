@@ -30,71 +30,56 @@ p.single_test.stk_codes1 = x;
 tgt_file = 'hl_21-1.h5';
 tgt_tag = file2tag(tgt_file); % 取变量名
 
-% adj_prices = h5read([a.single_test.base_data,'\stk_prices.h5'],'/adj_prices')';
-% rtn_array = adj_prices(2:end,:)./adj_prices(1:end-1,:) - 1;
-
+% 读取复权价格表
 price_table = h5_table(a.single_test.base_data,'stk_prices.h5','adj_prices');
-rtn_table = price2rtn(price_table);
+rtn_table = price2rtn(price_table); % 从复权价格计算return, 在停牌日等异常点为0
 
-% stk_status   = h5read([a.single_test.base_data,'\stk_status.h5'],'/stk_status')'; 
-% is_suspended = double(h5read([a.single_test.base_data,'\suspended.h5'],'/is_suspended')');
-% 
-% is_suspended(isnan(stk_status)) = NaN;
-% is_suspended(is_suspended==1) = NaN;
-% is_suspended(isnan(is_suspended)) =1;
-% 
-% is_suspended = is_suspended(2:end,:);
-
+% 读取股票交易状态
 stk_status_table = h5_table(a.single_test.base_data,'stk_status.h5','stk_status');
 is_suspended_table = h5_table(a.single_test.base_data,'suspended.h5','is_suspended');
 
+% 把异常点改为NaN
 rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
 
-% 把当日停牌的日期收益全都设为空值, 以避免后续单因子分析时造成扰动
-% rtn_array(is_suspended==1) = NaN;
-
+% 所有的trading dates
 trading_dates = p.all_trading_dates_;
 trading_dates = datenum(trading_dates,'yyyymmdd');
- 
-% rtn_table = [ array2table(trading_dates), array2table(rtn_array)];
-% rtn_table.Properties.VariableNames = ['DATEN',p.single_test.stk_codes1];
 
 %% 选择计算起始日的下标和间隔 %%
 rebalance_dates = trading_dates(5000:end);
 [rebalance_dates,~] = find_month_dates(1,rebalance_dates,'first'); % 每个月的第一个交易日
 
-% freecap = h5read([a.single_test.base_data,'\free_shares.h5'],'/free_cap');
-% freecap_table = [ array2table(trading_dates), array2table(freecap(:,2:end)') ];
-% freecap_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
-
+% 读取markcap
 freecap_table = h5_table(a.single_test.base_data,'free_shares.h5','free_cap');
 
-% 读取对应的因子数据
-% style = h5read([a.single_test.descriptors,'\',tgt_file],['/',tgt_tag]);
-% style = style(2:end,:);
-% style(is_suspended==1) = NaN;
-% style_table = [array2table(trading_dates), array2table(style)];
-% style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+% 读取对应的因子数据]
 style_table = h5_table(a.single_test.descriptors,tgt_file,tgt_tag);
+% 将异常交易日改为NaN
 style_table = del_suspended(style_table,stk_status_table,is_suspended_table);
 
-Ind_names=cell(1,36);
+% risk adjusted factor等等需要做中性的因子名
+Ind_names=cell(1,36); % 行业因子名 Ind1, Ind2...
 for i=1:36
     Ind_names(i) = {strcat('Ind',num2str(i))};
 end
-risk_factor_names = {'beta','tcap'};
+risk_factor_names = {'beta','tcap'}; % 风格因子名
 risk_factor_names = [risk_factor_names,Ind_names];
 
 % 设置CVX和Mosek
 %cvx_solver Mosek;
 %javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
+
+% pure factor call
 weight_table = pure_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 save('D:\Projects\scratch_data\single_test\pure_factor.mat','weight_table');
 
+% factor mimicking portfolio call
 %weight_table = factor_mimicking(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 %save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
 
+% risk adjusted factor call
 %adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 
-%[nav_grp,weight_grp,nav_bench] = naive_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
+% simple single factor test call
+%[nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
 %save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
