@@ -63,10 +63,12 @@ style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 %[nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,freecap_table);
 [nav_grp,weight_grp,nav_bench] = sector_neutral_test(5,rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
 
-% lag 10 day ic
-lag = 5;
+%
+lag = 10;
 [ic, ic_ir, fr] = style_stats(rebalance_dates, style_table, rtn_table, lag);
 
-grp_stats(rebalance_dates,nav_grp,nav_bench);
+stats_plot(reblanace_dates,nav_grp,nav_bench);
+
+
 
 save('D:\Projects\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');

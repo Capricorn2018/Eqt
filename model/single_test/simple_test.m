@@ -113,7 +113,7 @@ function [nav_grp,weight_grp,nav_bench] = simple_test(N_grp,rebalance_dates,rtn_
     bench_w_table = [array2table(rebalance_dates),array2table(bench_w)];
     bench_w_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
     % 模拟nav和生成weight
-    [nav_bench,~] = simulator(rtn_table,bench_w_table,cost_table); %#ok<ASGLU>
+    [nav_bench,~] = simulator(rtn_table,bench_w_table,cost_table);
     
     % 调整结果, 加入一列日期double
     nav_grp = [rtn_table(:,1),array2table(simulated_nav_grp)];

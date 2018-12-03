@@ -25,13 +25,14 @@ function [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = grp_stats(rebalance_d
     daily_rtn = (1 - rtn1 + rtnN);
     
     % ls的每日nav
-    ls = cumprod(daily_rtn);
+    ls = [1.;cumprod(daily_rtn)];
     ls = [array2table(nav_grp.DATEN), array2table(ls)];
     ls.Properties.RowNames = cellstr(num2str(nav_grp.DATEN));
     ls.Properties.VariableNames = {'DATEN', 'nav'};
     
     % 用字符串索引取对应调仓日的nav
-    ls_nav = ls(rebalance_str);
+    ls_nav = ls(rebalance_str,:);
+    ls_nav = table2array(ls_nav);
     
     % 调仓日之间ls组合的return
     ls_rtn = ls_nav(2:end) ./ ls_nav(1:end-1) - 1;

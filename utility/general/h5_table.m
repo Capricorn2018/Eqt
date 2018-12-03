@@ -9,7 +9,7 @@ function output_table = h5_table(h5_path, h5_file, tag_name)
     for k = 1 : length(stk_codes)
         z = cell2mat(stk_codes(k));
         x = [x,cellstr(z([8:9,1:6]))]; %#ok<AGROW>
-    end    
+    end
     
     if(size(output,2)==length(dates))
         output = output';
