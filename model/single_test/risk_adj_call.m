@@ -28,7 +28,7 @@ p.single_test.stk_codes1 = x;
 %%
 % 需要处理的单因子存储的文件名
 tgt_file = 'hl_21-1.h5';
-tgt_tag = file2tag(tgt_file); % 取变量名
+tgt_tag = get_tag([a.single_test.descriptors,'\',tgt_file]);
 
 % 读取复权价格表
 price_table = h5_table(a.single_test.base_data,'stk_prices.h5','adj_prices');
