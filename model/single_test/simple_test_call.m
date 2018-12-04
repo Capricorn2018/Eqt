@@ -12,8 +12,8 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 % 设置Mosek的Matlab Fusion
 javaaddpath 'D:/Program Files/Mosek/8/tools/platform/win64x86/bin/mosekmatlab.jar'
 
-tgt_file = 'hl_21-1.h5';
-tgt_tag = file2tag(tgt_file); % 取变量名
+tgt_file = 'roe_q_d-4.h5';
+tgt_tag = get_tag([a.output_data_path,'\',tgt_file]);
 
 adj_prices = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')';
 rtn_array = adj_prices(2:end,:)./adj_prices(1:end-1,:) - 1;
@@ -61,12 +61,13 @@ style_table = [array2table(trading_dates), array2table(style)];
 style_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
 
 %[nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,freecap_table);
-[nav_grp,weight_grp,nav_bench] = sector_neutral_test(5,rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
+N_grp=5;
+[nav_grp,weight_grp,nav_bench] = sector_neutral_test(N_grp,rebalance_dates,rtn_table,style_table,sectors_table,freecap_table);
 
 % lag 10 day ic
-lag = 5;
+lag = 1;
 [ic, ic_ir, fr] = style_stats(rebalance_dates, style_table, rtn_table, lag);
 
-grp_stats(rebalance_dates,nav_grp,nav_bench);
+grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
 
 save('D:\Projects\scratch_data\single_test\sector_neutral_test.mat','nav_grp','weight_grp');
