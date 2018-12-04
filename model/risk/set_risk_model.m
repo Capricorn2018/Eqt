@@ -1,15 +1,15 @@
 function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
     %%  设路径
      a.data         =  [input_data_path,'\fdata'];
-     a.sector       =  [output_data_path,'\risk\sector'];                  mkdir_(a.sector);
-     a.style        =  [output_data_path,'\risk\style'];                   mkdir_(a.style);
-     a.reggression  =  [output_data_path,'\risk\regression'];              mkdir_(a.reggression);
-     a.cov          =  [output_data_path,'\risk\cov'];                     mkdir_(a.cov);
-     a.spk          =  [output_data_path,'\risk\spk'];                     mkdir_(a.spk);
-     a.backtest     =  [output_data_path,'\risk\backtest'];                mkdir_(a.backtest);
-     mkdir_([output_data_path,'\risk\backtest\regression']);
-     mkdir_([output_data_path,'\risk\backtest\style']);
-   %  a.index
+     a.sector       =  [output_data_path,'\risk\sector'];                  %mkdir_(a.sector);
+     a.style        =  [output_data_path,'\risk\style'];                   %mkdir_(a.style);
+     a.reggression  =  [output_data_path,'\risk\regression'];              %mkdir_(a.reggression);
+     a.cov          =  [output_data_path,'\risk\cov'];                     %mkdir_(a.cov);
+     a.spk          =  [output_data_path,'\risk\spk'];                     %mkdir_(a.spk);
+     a.backtest     =  [output_data_path,'\risk\backtest'];                %mkdir_(a.backtest);
+    % mkdir_([output_data_path,'\risk\backtest\regression']);
+    % mkdir_([output_data_path,'\risk\backtest\style']);
+    % a.index
     %%  模型的基准;T和N，都由securites_dates.h5 来决定
      p.model.all_trading_dates = datenum_h5 (h5read([a.data,'\base_data\securites_dates.h5'],'/date'));      T = length(p.model.all_trading_dates);
      p.model.stk_codes         = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code'));  N = length(p.model.stk_codes);
@@ -23,7 +23,7 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
      p.file.base_index   = 'D:\Capricorn\index\all_A.mat';
      p.file.sector_codes = 'D:\Projects\Eqt\files\sector_codes.csv';
      p.file.sector_table = 'D:\Projects\Eqt\files\sector_table.csv';
-     p.file.style_file   = 'D:\Projects\Eqt\files\styles.xlsx';
+     p.file.style_file   = 'D:\Projects\Eqt\files\styles.xlsx';   % style factors settings
      %%   
      x = [];
      for k = 1 : length(p.model.stk_codes),z = cell2mat(p.model.stk_codes(k)); x = [x,cellstr(z([8:9,1:6]))]; end
@@ -31,7 +31,7 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
      p.model.start_date  = datenum(2005,01,01);
      p.model.end_date    = datenum(2018,09,21);
      p.model.model_trading_dates  = p.model.all_trading_dates(p.model.all_trading_dates>= p.model.start_date&p.model.all_trading_dates<=p.model.end_date);
-     load(p.file.base_index)
+     load(p.file.base_index)  % 默认Index0 为coverage universe Indexi(i>=0,...) 为不同的estimation universe(Index0也可以为estimation universe)
      p.model.indexlev  = index_self;     % 指数点位
      p.model.indexmemb = index_membs;    % 指数权重
      p.model.index_names = index_names;  % 指数名称
@@ -46,11 +46,11 @@ function  [p,a] = set_risk_model(project_path,input_data_path,output_data_path)
       end
       p.model.ind_names = table(snames,x.Var2,'VariableNames',{'Eng','Chn'});% risk model 中每个行业的中文名称
       
-      for i = 1 : length(index_names)-1
-         tmp = ismember(p.model.ind_names.Chn,x.Var2(ismember(x.Var1,index_names(i+1)),:));
-         p.model.alpha_code.(['Index',num2str(i)]) = p.model.ind_names(tmp,:); %IndexX中的“risk model 行业”
-      end
-      p.model.alpha_code.Index0 =  p.model.ind_names ; % Index0就是指数总体（基准是index0）
+%       for i = 1 : length(index_names)-1
+%          tmp = ismember(p.model.ind_names.Chn,x.Var2(ismember(x.Var1,index_names(i+1)),:));
+%          p.model.alpha_code.(['Index',num2str(i)]) = p.model.ind_names(tmp,:); %IndexX中的“risk model 行业”
+%       end
+%       p.model.alpha_code.Index0 =  p.model.ind_names ; % Index0就是指数总体（基准是index0）
     %% styles, 每个 descriptor 对应一个 factor 然后检查 descriptor\descriptor.h5 是不是存在
       p.style.styles01 = {'soe'};
       p.style.sty = readtable(p.file.style_file) ;
