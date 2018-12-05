@@ -32,7 +32,11 @@
     end
     clear j; 
      
-     
+     adj_price     = h5read(p.file.stk,'/adj_prices')';   % T by N
+     adj_rtn       = [nan(1,size(adj_price,2));adj_price(2:end,:)./adj_price(1:end-1,:)-1];
+     adj_rtn(isnan(adj_rtn)) = 0; 
+    
+    
      %  idx_index = 1;
      for  idx_index = K1:K2
          idx = find(p.model.model_trading_dates(1) == p.model.all_trading_dates);
@@ -87,6 +91,8 @@
              
              table_stctor_today = table_stctor_today(idx_pre_reg,:); % coverage universe里面的行业因子信息
              
+             table_stctor_today(isnan(table_stctor_today)) = 0; % 鉴于覆盖率还都比较高  
+             
              T_sector = array2table(table_stctor_today,'RowNames',p.model.stk_codes1(idx_pre_reg),'VariableNames',p.model.ind_names.Eng(est_universe_sector_num)');
              
              %　－－－－－－－－－－－风格因子　－－－－－－－－－－－－    
@@ -97,7 +103,6 @@
              % est_universe: 上一个交易日所有股票在estimation 里面的权重
              weight_vector = est_universe(idx_pre_reg);  % 如果指数存在停盘，这里可以不是100
   
-
              for j = 1 : M
                 if ~strcmp(p.style.style(j),'soe')
                     descriptors = p.style.sty.descriptors_(strcmp(p.style.sty.factors,p.style.style(j)));
@@ -116,6 +121,17 @@
                 T_des.soe  = soe(idx-1,idx_pre_reg)';
                 T_style.soe  = soe(idx-1,idx_pre_reg)';
              end
+             
+             ok_x_col_styles   = ~all(isnan(table2array(T_style)),1);
+             T_style =  T_style(:,ok_x_col_styles);
+             
+             [ii,~] = ismember(p.style.style,T_style.Properties.VariableNames);
+             T_style = T_style(:,p.style.style(ii));
+             
+             pre_reg_x = [T_sector,T_style];
+             pre_reg_y = array2table(adj_rtn(idx,idx_pre_reg)','RowNames',p.model.stk_codes1(idx_pre_reg),'VariableNames',{'y'}); 
+             pre_reg = [pre_reg_x,pre_reg_y];
+             T_stocks_cap_freecap_sector = T_stocks_cap_freecap_sector(idx_pre_reg,:);
              %%
                stocks_cap_freecap_sector = [data_mktcap(idx-1,:)',data_freecap(idx-1,:)',data_sector(idx-1,:)']; % 今天存储的是昨天EOD的市值。
                T_stocks_cap_freecap_sector = array2table(stocks_cap_freecap_sector,'RowNames',p.model.stk_codes1,'VariableNames',{'total_cap','free_cap','sector'});
