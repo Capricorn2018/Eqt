@@ -1,14 +1,15 @@
-% factor mimicking portfolio
-% a: 用于传入读数据的路径
-% style_table: 一个table, 第一列是datenum, 之后是每日对应因子截面数据
-% risk_factor_names: 需要做中性化的风险因子名称, 例如'beta'
-
-%%
-% 若只想在一个指数成分范围内做分析, 则只需要把style_table中的其他票都设为NaN即可
-%% 问题
-% 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
-%%
 function weight_table = factor_mimicking(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
+    
+    % factor mimicking portfolio
+    % a: 用于传入读数据的路径
+    % style_table: 一个table, 第一列是datenum, 之后是每日对应因子截面数据
+    % risk_factor_names: 需要做中性化的风险因子名称, 例如'beta'
+
+    %%
+    % 若只想在一个指数成分范围内做分析, 则只需要把style_table中的其他票都设为NaN即可
+    %% 问题
+    % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
+    %%
     
     % 初始化weight
     weight = nan(rebalance_dates,width(style_table)-1);    

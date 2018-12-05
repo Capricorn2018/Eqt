@@ -9,8 +9,8 @@ function style_table_del = del_suspended(style_table,stk_status_table,is_suspend
     is_suspended(is_suspended==1) = NaN;
     is_suspended(isnan(is_suspended)) =1;
         
-    [~,ia_row,ib_row] = intersect(style_table.DATEN,is_suspended_table.DATEN);
-    [~,ia_col,ib_col] = intersect(style_table.Properties.VariableNames(2:end),is_suspended_table.Properties.VariableNames(2:end));
+    [~,ia_row,ib_row] = intersect(style_table.DATEN,is_suspended_table.DATEN,'stable');
+    [~,ia_col,ib_col] = intersect(style_table.Properties.VariableNames(2:end),is_suspended_table.Properties.VariableNames(2:end),'stable');
     
     if(length(ia_col)<width(style_table)-1)
         disp('error in del_suspended: stk_codes in style_table not found£¡');
@@ -24,6 +24,5 @@ function style_table_del = del_suspended(style_table,stk_status_table,is_suspend
     
     style_table_del = array2table([style_table.DATEN(ia_row),style_array],'VariableNames',['DATEN',style_table.Properties.VariableNames(ia_col+1)]);
 
-    style_table_del = style_table_del(:,style_table.Properties.VariableNames);
 end
 
