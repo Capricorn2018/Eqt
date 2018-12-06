@@ -26,8 +26,8 @@ for i=1:length(c)
     % lag 10 day ic
     [ic, ic_ir, fr] = style_stats(rebalance_dates, style_table, rtn_table, lag);
 
-    grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
+    [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
 
-    save(['D:\Projects\scratch_data\single_test\sector_neutral_',file2name(tgt_file),'.mat'],'nav_grp','weight_grp','ic','ic_ir','fr');
+    save(['D:\Projects\scratch_data\single_test\sector_neutral_',file2name(tgt_file),'.mat']);
     saveas(gcf,['D:\Projects\scratch_data\figures\',file2name(tgt_file),'.jpg']);
 end
