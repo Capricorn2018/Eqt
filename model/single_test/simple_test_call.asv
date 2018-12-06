@@ -7,9 +7,10 @@ a.project_path       = 'D:\Projects\Eqt';
 cd(a.project_path); addpath(genpath(a.project_path));
 %%
 
-start_dt = datenum(2010,01,01);
+start_dt = datenum(2010
+
 [a,p,stk_status_table,is_suspended_table,...
-              rtn_table,freecap_table,sectors_table,rebalance_dates] = set_single_test(start_dt);
+              rtn_table,freecap_table,sectors_table,rebalance_dates] = set_single_test();
 
 c = get_file_names(a.single_test.descriptors);
     
