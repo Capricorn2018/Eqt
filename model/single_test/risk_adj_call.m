@@ -12,11 +12,6 @@ start_dt = datenum(2010,01,01);
 
 c = get_file_names(a.single_test.descriptors);
 
-% 读取对应的因子数据]
-style_table = h5_table(a.single_test.descriptors,tgt_file,tgt_tag);
-% 将异常交易日改为NaN
-style_table = del_suspended(style_table,stk_status_table,is_suspended_table);
-
 % risk adjusted factor等等需要做中性的因子名
 Ind_names=cell(1,36); % 行业因子名 Ind1, Ind2...
 for i=1:36
@@ -38,8 +33,7 @@ for i=1:length(c)
     
     adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 
-    [nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);  %#ok<ASGLU>
-
+    [nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
     % lag 10 day ic
     [ic, ic_ir, fr] = style_stats(rebalance_dates, style_table, rtn_table, lag);
 
@@ -64,8 +58,8 @@ end
 %save('D:\Projects\scratch_data\single_test\factor_mimicking.mat','weight_table');
 
 % risk adjusted factor call
-adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
+% adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 
 % simple single factor test call
-[nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
-save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');
+% [nav_grp,weight_grp,nav_bench] = simple_test(5,rebalance_dates,rtn_table,adj_style_table,freecap_table);
+% save('D:\Projects\scratch_data\single_test\risk_adj_test.mat','nav_grp','weight_grp','adj_style_table');

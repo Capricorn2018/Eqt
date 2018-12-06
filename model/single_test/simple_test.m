@@ -43,7 +43,8 @@ function [nav_grp,weight_grp,nav_bench] = simple_test(N_grp,rebalance_dates,rtn_
         end
         
         % cross sectional style, 当日因子截面
-        cs = squeeze(style(j,:));
+        js = find(table2array(style_table(:,1))==rebalance_dates(i,1),1,'first');
+        cs = squeeze(style(js,:));
         
         % 当日市值截面
         cap = squeeze(markcap(j,:));
