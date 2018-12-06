@@ -148,7 +148,7 @@ function quantile_grp_weight = quantile_group(x,N_grp)
         left_interval = q(grp);
         right_interval = q(grp+1);
         
-        % 若该组对应的interval中没有点，则只有离右端点最近的那个（些）点有权重
+        % 若该组对应的interval中没有点，则左边最近的点和右边最近的点按照距离比例赋权
         if(all(~(x <= right_interval & x >= left_interval)))
             % 对于matlab的quantile函数来说空的interval不会没有右边的点
             
@@ -169,15 +169,17 @@ function quantile_grp_weight = quantile_group(x,N_grp)
             continue;
         end
         
-        % 组内的点先都赋予一样的权重, 其中组内最小的那个（那些）点的权重可能在下面被修改
+        % 组内的点先都赋予一样的权重
         w(x <= right_interval & x >= left_interval) = 1;
         
+        % 区间外左边最近的点
         k_left = left_point(x,left_interval);
+        % 区间外右边最近的点
         k_right = right_point(x,right_interval);
         
-        if(~isempty(k_left))
+        if(~isempty(k_left)) % 若左边有点
             
-            % 那些点的值
+            % 区间外左边最近的那些点的值
             x_left = x(k_left(1)); % 防止多个数重合的情况
 
             % interval之内最小的那个（那些）点
@@ -190,7 +192,7 @@ function quantile_grp_weight = quantile_group(x,N_grp)
             w(k_left) = (x_left_next-left_interval)/(x_left_next-x_left);
         end
         
-        if(~isempty(k_right))
+        if(~isempty(k_right)) % 若右边有点
             % 得到interval右边离它最近的那个点的下标
             k_right = right_point(x,right_interval);
             
@@ -207,45 +209,6 @@ function quantile_grp_weight = quantile_group(x,N_grp)
             w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
            
         end
-        
-        % 如果interval不是最左边那个, 则找到interval之外左边最近的那个（那些）点
-        % 然后按照interval覆盖比例赋予权重, 对interval内最小的那个（那些点）赋予权重
-%         if(left_interval>-Inf)
-%             
-%             % 得到interval左边离它最近的那个点的下标
-%             k_left = left_point(x,left_interval);
-%             
-%             % 那些点的值
-%             x_left = x(k_left(1)); % 防止多个数重合的情况
-% 
-%             % interval之内最小的那个（那些）点
-%             k_left_next = find_next(x,x_left);
-%             % 那些点的值
-%             x_left_next = x(k_left_next(1));  
-%             
-%             % 按照left_interval（左端点）到x_left_next（interval内最小的点）的距离
-%             % 占x_left（左边离interval最近的点）到x_left_next（interval内最小的点）的距离的比例赋予权重
-%             w(k_left_next) = (x_left_next-left_interval)/(x_left_next-x_left);
-%         end
-%         
-%         if(right_interval<Inf)       
-%             
-%             % 得到interval右边离它最近的那个点的下标
-%             k_right = right_point(x,right_interval);
-%             if(length(k_right)>=1)
-%                 % 那些点的值
-%                 x_right = x(k_right(1)); % 防止多个数重合的情况
-% 
-%                 % interval中最大的那个（那些）点的下标
-%                 k_right_last = find_last(x,x_right);
-%                 % 那些点的值
-%                 x_right_last = x(k_right_last(1));
-% 
-%                 % 按照x_right_last（interval内最大的点）到right_interval（interval右端点）的距离
-%                 % 占x_right_last（interval内最大的点）到x_right（右边离interval最近的点）的距离的比例赋予权重
-%                 w(k_right) = (right_interval-x_right_last)/(x_right-x_right_last);
-%             end
-%         end
         
         % 归一化       
         w = w ./ sum(w);
