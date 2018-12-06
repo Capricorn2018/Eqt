@@ -1,5 +1,5 @@
 function [a,p,stk_status_table,is_suspended_table,...
-              rtn_table,freecap_table,sectors_table,rebalance_dates] = set_single_test()
+              rtn_table,freecap_table,sectors_table,rebalance_dates] = set_single_test(start_dt)
 % 单因子检测参数设置
 
     %%
@@ -50,7 +50,7 @@ function [a,p,stk_status_table,is_suspended_table,...
     trading_dates = datenum(trading_dates,'yyyymmdd');
 
     %% 选择计算起始日的下标和间隔 %%
-    rebalance_dates = trading_dates(5000:end);
+    rebalance_dates = trading_dates(trading_dates>=start_dt);
     [rebalance_dates,~] = find_month_dates(1,rebalance_dates,'first'); % 每个月的第一个交易日
 
     % 读取markcap
