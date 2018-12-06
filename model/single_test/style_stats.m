@@ -27,18 +27,20 @@ function [ic, ic_ir, fr] = style_stats(rebalance_dates, style_table, rtn_table, 
     rtn_reb = nav_reb(reb_idx(2:end),2:end)./nav_reb(reb_idx(1:end-1)+lag,2:end) - 1;
     
     % 初始化结果
-    ic = zeros(size(rtn_reb,1)-1,1);
-    fr = zeros(size(rtn_reb,1)-1,1);
+    ic = nan(size(rtn_reb,1)-1,1);
+    fr = nan(size(rtn_reb,1)-1,1);
     
     for i = 1:length(ic)
         % 用spearman rho做ranked ic
-        ic(i) = spearman_rho(style(i,:),rtn_reb(i,:));
-        % 单因子对未来区间收益的facror return回归
-        fr(i) = regress(rtn_reb(i,:)',style(i,:)');
+        if(~all(isnan(style(i,:))))
+            ic(i) = spearman_rho(style(i,:),rtn_reb(i,:));
+            % 单因子对未来区间收益的facror return回归
+            fr(i) = regress(rtn_reb(i,:)',style(i,:)');
+        end
     end
     
     % 计算ic/std(ic)用以衡量ic的稳定意义
-    ic_ir = mean(ic)/std(ic);
+    ic_ir = nanmean(ic)/nanstd(ic);
     
 end
 
