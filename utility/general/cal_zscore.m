@@ -4,15 +4,18 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
     %  version: 2018/8/22
     % boxplot去outlier并正态化, 参见东方证券研报
     
-     
-    mu     = nansum(input_vector.*weight_vector/nansum(weight_vector));
-    sigma  = std(input_vector(~isnan(input_vector)));
+    weight_vector(weight_vector<=0) = NaN; 
+    idx_nan  = isnan(input_vector);
+    not_nan  = input_vector(~idx_nan);
     
-    zscores = nan(size(input_vector,1),1);
+    
+    mu     = nansum(input_vector.*weight_vector/nansum(weight_vector));
+    sigma  = std(input_vector(~idx_nan));
+    
+    zscores  = nan(size(input_vector,1),1);
     outliers = nan(size(input_vector,1),1);
     
-    idx_nan = isnan(input_vector);
-    not_nan  = input_vector(~idx_nan);
+
     if  ~isempty(not_nan)
         % outlier treatment 
         % mad = median(abs(fi- median_f))
@@ -30,8 +33,6 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
     end
      
     if sigma>0
-        zscores = (input_vector - mu)/sigma;
+       zscores = (input_vector - mu)/sigma;
     end
 end
-% input_vector = stks_today.beta;
-% free_cap_vector = T_freecap.free_cap;
