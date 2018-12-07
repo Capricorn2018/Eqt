@@ -31,7 +31,7 @@ for i=1:length(c)
 
     [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
 
-    save(['D:\Projects\scratch_data\single_test\sector_neutral_',file2name(tgt_file),'.mat']);
-    saveas(gcf,['D:\Projects\scratch_data\figures\',file2name(tgt_file),'.jpg']);
+    save(['D:\Projects\scratch_data\single_test\',file2name(tgt_file),'.mat']);
+    saveas(gcf,['D:\Projects\scratch_data\single_figures\',file2name(tgt_file),'.jpg']);
     
 end
