@@ -21,7 +21,7 @@ risk_factor_names = {'beta','tcap'}; % 风格因子名
 risk_factor_names = [risk_factor_names,Ind_names];
 
 
-for i=1:length(c)
+for i = 1:length(c) %1:length(c)
     
     tgt_file = cell2mat(c(i));
     tgt_tag = get_tag([a.single_test.descriptors,'\',tgt_file]);
@@ -39,7 +39,9 @@ for i=1:length(c)
 
     [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
 
-    save(['D:\Projects\scratch_data\risk_adj_test\',file2name(tgt_file),'.mat']);
+    save(['D:\Projects\scratch_data\risk_adj_test\',file2name(tgt_file),'.mat'],'nav_grp','weight_grp',...
+                                                                    'nav_bench','ic','ic_ir','fr','ls_rtn','ls_nav',...
+                                                                    'mean_ret','hit_ratio','ls_ir','max_dd');
     saveas(gcf,['D:\Projects\scratch_data\risk_adj_figures\',file2name(tgt_file),'.jpg']);
     
 end
