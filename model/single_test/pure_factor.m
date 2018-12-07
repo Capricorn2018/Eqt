@@ -71,6 +71,10 @@ function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,
            % 用格式化后的股票代码做indexing
            stk_cov(stk_codes,stk_codes) = array2table(df_stk_cov);
            
+           tbl_factors = array2table(factors,'RowNames',stk_codes);
+           tbl_spec = array2table(spec,'RowNames',stk_codes);
+           
+           
        else
            continue;
        end
@@ -95,8 +99,15 @@ function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,
        stk_cov = stk_cov(stk_codes,stk_codes);
        stk_cov = table2array(stk_cov);
        
+       %......
+       factors = tbl_factors(stk_codes,:);
+       factors = table2array(factors);
+       spec = tbl_spec(stk_codes,1);
+       spec = table2array(spec);
+       
        % 优化求解
-       weight_table(i,stk_codes) = array2table(minvol_opt(style,cap,risk_factors,stk_cov)');
+       %weight_table(i,stk_codes) = array2table(minvol_opt(style,cap,risk_factors,stk_cov)');
+       weight_table(i,stk_codes) = array2table(minvol_opt_test(style,cap,risk_factors,factors,cov,spec)');%%%%%%
         
        disp(date);
     end
@@ -123,6 +134,58 @@ function stk_codes = df_stk_codes(stk_num)
     end
 
 end
+
+
+% minimum variance求纯因子的优化函数, 这里没有使用惩罚项优化
+% style: 正规化后的因子
+% risk_factors: 正规化后的风险因子矩阵
+% sectors: 记录每日股票所在行业的矩阵
+% markcap: 每日市值数据
+% stk_cov: 股票间协方差矩阵, 可以用factor cov和residual vol算出来
+function w = minvol_opt_test(style, cap, risk_factors, factors,factor_cov,spec)
+    
+    % 初始化权重结果
+    w = zeros(length(style),1);
+    
+    % 取得所有有nan的行并去掉
+    notnan_risk_factors = ~any(isnan(risk_factors),2);
+    notnan_style = ~isnan(style);
+    notnan_cap = ~isnan(cap);
+    notnan_spec = ~isnan(spec);
+    %notnan_cov = ~any(isnan(stk_cov),2) & ~any(isnan(stk_cov),1)';
+    
+    % 没有NaN出现的行
+    notnan_all = notnan_risk_factors & notnan_style & notnan_cap & notnan_spec;
+    
+    % 取得最后进入回归的行
+    style = style(notnan_all);
+    risk_factors = risk_factors(notnan_all,:);
+    cap = cap(notnan_all);
+    %stk_cov = stk_cov(notnan_all,notnan_all);
+    factors = factors(notnan_all,:);
+    factors(isnan(factors)) = 0;
+    spec = spec(notnan_all,:);
+    
+    style = mad_zscore(style,cap);
+    % 这里可能需要把risk factor也给正态化
+        
+    % 这里还要考虑去NaN        
+    n = length(style); %#ok<NASGU>
+    cvx_begin
+        variable x(n)
+        minimize(quad_form(factors'*x,factor_cov)+sum(spec.*x.*x))
+        subject to
+        	%x >= 0; %#ok<VUNUS>
+            risk_factors' * x == 0; %#ok<EQEFF>
+            style' * x == 1; %#ok<EQEFF>
+    cvx_end
+    
+    % 结果
+    w(notnan_all) = x;
+    
+end
+
+
 
 
 % minimum variance求纯因子的优化函数, 这里没有使用惩罚项优化

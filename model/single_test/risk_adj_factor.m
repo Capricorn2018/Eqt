@@ -12,7 +12,7 @@
 function adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
 
     % 初始化结果
-    adj_style = nan(rebalance_dates,width(style_table)-1);    
+    adj_style = nan(length(rebalance_dates),width(style_table)-1);    
     adj_style_table = [array2table(rebalance_dates),array2table(adj_style)];
     adj_style_table.Properties.VariableNames = style_table.Properties.VariableNames;
     
@@ -45,7 +45,7 @@ function adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,markcap
        stk_codes = T_sector_style.Properties.RowNames;
        
        % 从目标style中截取risk_factor中也存在的股票名
-       j = find(rebalance_dates(i),dt,'first');
+       j = find(ismember(style_table.DATEN,rebalance_dates(i)),1,'first');
        style = style_table(j,stk_codes);
        style = table2array(style)';
        cap = markcap_table(j,stk_codes);
@@ -66,6 +66,8 @@ function res_factor = calc_residual(style, cap, risk_factors)
     %if(nargin==2)
     %   weight_array = ones(length(style),1); 
     %end
+    
+    res_factor = nan(length(style),1);
 
     non_nan = (~isnan(style)) & (~any(isnan(risk_factors),2)) & (~isnan(cap));
     style = style(non_nan);
@@ -86,7 +88,6 @@ function res_factor = calc_residual(style, cap, risk_factors)
     % 这里不知道是不是要考虑做稳健回归
     [~,~,res] = regress(y,x);
         
-    res_factor = nan(length(style),1);
     % 在residual上乘以weight_matrix的逆就是最终结果
     res_factor(non_nan) = res ./ weight;
 
