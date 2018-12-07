@@ -31,7 +31,9 @@ for i=1:length(c)
 
     [ls_rtn,ls_nav,mean_ret,hit_ratio,ls_ir,max_dd] = grp_stats(rebalance_dates,nav_grp,nav_bench,lag);
 
-    save(['D:\Projects\scratch_data\single_test\',file2name(tgt_file),'.mat']);
+    save(['D:\Projects\scratch_data\single_test\',file2name(tgt_file),'.mat'],'nav_grp','weight_grp',...
+                                                                    'nav_bench','ic','ic_ir','fr','ls_rtn','ls_nav',...
+                                                                    'mean_ret','hit_ratio','ls_ir','max_dd');
     saveas(gcf,['D:\Projects\scratch_data\single_figures\',file2name(tgt_file),'.jpg']);
     
 end
