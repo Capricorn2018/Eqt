@@ -12,7 +12,6 @@ function  ebpntm(p,a)
            if  exist(tgt_file,'file')==2
                eval(['delete ',tgt_file]);
            end
-
            eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
        end
 

@@ -83,7 +83,7 @@ report_num_q(p,a)
 % ebitdapttm(p,a)
 % ebitpttm(p,a)
 % dvd_his(p,a);
-% soe(p,a)
+% soe_(p,a)
 
 %  cal_stk_vol(p,a,252,63,1)
 %  cal_stk_vol(p,a,63,16,1)
