@@ -12,7 +12,7 @@ function do_reg(p,a,K1,K2)
      data_satus(isnan(data_satus)) = 0;
      data_satus = logical(data_satus);
      
-     data_sus        =  h5read(p.file.sus,'/is_suspended')';           % if(停盘，1,0）
+     data_sus        =  h5read(p.file.sus,'/is_suspended')';           % if(停盘，1,0） 
      data_sus(isnan(data_sus)) = 0;
      data_sus = logical(data_sus);
 
@@ -46,7 +46,7 @@ function do_reg(p,a,K1,K2)
          dates_in_index = datenum(index_membs.Properties.RowNames);
          idx_bcmk = find(p.model.model_trading_dates(1) == dates_in_index);
          for i_ = 1 : T
-             disp(i_)
+           %  disp(i_)
              % （原始的）所有股票的市值，自由流通市值，行业
              stocks_cap_freecap_sector = [data_mktcap(idx-1,:)',data_freecap(idx-1,:)',data_sector(idx-1,:)']; % 今天存储的是昨天EOD的市值。
              T_stocks_cap_freecap_sector = array2table(stocks_cap_freecap_sector,'RowNames',p.model.stk_codes1,'VariableNames',{'total_cap','free_cap','sector'});
@@ -137,7 +137,7 @@ function do_reg(p,a,K1,K2)
              
              [mdl,tbl,factor_rtn,residuals,ERR] =  wls(T_sector,T_style,pre_reg_y,T_stocks_cap_freecap_sector,T_weight_index,T_sus);
              
-              save ([a.reggression,'\','Index',num2str(idx_index),'_',datestr(p.model.model_trading_dates(i),29),'.mat'],...
+              save ([a.reggression,'\','Index',num2str(idx_index),'_',datestr(p.model.model_trading_dates(i_),29),'.mat'],...
                      'factor_rtn','residuals','mdl','T_sector','T_style','pre_reg_y','T_stocks_cap_freecap_sector','T_weight_index','T_sus'); 
              if i_<T
                  idx = idx+1;

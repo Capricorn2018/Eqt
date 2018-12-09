@@ -1,5 +1,5 @@
 
-function [mdl,tbl,factor_rtn,residuals,ERR] =  wls(T_sector,T_style,pre_reg_y,T_stocks_cap_freecap_sector,T_weight_index,T_sus)
+function [mdl,tbl,factor_rtn,residuals,ERR] =  wls_structured_model(T_sector,T_style,pre_reg_y,T_stocks_cap_freecap_sector,T_weight_index,T_sus,r)
     ERR = [];
     rows = T_sector.Properties.RowNames;
     % 几个输入table的行变量名字必须一样（都为 市场代码(2) + 股票代码（6））
@@ -33,12 +33,11 @@ function [mdl,tbl,factor_rtn,residuals,ERR] =  wls(T_sector,T_style,pre_reg_y,T_
             x(isnan(x)) = 0; % 鉴于覆盖率还都比较高   
           
             % 回归
-
             in_the_index =  T_weight_index.w>0;  %基准成分
-            not_sus  = T_sus.if_sus == 0;        % 没停盘
-            id_tradeable = (pre_reg_y.y<0.105)&(pre_reg_y.y>-0.105); %涨幅不是过大 
-
-            id_in_reg  = in_the_index&not_sus&id_tradeable; %实际参与回归的票
+%             not_sus  = T_sus.if_sus == 0;        % 没停盘
+%             id_tradeable = (pre_reg_y.y<0.105)&(pre_reg_y.y>-0.105); %涨幅不是过大 
+            gamma_eq_one  = r.gamma ==1;
+            id_in_reg  = in_the_index&gamma_eq_one; %实际参与回归的票
 
              w_ =  w(id_in_reg,id_in_reg) ;
              x_ =  x(id_in_reg,:);
