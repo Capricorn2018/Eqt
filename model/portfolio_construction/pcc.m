@@ -9,6 +9,9 @@ cd(a.project_path); addpath(genpath(a.project_path));
 start_dt = datenum(2010,01,01);
 [a,p,stk_status_table,is_suspended_table,...
               rtn_table,freecap_table,sectors_table,rebalance_dates] = set_single_test(start_dt);
+          
+p.optimization.stk_codes = p.single_test.stk_codes1;
+p.optimization.trading_dates = p.all_trading_dates;
 
 c = get_file_names(a.single_test.descriptors);
 
@@ -31,7 +34,7 @@ for i = 1:1%length(c)
     % 将异常交易日改为NaN
     style_table = del_suspended(style_table,stk_status_table,is_suspended_table);
     
-    weight_table = portfolio_construction(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
+    weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_names);
     
 %     adj_style_table = risk_adj_factor(a,rebalance_dates,style_table,freecap_table,risk_factor_names);
 % 
