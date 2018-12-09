@@ -4,14 +4,14 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = portfolio_construction(a,rebalance_dates,style_table,markcap_table,risk_factor_names)
+function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_names)
 
-    dt = table2array(style_table(:,1));
+    dt = p.optimization.trading_dates;
 
     % 初始化weight
-    weight = nan(length(rebalance_dates),width(style_table)-1);    
+    weight = nan(length(rebalance_dates),length(p.optimization.stk_codes));    
     weight_table = [array2table(rebalance_dates),array2table(weight)];
-    weight_table.Properties.VariableNames = style_table.Properties.VariableNames;
+    weight_table.Properties.VariableNames = ['DATEN',p.optimization.stk_codes];
     
     % 按日循环
     for i=1:length(rebalance_dates)
@@ -62,16 +62,6 @@ function weight_table = portfolio_construction(a,rebalance_dates,style_table,mar
            spec = table2array(spec(:,2));
            factors = table2array(factors(2:end,2:end));
            
-           % 定义stk_cov即股票间cov矩阵, 行名列名都用SH600018格式股票代码
-           stk_cov = nan(width(style_table));
-           stk_cov = array2table(stk_cov,'VariableNames',style_table.Properties.VariableNames,'RowNames',style_table.Properties.VariableNames);
-           
-           % 从东方金工数据中计算股票间cov
-           df_stk_cov = factors * cov * factors' + diag(spec);
-           
-           % 用格式化后的股票代码做indexing
-           stk_cov(stk_codes,stk_codes) = array2table(df_stk_cov);
-           
            tbl_factors = array2table(factors,'RowNames',stk_codes);
            tbl_spec = array2table(spec,'RowNames',stk_codes);
            
@@ -87,18 +77,6 @@ function weight_table = portfolio_construction(a,rebalance_dates,style_table,mar
        
        % 当日回归矩阵中的股票代码
        stk_codes = pre_reg.Properties.RowNames;
-       
-       % 用股票代码筛选style中需要的数据
-       % 截取style中同样代码股票
-       j = find(ismember(dt,rebalance_dates(i)),1,'first');
-       style = style_table(j,stk_codes);
-       style = table2array(style)';
-       cap = markcap_table(j,stk_codes);
-       cap = table2array(cap)';
-       
-       % 对应的股票协方差矩阵
-       stk_cov = stk_cov(stk_codes,stk_codes);
-       stk_cov = table2array(stk_cov);
        
        %......
        factors = tbl_factors(stk_codes,:);
