@@ -4,9 +4,7 @@
 %% 问题
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
-function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_names)
-
-    dt = p.optimization.trading_dates;
+function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
 
     % 初始化weight
     weight = nan(length(rebalance_dates),length(p.optimization.stk_codes));    
@@ -20,7 +18,7 @@ function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_n
        date = datestr(rebalance_dates(i),'yyyy-mm-dd'); 
        % a.regression是读取回归所用矩阵的文件夹地址
        % 暂时看是D:\Capricorn\model\risk\regression\
-       filename = [a.single_test.regression,'\Index0_',date,'.mat'];
+       filename = [a.optimization.regression,'\Index0_',date,'.mat'];
        
        % 判断文件是否存在
        if(exist(filename,'file')==2)
@@ -43,9 +41,9 @@ function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_n
        % spec存在D:\Capricorn\model\dfquant_risk\spec中
        % 日期字符串换成yyyymmdd格式
        date = datestr(rebalance_dates(i),'yyyymmdd'); 
-       cov_filename = [a.single_test.dfquant_risk,'\cov\cov_',date,'.csv'];
-       factor_filename = [a.single_test.dfquant_risk,'\factors\risk_factors_',date,'.csv'];
-       spec_filename = [a.single_test.dfquant_risk,'\spec\spec_',date,'.csv'];
+       cov_filename = [a.optimization.dfquant_risk,'\cov\cov_',date,'.csv'];
+       factor_filename = [a.optimization.dfquant_risk,'\factors\risk_factors_',date,'.csv'];
+       spec_filename = [a.optimization.dfquant_risk,'\spec\spec_',date,'.csv'];
        
        if(exist(cov_filename,'file')==2 && exist(factor_filename,'file')==2 && exist(spec_filename,'file')==2)
            cov = readtable(cov_filename);
@@ -88,7 +86,7 @@ function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_n
        %weight_table(i,stk_codes) = array2table(minvol_opt(style,cap,risk_factors,stk_cov)');
        exp_bound = ones(size(cov,1),1) * 0.1;
        active_bound = ones(size(factors,1),1) * 0.02;
-       weight_table(i,stk_codes) = array2table(optimizer(0.1,risk_factors,factor_rtn',cov,factors,spec,exp_bound,active_bound)');%%%%%%
+       weight_table(i,stk_codes) = array2table(portfolio_construction(0.1,risk_factors,factor_rtn',cov,factors,spec,exp_bound,active_bound)');%%%%%%
         
        disp(date);
     end
@@ -96,19 +94,31 @@ function weight_table = portfolio_construction(a,p,rebalance_dates,risk_factor_n
 end
 
 
-function x = optimizer(lambda, alpha_factors, alpha_factors_rtn, factor_cov, exposure, spk, exp_bound, active_bound)
+function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rtn, factor_cov, exposure, spk, exp_bound, active_bound)
 %OPTIMIZER 此处显示有关此函数的摘要
 %   此处显示详细说明
 
+    weight = zeros(length(spk),1);
+
+    
+   % alpha_factors(isnan(alpha_factors))=0;
+    %alpha_factors_rtn(isnan(alpha_factors_rtn))=0;
+    
+    not_nan = ~any(isnan(exposure),2) & ~isnan(spk) & ~any(isnan(alpha_factors),2);
+    exposure = exposure(not_nan,:);
+    spk = spk(not_nan);
+    alpha_factors = alpha_factors(not_nan,:);
+    
+    active_bound = active_bound(not_nan);
+    
+    
     bound_idx = exp_bound<Inf;
     bound_mtx = exposure(:,bound_idx);
     bound = exp_bound(bound_idx);
     
-    alpha_factors(isnan(alpha_factors))=0;
-    alpha_factors_rtn(isnan(alpha_factors_rtn))=0;
 
     % 这里还要考虑去NaN        
-    n = size(exposure,1); %#ok<NASGU>
+    n = length(spk); %#ok<NASGU>
     cvx_begin
         variable x(n)
         maximize(alpha_factors_rtn' * alpha_factors' * x - lambda * quad_form(exposure' * x,factor_cov) - lambda * sum(spk .* x))
@@ -119,6 +129,7 @@ function x = optimizer(lambda, alpha_factors, alpha_factors_rtn, factor_cov, exp
             -active_bound <= x <= active_bound; %#ok<VUNUS>
     cvx_end
 
+    weight(not_nan) = x;
 
 end
 
