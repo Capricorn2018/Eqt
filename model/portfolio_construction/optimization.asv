@@ -24,7 +24,6 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        if(exist(filename,'file')==2)
            load(filename);
        else
-           disp([filename,': not exist');
            continue;
        end
        
@@ -33,7 +32,6 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
            risk_factors = table2array(pre_reg(:,risk_factor_names));  %#ok<NODEF>
            factor_rtn = table2array(factor_rtn(1,risk_factor_names));
        catch
-           disp('risk_factor_names: some factors are not in pre_reg or factor_rtn')
            continue;
        end
        
@@ -67,13 +65,11 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
            
            
        else
-           disp('dfquant_risk: ', cov_filename,', ',factor_filename,', ',spec_filename,', do not exist')
            continue;
        end
        
        
        if(all(any(isnan(risk_factors),2)))
-           disp('risk_factors are all nan');
            continue;
        end       
        
@@ -123,7 +119,7 @@ function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rt
     n = length(spk); %#ok<NASGU>
     cvx_begin
         variable x(n)
-        maximize(alpha_factors_rtn' * alpha_factors' * x - lambda * quad_form(exposure' * x,factor_cov) - lambda * sum(spk .* x .* x))
+        maximize(alpha_factors_rtn' * alpha_factors' * x - lambda * quad_form(exposure' * x,factor_cov) - lambda * sum(spk .* x.*x))
         subject to
         	%x >= 0; %#ok<VUNUS>
             sum(x) == 0; %#ok<EQEFF>
