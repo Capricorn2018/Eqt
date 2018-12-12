@@ -21,7 +21,7 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
 %         z = cell2mat(p.optimization.stk_codes(k));
 %         x = [x,cellstr(z([8:9,1:6]))]; %#ok<AGROW>
 %     end
-    p.optimization.stk_codes1 = stkcodes2colnames(p.optimization.stk_codes);
+    p.optimization.stk_codes1 = gen_colnames(p.optimization.stk_codes);
     %%
     %%
     

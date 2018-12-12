@@ -80,7 +80,7 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        % 当日回归矩阵中的股票代码
        stk_codes = pre_reg.Properties.RowNames;
        
-       %......
+       % 用stk_codes给东方金工的因子暴露阵和特异风险向量做indexing
        factors = tbl_factors(stk_codes,:);
        factors = table2array(factors);
        spec = tbl_spec(stk_codes,1);
@@ -96,26 +96,30 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
         
 end
 
-
-function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rtn, factor_cov, exposure, spk, exp_bound, active_bound)
-
-    weight = zeros(length(spk),1);
-
+% 给定alpha因子暴露, 因子收益, 风险因子暴露, 风险因子cov, 特质风险向量
+% 给定exposure bound及因子暴露上下限, active_bound即单只股票偏离基准上限
+% 优化求解
+function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rtn,...
+                                            factor_cov, exposure, spk, exp_bound, active_bound)
+% lambda: 风险厌恶系数
+% alpha_factors: alpha因子暴露矩阵： alpha_factors_rtn: 对应的alpha因子收益向量
+% factor_cov, exposure, spk: 风险模型中的因子cov, 因子暴露矩阵, 特异风险向量
+% exp_bound：每个风险因子暴露的上下限, active_bound: 单只股票偏离基准比例的上下限
     
-   % alpha_factors(isnan(alpha_factors))=0;
-    %alpha_factors_rtn(isnan(alpha_factors_rtn))=0;
+    weight = zeros(length(spk),1); % 结果初始化
     
+    % 去掉nan
     not_nan = ~any(isnan(exposure),2) & ~isnan(spk) & ~any(isnan(alpha_factors),2);
     exposure = exposure(not_nan,:);
     spk = spk(not_nan);
     alpha_factors = alpha_factors(not_nan,:);
     
     active_bound = active_bound(not_nan);
-    
-    
+        
+    % 获取有效的因子暴露constraints, 有些因子可能不限制
     bound_idx = exp_bound<Inf;
-    bound_mtx = exposure(:,bound_idx);
-    bound = exp_bound(bound_idx);
+    bound_mtx = exposure(:,bound_idx); % constraints中的暴露矩阵
+    bound = exp_bound(bound_idx); % 对应的constraint的上下限
     
 
     % 这里还要考虑去NaN        

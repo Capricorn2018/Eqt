@@ -95,11 +95,7 @@ function weight_table = pure_factor(a,rebalance_dates,style_table,markcap_table,
        cap = markcap_table(j,stk_codes);
        cap = table2array(cap)';
        
-       % 对应的股票协方差矩阵
-       stk_cov = stk_cov(stk_codes,stk_codes);
-       stk_cov = table2array(stk_cov);
-       
-       %......
+       % 用stk_codes给东方的risk model结果做indexing
        factors = tbl_factors(stk_codes,:);
        factors = table2array(factors);
        spec = tbl_spec(stk_codes,1);

@@ -1,4 +1,4 @@
-function x = stkcodes2colnames(stk_codes)
+function x = gen_colnames(stk_codes)
 % 从h5文件中读取的stk_codes转为可以用为table列名的cell
 
     x = [];
