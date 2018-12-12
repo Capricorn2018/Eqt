@@ -16,11 +16,6 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
 
     % 转换成SH600018这种格式
     p.optimization.stk_codes    = stk_code_h5(h5read([a.optimization.base_data,'\securites_dates.h5'],'/stk_code'));
-%     x = [];
-%     for k = 1 : length(p.optimization.stk_codes)
-%         z = cell2mat(p.optimization.stk_codes(k));
-%         x = [x,cellstr(z([8:9,1:6]))]; %#ok<AGROW>
-%     end
     p.optimization.stk_codes1 = gen_colnames(p.optimization.stk_codes);
     %%
     %%
