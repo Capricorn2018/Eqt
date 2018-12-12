@@ -9,7 +9,7 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
     % 初始化weight
     weight = nan(length(rebalance_dates),length(p.optimization.stk_codes));    
     weight_table = [array2table(rebalance_dates),array2table(weight)];
-    weight_table.Properties.VariableNames = ['DATEN',p.optimization.stk_codes];
+    weight_table.Properties.VariableNames = ['DATEN',p.optimization.stk_codes1];
     
     % 按日循环
     for i=1:length(rebalance_dates)
@@ -24,7 +24,7 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        if(exist(filename,'file')==2)
            load(filename);
        else
-           disp([filename,': not exist');
+           disp([filename,': not exist']);
            continue;
        end
        
@@ -87,7 +87,6 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        spec = table2array(spec);
        
        % 优化求解
-       %weight_table(i,stk_codes) = array2table(minvol_opt(style,cap,risk_factors,stk_cov)');
        exp_bound = zeros(size(cov,1),1);
        active_bound = ones(size(factors,1),1) * 0.02;
        weight_table(i,stk_codes) = array2table(portfolio_construction(20,risk_factors,factor_rtn',cov,factors,spec,exp_bound,active_bound)');%%%%%%
