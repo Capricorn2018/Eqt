@@ -1,4 +1,7 @@
 function  cal_stk_ivol(p,a,D,HL,if_mix,index_names)
+% vol，按照停牌日比例用所在板块加权
+% D回溯天数，HL半衰期，if_mix是否用板块vol代替
+% index_name所在板块代码，用来做停牌比例加权
   
    T = length(p.all_trading_dates);
    N = length(p.stk_codes); 

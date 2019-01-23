@@ -14,4 +14,4 @@ p.stk_codes          = stk_code_h5(h5read([a.input_data_path,'\fdata\base_data\s
 bp(p,a)
 ebpntm(p,a) % next 12 month 预期bp
 cal_stk_ivol(p,a,63,16,1,{'windA'}) % 历史波动率，D=63天，半衰期16天，在wind全A中加权
-cal_stk_rtn(p,a,21,252,1) % 1Y前~1m前的收益
+cal_stk_rtn(p,a,21,252,1)
