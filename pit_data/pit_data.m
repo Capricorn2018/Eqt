@@ -1,9 +1,9 @@
-function [] = pit_data( data,start_dt,end_dt,n_rpt)
-%UNTITLED3 此处显示有关此函数的摘要
-%   此处显示详细说明
+function [] = pit_data(data,start_dt,end_dt,n_rpt)
+
     %data = proprecessing(data_file,sample_file);
     
-    w  =windmatlab;
+    % 用wind插件取得交易日
+    w  = windmatlab;
 
     [~,~,~,calender,~,~] = w.tdays(start_dt,end_dt);
     calender = datestr(calender,'yyyymmdd');
@@ -13,21 +13,28 @@ function [] = pit_data( data,start_dt,end_dt,n_rpt)
     st = calender{1};
     t = round(str2double(st),0);
     
+    % 去掉nan
     data = data(~isnan(data.actual_ann_dt) & ~isnan(data.report_period),:);
+    % 只选合并报表
     data = data(data.statement_type==408001000 | data.statement_type==408004000 | ...
                 data.statement_type==408005000 | data.statement_type==408050000,:);
     
+    % 先初始化rank列避免data里面本就有这些列
     data.rank_rpt = zeros(size(data,1),1);
     data.rank_ann = data.rank_rpt;
     
+    % 选择公布日在第一个交易日之前的数据
     data_last = data(data.actual_ann_dt<= t,:);
     
+    % 用get_ranks给报告期和公布日排序
     data_last = get_ranks(data_last);
     
+    % 筛选前n_rpt个报告期的最新公布日
     data_last = data_last(data_last.rank_rpt<=n_rpt & data_last.rank_ann==1,:);
     
     save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
     
+    % 循环对每个交易日进行筛选, 保存
     for i=2:size(calender,1)
        
         st = calender{i};
@@ -36,8 +43,6 @@ function [] = pit_data( data,start_dt,end_dt,n_rpt)
         update = data(data.actual_ann_dt==t,:);
         
         if(size(update,1)>0)
-        %    update_tickers
-        
         
             tmp_data = [data_last;update];
 
