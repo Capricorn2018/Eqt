@@ -13,14 +13,12 @@ function tbl = singe_season(data)
 %     comp_code = data.s_info_compcode;
     
     names = data.Properties.VariableNames;
-    cols = ~strcmp(names,'object_id') & ~strcmp(names,'s_info_windcode') & ...
-            ~strcmp(names,'report_period') & ~strcmp(names,'wind_code') & ...
-            ~strcmp(names,'wind_code') & ~strcmp(names,'actual_ann_dt') & ...
-            ~strcmp(names,'ann_dt') & ~strcmp(names,'statement_type') & ...
-            ~strcmp(names,'crncy_code') & ~strcmp(names,'comp_type_code') & ...
-            ~strcmp(names,'s_info_compcode') & ~strcmp(names,'monetary_cap');
     
+    char_cols = ['object_id','s_info_windcode','report_period','wind_code', ...
+                    'actual_ann_dt','ann_dt','statement_type','crncy_code', ...
+                    'comp_type_code','s_info_compcode','monetary_cap'];
     
+    cols = ~ismember(names,char_cols);
     
     ary_data = table2array(data(:,cols));
     
@@ -42,6 +40,8 @@ function tbl = singe_season(data)
         else
              for j=(i+1):size(data,1)
                  if(lvl_code(j)~=lvl_code(i))%~strcmp(code(j),code(i)))
+                     tmp_data(i,:) = nan(1,size(tmp_data,2));
+                     disp([code(i),', ',rpt(i)]);
                      break;
                  else
                      if(rpt(j)==last_season(rpt(j)))

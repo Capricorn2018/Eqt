@@ -53,8 +53,7 @@ function [] = pit_data(data,start_dt,end_dt,n_rpt)
         
         end
         
-        %save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
-        save(['D:/Projects/pit_data/mat/cashflow/pit_',st,'.mat'],'data_last');
+        save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
         
         disp(st);
         
