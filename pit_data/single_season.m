@@ -1,4 +1,4 @@
-function tbl = singe_season(data)
+function tbl = single_season(data)
 
 %     id = data.object_id;
      code = data.s_info_windcode;
@@ -14,24 +14,19 @@ function tbl = singe_season(data)
     
     names = data.Properties.VariableNames;
     
-    char_cols = ['object_id','s_info_windcode','report_period','wind_code', ...
+    char_cols = {'object_id','s_info_windcode','report_period','wind_code', ...
                     'actual_ann_dt','ann_dt','statement_type','crncy_code', ...
-                    'comp_type_code','s_info_compcode','monetary_cap'];
+                    'comp_type_code','s_info_compcode','monetary_cap','opdate'};
     
     cols = ~ismember(names,char_cols);
     
     ary_data = table2array(data(:,cols));
+    ary_data(isnan(ary_data)) = 0;
     
     tmp_data = nan(size(ary_data));
     
-    lvl_code = ones(size(data,1),1);
-    for i=2:size(data,1)
-        if(~strcmp(code(i),code(i-1)))
-            lvl_code(i) = lvl_code(i-1)+1;
-        else
-            lvl_code(i) = lvl_code(i-1);
-        end
-    end
+    no_single = zeros(size(data,1),1);
+    no_single(end) = 1;
     
     for i=1:(size(data,1)-1)
         
@@ -39,13 +34,15 @@ function tbl = singe_season(data)
             tmp_data(i,:) = ary_data(i,:);
         else
              for j=(i+1):size(data,1)
-                 if(lvl_code(j)~=lvl_code(i))%~strcmp(code(j),code(i)))
+                 if(~strcmp(code(j),code(i)))
                      tmp_data(i,:) = nan(1,size(tmp_data,2));
-                     disp([code(i),', ',rpt(i)]);
+                     %disp([code(i),', ',rpt(i)]);
+                     no_single(i) = 1;
                      break;
                  else
-                     if(rpt(j)==last_season(rpt(j)))
+                     if(rpt(j)==last_season(rpt(i)))
                          tmp_data(i,:) = (ary_data(i,:) - ary_data(j,:));
+                         break;
                      end
                  end
              end
@@ -56,6 +53,8 @@ function tbl = singe_season(data)
 
     tbl(:,cols) = array2table(tmp_data);
     tbl(:,~cols) = data(:,~cols);
+    
+    tbl = tbl(no_single==0,:);
     
 end
 
