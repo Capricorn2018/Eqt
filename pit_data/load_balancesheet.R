@@ -1,8 +1,8 @@
 ################## preprocessing
 
-#data <- read.csv('asharebalancesheet.txt',sep='\t',na.strings='\\N',header=F)
+#data <- read.csv('D:/Projects/pit_data/origin_data/asharebalancesheet.txt',sep='\t',na.strings='\\N',header=F)
 
-#sample <- read.csv('sample_asharebalancesheet.csv')
+#sample <- read.csv('D:/Projects/pit_data/origin_data/sample_asharebalancesheet.csv')
 
 #colnames(data) <- colnames(sample)
 
