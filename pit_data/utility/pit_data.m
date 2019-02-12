@@ -1,4 +1,5 @@
-function [] = pit_data(data,start_dt,end_dt,n_rpt)
+function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
+                        out_path, do_single)
 
     %data = proprecessing(data_file,sample_file);
     
@@ -33,7 +34,12 @@ function [] = pit_data(data,start_dt,end_dt,n_rpt)
     data_last = data_last(data_last.rank_rpt<=n_rpt & data_last.rank_ann==1,:);
     
     %save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
-    save(['D:/Projects/pit_data/mat/cashflow/pit_',st,'.mat'],'data_last');
+    save([out_path,'pit_',st,'.mat'],'data_last');
+    
+    if(do_single)
+        sinlge = single_season(data_last); %#ok<NASGU>
+        save([out_path,'sinlge_season/pit_',st,'.mat'],'single');
+    end
     
     % 循环对每个交易日进行筛选, 保存
     for i=2:size(calender,1)
@@ -53,8 +59,12 @@ function [] = pit_data(data,start_dt,end_dt,n_rpt)
         
         end
         
-        %save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
-        save(['D:/Projects/pit_data/mat/cashflow/pit_',st,'.mat'],'data_last');
+        save([out_path,'pit_',st,'.mat'],'data_last');
+        
+        if(do_single)
+            sinlge = single_season(data_last); %#ok<NASGU>
+            save([out_path,'sinlge_season/pit_',st,'.mat'],'single');
+        end
         
         disp(st);
         

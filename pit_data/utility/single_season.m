@@ -1,23 +1,13 @@
 function tbl = single_season(data)
 
-%     id = data.object_id;
-     code = data.s_info_windcode;
-     rpt = data.report_period;
-     dt = mod(rpt,10000);
-%     wind = data.wind_code;    
-%     ann = data.actual_ann_dt;
-%     ann2 = data.ann_dt;
-%     state = data.statement_type;
-%     crncy = data.crncy_code;
-%     comp = data.comp_type_code;
-%     comp_code = data.s_info_compcode;
+    code = data.s_info_windcode;
+    rpt = data.report_period;
+    dt = mod(rpt,10000); % 日期
     
     names = data.Properties.VariableNames;
-    
     char_cols = {'object_id','s_info_windcode','report_period','wind_code', ...
                     'actual_ann_dt','ann_dt','statement_type','crncy_code', ...
                     'comp_type_code','s_info_compcode','monetary_cap','opdate'};
-    
     cols = ~ismember(names,char_cols);
     
     ary_data = table2array(data(:,cols));
@@ -30,7 +20,7 @@ function tbl = single_season(data)
     
     for i=1:(size(data,1)-1)
         
-        if(dt(i)==331)
+        if(dt(i)==331) % 一季度的报表不需拆单季度
             tmp_data(i,:) = ary_data(i,:);
         else
              for j=(i+1):size(data,1)
@@ -59,25 +49,25 @@ function tbl = single_season(data)
 end
 
 
-% function s=last_season(t)
-% 
-%     yr = floor(t/10000);
-%     dt = mod(t,10000);
-%     
-%     if(dt==331)
-%         s = round((yr-1)*10000+1231,0);
-%     else
-%         if (dt==630)
-%             s = round(yr*10000+331,0);
-%         else
-%             if(dt==930)
-%                 s = round(yr*10000+630,0);
-%             else if(dt==1231)
-%                     s = round(yr*10000+930,0);
-%                 end
-%             end
-%         end
-%     end
-% 
-% end
+function s=last_season(t)
+
+    yr = floor(t/10000);
+    dt = mod(t,10000);
+    
+    if(dt==331)
+        s = round((yr-1)*10000+1231,0);
+    else
+        if (dt==630)
+            s = round(yr*10000+331,0);
+        else
+            if(dt==930)
+                s = round(yr*10000+630,0);
+            else if(dt==1231)
+                    s = round(yr*10000+930,0);
+                end
+            end
+        end
+    end
+
+end
 
