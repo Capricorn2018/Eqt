@@ -37,8 +37,8 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
     save([out_path,'pit_',st,'.mat'],'data_last');
     
     if(do_single)
-        sinlge = single_season(data_last); %#ok<NASGU>
-        save([out_path,'sinlge_season/pit_',st,'.mat'],'single');
+        single = single_season(data_last); %#ok<NASGU>
+        save([out_path,'single_season/pit_',st,'.mat'],'single');
     end
     
     % 循环对每个交易日进行筛选, 保存
@@ -62,8 +62,8 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
         save([out_path,'pit_',st,'.mat'],'data_last');
         
         if(do_single)
-            sinlge = single_season(data_last); %#ok<NASGU>
-            save([out_path,'sinlge_season/pit_',st,'.mat'],'single');
+            single = single_season(data_last); %#ok<NASGU>
+            save([out_path,'single_season/pit_',st,'.mat'],'single');
         end
         
         disp(st);
