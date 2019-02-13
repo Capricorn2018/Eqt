@@ -70,8 +70,11 @@ function s=last_season(t)
         else
             if(dt==930)
                 s = round(yr*10000+630,0);
-            else if(dt==1231)
+            else
+                if(dt==1231)
                     s = round(yr*10000+930,0);
+                else
+                    s = nan;
                 end
             end
         end
