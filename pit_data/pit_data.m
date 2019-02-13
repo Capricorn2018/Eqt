@@ -51,16 +51,18 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
         
         if(size(update,1)>0)
         
-            tmp_data = [data_last;update];
+            tmp_data = [data_last;update]; % 把更新的数据加在上一交易日数据 后
 
-            data_last = get_ranks(tmp_data);
+            data_last = get_ranks(tmp_data); % 对每个股票的报告期排序、对每个报告期的ann_dt排序
 
+            % 筛选前n_rpt个报告期的最新数据
             data_last = data_last(data_last.rank_rpt<=n_rpt & data_last.rank_ann==1,:);
         
         end
         
         save([out_path,'pit_',st,'.mat'],'data_last');
         
+        % 若需要拆单季数据
         if(do_single)
             single = single_season(data_last); %#ok<NASGU>
             save([out_path,'single_season/pit_',st,'.mat'],'single');
