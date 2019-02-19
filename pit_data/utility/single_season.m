@@ -10,7 +10,8 @@ function tbl = single_season(data)
     names = data.Properties.VariableNames;
     char_cols = {'object_id','s_info_windcode','report_period','wind_code', ...
                     'actual_ann_dt','ann_dt','statement_type','crncy_code', ...
-                    'comp_type_code','s_info_compcode','monetary_cap','opdate'};
+                    'comp_type_code','s_info_compcode','monetary_cap','opdate', ...
+                    'rank_rpt','rank_ann','season'};
     cols = ~ismember(names,char_cols);
     
     % 向量化和初始化
