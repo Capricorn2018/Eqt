@@ -1,4 +1,4 @@
-function [ output_args ] = earning_lyr(folder)
+function [ output_args ] = earning_lyr(folder,stk_codes)
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
 % folder = 'D:/Projects/pit_data/mat/income/';
@@ -12,6 +12,9 @@ function [ output_args ] = earning_lyr(folder)
         name{i} = files(i).name;
         isdir(i) = files(i).isdir;
     end
+    
+    result = nan(N,length(stk_codes));
+    result = array2table(result,'VariableNames',stk_codes);
 
     name = name(isdir==0);
     
@@ -32,7 +35,9 @@ function [ output_args ] = earning_lyr(folder)
         end
         
         code = code(bool==1);
-        earn = data.net_profit_excl_min_int_inc(bool==1); 
+        colnames = num2cell(code);
+        earn = data.net_profit_excl_min_int_inc(bool==1);
+        result(i,colnames) = array2table(earn);
         
     end
     
