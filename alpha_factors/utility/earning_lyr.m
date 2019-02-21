@@ -1,27 +1,34 @@
-function [ output_args ] = earning_lyr(folder,stk_codes)
+function result = earning_lyr(folder,stk_codes)
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
 % folder = 'D:/Projects/pit_data/mat/income/';
 
     files = dir(folder);
     N = length(files);
-    name = cell(N,1);
+    filename = cell(N,1);
     isdir = zeros(N,1);
     
     for i=1:N
-        name{i} = files(i).name;
+        filename{i} = files(i).name;
         isdir(i) = files(i).isdir;
     end
     
-    result = nan(N,length(stk_codes));
-    result = array2table(result,'VariableNames',stk_codes);
-
-    name = name(isdir==0);
+    filename = filename(isdir==0);
     
-    for i = 1:length(name)
+    dt = cell(length(filename),1);
+    result = nan(length(filename),length(stk_codes));
+    
+    colnames = cell(length(stk_codes),1);
+    for i = 1:length(stk_codes)
+        colnames{i} = ['ST',stk_codes{i}(1:6)];
+    end
+    
+    result = array2table(result,'VariableNames',colnames);
+    
+    for i = 1:length(filename)
         
-        dt = file2dt(name);
-        load([folder,name]);
+        dt{i} = file2dt(filename{i});
+        load([folder,filename{i}]);
         
         data = data_last(data_last.season==4,:);  %#ok<NODEF>
         
@@ -35,11 +42,15 @@ function [ output_args ] = earning_lyr(folder,stk_codes)
         end
         
         code = code(bool==1);
-        colnames = num2cell(code);
+        [~,cols] = ismember(code,stk_codes);
         earn = data.net_profit_excl_min_int_inc(bool==1);
-        result(i,colnames) = array2table(earn);
+        result(i,cols) = array2table(earn');
         
-    end
+        disp(i);
+        
+    end    
+    
+    result.DATEN = datenum_h5(dt);
     
 end
 
