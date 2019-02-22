@@ -1,4 +1,4 @@
-function []=latest_yr(folder, stk_codes, db_names)
+function result = latest_yr(folder, stk_codes, db_names)
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名
 % folder = 'D:/Projects/pit_data/mat/income/';
@@ -76,7 +76,7 @@ function []=latest_yr(folder, stk_codes, db_names)
     DATEN = datenum_h5(dt); %#ok<NASGU>
     for k=1:length(db_names)
         eval([db_names{k},'.DATEN = DATEN;']);
-        eval(['save(''D:/Projects/pit_data/',db_names{k},'.mat'',''',db_names{k},''');']);
+        eval(['save(''D:/Projects/pit_data/',db_names{k},'.mat,',db_names{k}
     end
     
     
