@@ -59,11 +59,13 @@ function []=latest_yr(folder, stk_codes, db_names)
         code = code(bool==1);
         
         % 找到result里面对应的列
-        [~,cols] = ismember(code,stk_codes); %#ok<ASGLU>
+        [~,cols] = ismember(code,stk_codes); 
+        cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
         
         for k=1:length(db_names)
             
             eval(['tmp = data.',db_names{k},'(bool==1);']);
+            tmp = tmp(cols>0); % 去掉股票代码表stk_code里面没有的票
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
         %result(i,cols) = array2table(earn');
