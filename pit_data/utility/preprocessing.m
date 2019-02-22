@@ -20,8 +20,8 @@ function ss = get_season(report_period)
     
     ss = zeros(size(report_period,1),1);
     ss(dt==331) = 1;
-    ss(dt==631) = 2;
-    ss(dt==931) = 3;
+    ss(dt==630) = 2;
+    ss(dt==930) = 3;
     ss(dt==1231)= 4;    
 
 end
