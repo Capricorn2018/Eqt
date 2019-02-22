@@ -1,7 +1,8 @@
 function []=latest_yr(folder, stk_codes, db_names)
 % 从每天的pit_data中截取需用字段，存在单独的文件中
-% db_names是数据库字段名
-% folder = 'D:/Projects/pit_data/mat/income/';
+% db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
+% folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
+% stk_codes就是wind表里面的s_info_windcode
 
     % folder是存放pit_data的位置
     files = dir(folder); % 取得文件列表
