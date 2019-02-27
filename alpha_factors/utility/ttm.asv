@@ -61,11 +61,11 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         [~,locb] = ismember(s1.s_info_windcode,code);
         result(locb(locb>0),db_names) = s1(:,db_names);
         [~,locb2] = ismember(s2.s_info_windcode,code);
-        result(locb2(locb2>0),db_names) = array2table(table2array(result(locb2(locb2>0),db_names)) + table2array(s2(:,db_names)));
+        result(locb2(locb2>0),db_names) = table2array(result(locb2(locb2>0),db_names)) + table2array(s2(:,db_names));
         [~,locb3] = ismember(s3.s_info_windcode,code);
-        result(locb3(locb3>0),db_names) = array2table(table2array(result(locb3(locb3>0),db_names)) + table2array(s3(:,db_names)));
+        result(locb3(locb3>0),db_names) = result(locb3(locb3>0),db_names) + s3(:,db_names);
         [~,locb4] = ismember(s4.s_info_windcode,code);
-        result(locb4(locb4>0),db_names) = array2table(table2array(result(locb4(locb4>0),db_names)) + table2array(s4(:,db_names)));
+        result(locb4(locb4>0),db_names) = result(locb4(locb4>0),db_names) + s4(:,db_names);
         
         
         % 找到result里面对应的列
