@@ -35,7 +35,7 @@ function []=latest_yr(folder, stk_codes, db_names)
         eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
     end
     % table的列名如上
-    %result = array2table(result,'VariableNames',colnames);
+    % result = array2table(result,'VariableNames',colnames);
     
     % 循环从pit数据中截取最新的年报数据中需要的字段
     for i = 1:length(filename)
@@ -63,8 +63,7 @@ function []=latest_yr(folder, stk_codes, db_names)
         cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
         data = data(cols>0,:); %#ok<NASGU> % 去掉股票代码表stk_code里面没有的票
         
-        for k=1:length(db_names)
-            
+        for k=1:length(db_names)            
             eval(['tmp = data.',db_names{k},'(bool==1);']);
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
