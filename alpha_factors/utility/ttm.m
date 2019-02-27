@@ -48,17 +48,21 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         % 选最新的4期单季数据
         data = single(single.rank_rpt<=4,:);  %#ok<NODEF>
         
+        % 所有的代码
         code = data.s_info_windcode;
         code = unique(code);
         
+        % 最近的四个季度对应的单季数据
         s1 = data(data.rank_rpt==1,:);
         s2 = data(data.rank_rpt==2,:);
         s3 = data(data.rank_rpt==3,:);
         s4 = data(data.rank_rpt==4,:);
         
+        % 初始化结果
         result = nan(size(code,1),size(data,2));
         result = array2table(result,'VariableNames',data.Properties.VariableNames);
         
+        % 把最新的四个季度对应的字段相加计算ttm
         [~,locb] = ismember(s1.s_info_windcode,code);
         result(locb(locb>0),db_names) = s1(:,db_names);
         [~,locb2] = ismember(s2.s_info_windcode,code);
@@ -74,8 +78,8 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
         result = result(cols>0,:); %#ok<NASGU> % 去掉股票代码表stk_code里面没有的票
         
-        for k=1:length(db_names)
-            
+        % 把得到的结果储存在以字段名命名的变量中的一行
+        for k=1:length(db_names)            
             eval(['tmp = result.',db_names{k},';']);
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
@@ -90,13 +94,14 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
     DATEN = datenum_h5(dt); %#ok<NASGU>
     
     % 防止忘了加文件夹地址符
-    if(output_folder~='/' && output_folder(end)~='\') 
+    if(output_folder(end)~='/' && output_folder(end)~='\') 
         output_folder = [output_folder,'/']; 
     end
     
+    % 存储结果
     for k=1:length(db_names)
         eval([db_names{k},'.DATEN = DATEN;']);        
-        eval(['save(',output_folder,db_names{k},'.mat'',''',db_names{k},''');']);
+        eval(['save(''',output_folder,'TTM_',db_names{k},'.mat'',''',db_names{k},''');']);
     end
     
     

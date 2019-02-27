@@ -40,14 +40,15 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
         single = single_season(data_last); %#ok<NASGU>
         save([out_path,'single_season/pit_',st,'.mat'],'single');
     end
-    
+        
     % 循环对每个交易日进行筛选, 保存
     for i=2:size(calender,1)
        
-        st = calender{i};
+        st = calender{i};        
+        lt = t; % 上一交易日
         t = round(str2double(st),0);
         
-        update = data(data.actual_ann_dt==t,:);
+        update = data(data.actual_ann_dt<=t & data.actual_ann_dt>lt,:);
         
         if(size(update,1)>0)
         
