@@ -1,7 +1,8 @@
 function []=ttm(input_folder, stk_codes, db_names, output_folder)
+% trailing twelve month数据
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
-% input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
+% input_folder = 'D:/Projects/pit_data/mat/income/single_season/'; 是存放pit_data的位置
 % stk_codes就是wind表里面的s_info_windcode
 % output_folder = 'D:/Projects/pit_data/mat/alpha_factors/'; 是用来存放结果的地址
 
@@ -44,8 +45,8 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
         load([input_folder,filename{i}]); % 读取当日的pit_data
         
-        % 选最新的4期报表(应为单季数据)
-        data = data_last(data_last.rank_rpt<=4,:);  %#ok<NODEF>
+        % 选最新的4期单季数据
+        data = single(single.rank_rpt<=4,:);  %#ok<NODEF>
         
         code = data.s_info_windcode;
         code = unique(code);

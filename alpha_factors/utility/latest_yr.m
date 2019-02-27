@@ -1,4 +1,5 @@
 function []=latest_yr(input_folder, stk_codes, db_names, output_folder)
+% 最新年报数据
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
 % input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
