@@ -1,4 +1,4 @@
-function []=latest_yr(input_folder, stk_codes, db_names, output_folder)
+function []=ttm(input_folder, stk_codes, db_names, output_folder)
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
 % input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
@@ -44,28 +44,36 @@ function []=latest_yr(input_folder, stk_codes, db_names, output_folder)
         dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
         load([folder,filename{i}]); % 读取当日的pit_data
         
-        % 筛选所有年报
-        data = data_last(data_last.season==4,:);  %#ok<NODEF>
+        % 选最新的4期报表(应为单季数据)
+        data = data_last(data_last.rank_rpt<=4,:);  %#ok<NODEF>
         
-        % bool用来辨别是否是该股票的最新一条年报
         code = data.s_info_windcode;
-        bool = ones(size(data,1),1);        
-        for j = 2:size(data,1)
-            if(strcmp(code(j),code(j-1))) 
-                bool(j) = 0;    % 若与上一条记录的code不相同则说明是最新的
-            end
-        end
+        code = unique(code);
         
-        % 筛选所有最新报告
-        code = code(bool==1);
+        s1 = data(data.rank_rpt==1,:);
+        s2 = data(data.rank_rpt==2,:);
+        s3 = data(data.rank_rpt==3,:);
+        s4 = data(data.rank_rpt==4,:);
+        
+        result = nan(size(code,1),size(data,2));
+        [~,locb] = ismember(s1.s_info_windcode,code);
+        result(locb(locb>0),:) = s1;
+        [~,locb2] = ismember(s2.s_info_windcode,code);
+        result(locb2(locb2>0),:) = result(locb2(locb2>0),:) + s2;
+        [~,locb3] = ismember(s3.s_info_windcode,code);
+        result(locb3(locb3>0),:) = result(locb3(locb3>0),:) + s3;
+        [~,locb4] = ismember(s4.s_info_windcode,code);
+        result(locb4(locb4>0),:) = result(locb4(locb4>0),:) + s4;
+        
         
         % 找到result里面对应的列
         [~,cols] = ismember(code,stk_codes); 
         cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
-        data = data(cols>0,:); %#ok<NASGU> % 去掉股票代码表stk_code里面没有的票
+        result = result(cols>0,:); % 去掉股票代码表stk_code里面没有的票
         
-        for k=1:length(db_names)            
-            eval(['tmp = data.',db_names{k},'(bool==1);']);
+        for k=1:length(db_names)
+            
+            eval(['tmp = result.',db_names{k},';']);
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
         % result(i,cols) = array2table(earn');
@@ -97,4 +105,3 @@ function dt = file2dt(filename)
     dt = filename(5:12);
 
 end
-
