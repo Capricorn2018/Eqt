@@ -46,7 +46,7 @@ function []=mrq(input_folder, stk_codes, db_names, output_folder)
         load([input_folder,filename{i}]); % 读取当日的pit_data
         
         % 选最新的4期单季数据
-        result = single(single.rank_rpt<=4,:);  %#ok<NODEF>
+        result = single(single.rank_rpt==1,:);  %#ok<NODEF>
         
         % 所有的代码
         code = result.s_info_windcode;
