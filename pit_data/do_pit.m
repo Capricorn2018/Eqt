@@ -2,6 +2,7 @@
 % start_dt = '20041231';
 % end_dt = '20190201';
 % n_rpt = 21;
+% type = 'balance';
 function []=do_pit(start_dt, end_dt, n_rpt, type)
 
     % balancesheet
