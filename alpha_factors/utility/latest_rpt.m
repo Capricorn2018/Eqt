@@ -1,10 +1,13 @@
-function []=lyr(input_folder, stk_codes, db_names, output_folder)
-% 最新年报数据
+function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type)
+% 最新报表数据
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
 % input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
 % stk_codes就是wind表里面的s_info_windcode
 % output_folder = 'D:/Projects_pit_data/mat/alpha_factors/'; 是用来存放结果的地址
+% rpt_type = 'LYR' 最新年报数据
+% rpt_type = 'SQ' 最新报表单季数据
+% rpt_type = 'LR' 最新季(年)报数据
 
     % input_folder是存放pit_data的位置
     files = dir(input_folder); % 取得文件列表
@@ -43,30 +46,53 @@ function []=lyr(input_folder, stk_codes, db_names, output_folder)
     for i = 1:length(filename)
         
         dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
-        load([folder,filename{i}]); % 读取当日的pit_data
+        load([input_folder,filename{i}]); % 读取当日的pit_data
         
-        % 筛选所有年报
-        data = data_last(data_last.season==4,:);  %#ok<NODEF>
-        
-        % bool用来辨别是否是该股票的最新一条年报
-        code = data.s_info_windcode;
-        bool = ones(size(data,1),1);        
-        for j = 2:size(data,1)
-            if(strcmp(code(j),code(j-1))) 
-                bool(j) = 0;    % 若与上一条记录的code不相同则说明是最新的
+        if(strcmp(rpt_type,'LYR'))
+            % 筛选所有年报
+            data = data_last(data_last.season==4,:);  %#ok<NODEF>
+
+            % bool用来辨别是否是该股票的最新一条年报
+            code = data.s_info_windcode;
+            bool = ones(size(data,1),1);        
+            for j = 2:size(data,1)
+                if(strcmp(code(j),code(j-1))) 
+                    bool(j) = 0;    % 若与上一条记录的code不相同则说明是最新的
+                end
+            end
+
+            % 筛选所有最新报告
+            code = code(bool==0);
+            data = data(bool==0,:);
+        else
+            if(strcmp(rpt_type,'SQ'))
+                % 筛选最新的单季数据
+                data = single(single.rank_rpt==1,:);  %#ok<NODEF>
+
+                % 所有的代码
+                code = data.s_info_windcode;
+                code = unique(code);
+            else
+                if(strcmp(rpt_type,'LR'))
+                    % 筛选最新的季报数据
+                    data = data_last(data_last.rank_rpt==1,:);  %#ok<NODEF>
+
+                    % 所有的代码
+                    code = data.s_info_windcode;
+                    code = unique(code);
+                else
+                    disp('Error: rpt_type is not in {''LR'',''SQ'',''LYR''}');
+                end
             end
         end
-        
-        % 筛选所有最新报告
-        code = code(bool==1);
         
         % 找到result里面对应的列
         [~,cols] = ismember(code,stk_codes); 
         cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
-        data = data(cols>0,:); %#ok<NASGU> % 去掉股票代码表stk_code里面没有的票
+        data = data(cols>0,:); % 去掉股票代码表stk_code里面没有的票
         
         for k=1:length(db_names)            
-            eval(['tmp = data.',db_names{k},'(bool==1);']);
+            eval(['tmp = data.',db_names{k},';']);
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
         % result(i,cols) = array2table(earn');
@@ -86,7 +112,7 @@ function []=lyr(input_folder, stk_codes, db_names, output_folder)
     
     for k=1:length(db_names)
         eval([db_names{k},'.DATEN = DATEN;']);        
-        eval(['save(',output_folder,db_names{k},'.mat'',''',db_names{k},''');']);
+        eval(['save(''',output_folder,rpt_type,'_',db_names{k},'.mat'',''',db_names{k},''');']);
     end
     
     

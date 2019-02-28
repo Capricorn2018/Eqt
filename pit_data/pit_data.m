@@ -66,7 +66,7 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
         % 若需要拆单季数据
         if(do_single)
             single = single_season(data_last); %#ok<NASGU>
-            save([out_path,'single_season/pit_',st,'.mat'],'single');
+            save([out_path,'pit_',st,'.mat'],'single','-append');
         end
         
         disp(st);
