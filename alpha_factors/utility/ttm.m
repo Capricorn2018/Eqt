@@ -63,6 +63,7 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         result = array2table(result,'VariableNames',data.Properties.VariableNames);
         
         % 把最新的四个季度对应的字段相加计算ttm
+        % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
         [~,locb] = ismember(s1.s_info_windcode,code);
         result(locb(locb>0),db_names) = s1(:,db_names);
         [~,locb2] = ismember(s2.s_info_windcode,code);

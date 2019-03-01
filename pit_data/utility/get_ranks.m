@@ -1,7 +1,7 @@
 function tbl = get_ranks(data)
 
     % 先按照code/report/ann的顺序排序
-    sort_data =  sortrows(data,{'s_info_windcode','report_period','actual_ann_dt'},{'ascend','descend','descend'});
+    sort_data =  sortrows(data,{'s_info_windcode','report_period','actual_ann_dt','statement_type_int'},{'ascend','descend','descend','ascend'});
 
     code = sort_data.s_info_windcode;
     rpt = sort_data.report_period;
@@ -25,9 +25,9 @@ function tbl = get_ranks(data)
         end
         
         % 若本行ann与上一行不一致则sign赋值为0
-        if(ann(i,1)~=ann(i-1,1))
-            sa(i) = 0;
-        end
+%         if(ann(i,1)~=ann(i-1,1))
+%             sa(i) = 0;
+%         end
         
     end
     

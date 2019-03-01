@@ -1,3 +1,6 @@
+% 注意！所有的code都默认传进来的报告记录是按照
+% s_info_windcode, report_period desc, actual_ann_dt desc 排序过的
+
 function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type)
 % 最新报表数据
 % 从每天的pit_data中截取需用字段，存在单独的文件中
@@ -52,18 +55,15 @@ function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_typ
             % 筛选所有年报
             data = data_last(data_last.season==4,:);  %#ok<NODEF>
 
-            % bool用来辨别是否是该股票的最新一条年报
+            % 所有的代码
             code = data.s_info_windcode;
-            bool = ones(size(data,1),1);        
-            for j = 2:size(data,1)
-                if(strcmp(code(j),code(j-1))) 
-                    bool(j) = 0;    % 若与上一条记录的code不相同则说明是最新的
-                end
-            end
+            code = unique(code);
 
-            % 筛选所有最新报告
-            code = code(bool==0);
-            data = data(bool==0,:);
+            % 为防止data里面出现同一股票代码有两条记录的状况
+            % 每个股票只选最靠上那条记录
+            [~,Locb] = ismember(code,data.s_info_windcode);
+            data = data(Locb,:);
+            
         else
             if(strcmp(rpt_type,'SQ'))
                 % 筛选最新的单季数据
@@ -72,6 +72,12 @@ function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_typ
                 % 所有的代码
                 code = data.s_info_windcode;
                 code = unique(code);
+                
+                % 为防止data里面出现同一股票代码有两条记录的状况
+                % 每个股票只选最靠上那条记录
+                [~,Locb] = ismember(code,data.s_info_windcode);
+                data = data(Locb,:);
+                
             else
                 if(strcmp(rpt_type,'LR'))
                     % 筛选最新的季报数据
@@ -80,6 +86,12 @@ function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_typ
                     % 所有的代码
                     code = data.s_info_windcode;
                     code = unique(code);
+                    
+                    % 为防止data里面出现同一股票代码有两条记录的状况
+                    % 每个股票只选最靠上那条记录
+                    [~,Locb] = ismember(code,data.s_info_windcode);
+                    data = data(Locb,:);
+                    
                 else
                     disp('Error: rpt_type is not in {''LR'',''SQ'',''LYR''}');
                 end
