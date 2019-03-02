@@ -16,6 +16,10 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
     
     % 去掉nan
     data = data(~isnan(data.actual_ann_dt) & ~isnan(data.report_period),:);
+    
+    % 2007年附近新老报表交替时有ann_dt > actual_ann_dt的问题
+    data.actual_ann_dt(data.actual_ann_dt < data.ann_dt) = data.ann_dt(data.actual_ann_dt < data.ann_dt);
+    
     % 只选合并报表
     data = data(data.statement_type==408001000 | data.statement_type==408004000 | ...
                 data.statement_type==408005000 | data.statement_type==408050000,:);
@@ -23,8 +27,8 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
    % 给报表类型排序以处理同一天发布了更正公告(或者数据错误)的情况        
    data.statement_type_int = nan(size(data,1),1);
    data.statement_type_int(data.statement_type==408005000) = 4;
-   data.statement_type_int(data.statement_type==408050000) = 3;
-   data.statement_type_int(data.statement_type==408001000) = 2;   
+   data.statement_type_int(data.statement_type==408050000) = 2;
+   data.statement_type_int(data.statement_type==408001000) = 3;   
    data.statement_type_int(data.statement_type==408004000) = 1;
    
     
