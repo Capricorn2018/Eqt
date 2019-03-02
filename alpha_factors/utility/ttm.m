@@ -66,6 +66,8 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
         [Lia,Locb] = ismember(code,s1.s_info_windcode);
         result(Lia,db_names) = s1(Locb(Locb>0),db_names);
+        season1 = nan(size(result,1),1);
+        season1(Lia) = s1.report_period(Locb(Locb>0));
         
         [Lia2,Locb2] = ismember(code,s2.s_info_windcode);
         add = array2table(nan(size(result)),'VariableNames',result.Properties.VariableNames);
@@ -81,6 +83,14 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         add = array2table(nan(size(result)),'VariableNames',result.Properties.VariableNames);
         add(Lia4,db_names) = s4(Locb4(Locb4>0),db_names);
         result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(add(:,db_names)));
+        season4 = nan(size(result,1),1);
+        season4(Lia4) = s4.report_period(Locb4(Locb4>0));
+        
+        % 辨别s4对应的season是不是一年以前
+        l4s = nan(size(result,1),1);
+        l4s(Locb(Locb>0)) = last4season(season1(Lia));
+        result(season4~=l4s,:) = nan(size(result(season4~=l4s,:)));
+        
         
         
         % 找到result里面对应的列
@@ -120,4 +130,15 @@ end
 % 从pit_20190201.mat格式的文件名中取得日期字符串
 function dt = file2dt(filename)
     dt = filename(5:12);
+end
+
+% 找最新季报对应季度的三个季度之前对应的report_period
+function last_4s = last4season(season)
+
+    last_4s = zeros(size(season));
+    
+    for i=1:length(season)
+        last_4s(i) = last_season(last_season(last_season(season(i))));
+    end
+    
 end
