@@ -67,11 +67,11 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         [~,Locb] = ismember(code,s1.s_info_windcode);
         result(:,db_names) = s1(Locb(Locb>0),db_names);
         [~,Locb2] = ismember(code,s2.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s2(Locb2(Locb2>0),db_names)));
+        result(Locb2(Locb2>0),db_names) = array2table(table2array(result(Locb2(Locb2>0),db_names)) + table2array(s2(:,db_names)));
         [~,Locb3] = ismember(code,s3.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s3(Locb3(Locb3>0),db_names)));
+        result(Locb3(Locb3>0),db_names) = array2table(table2array(result(Locb3(Locb3>0),db_names)) + table2array(s3(:,db_names)));
         [~,Locb4] = ismember(code,s4.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s4(Locb4(Locb4>0),db_names)));
+        result(Locb4(Locb4>0),db_names) = array2table(table2array(result(Locb4(Locb4>0),db_names)) + table2array(s4(:,db_names)));
         
         
         % 找到result里面对应的列
