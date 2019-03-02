@@ -22,10 +22,10 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
             
    % 给报表类型排序以处理同一天发布了更正公告(或者数据错误)的情况        
    data.statement_type_int = nan(size(data,1),1);
-   data.statement_type_int(data.statement_type==408005000) = 1;
-   data.statement_type_int(data.statement_type==408050000) = 2;
-   data.statement_type_int(data.statement_type==408001000) = 3;   
-   data.statement_type_int(data.statement_type==408004000) = 4;
+   data.statement_type_int(data.statement_type==408005000) = 4;
+   data.statement_type_int(data.statement_type==408050000) = 3;
+   data.statement_type_int(data.statement_type==408001000) = 2;   
+   data.statement_type_int(data.statement_type==408004000) = 1;
    
     
     % 先初始化rank列避免data里面本就有这些列
