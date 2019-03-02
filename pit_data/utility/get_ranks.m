@@ -10,7 +10,8 @@ function tbl = get_ranks(data)
     % 初始化, 本行与上一行是否一致的sign
     sc = ones(size(code,1),1);
     sr= ones(size(rpt,1),1);
-    sa = ones(size(ann,1),1);
+    % sa = ones(size(ann,1),1);
+    sa = zeros(size(ann,1),1);
     
     for i = 2:size(code,1)
         
@@ -24,6 +25,8 @@ function tbl = get_ranks(data)
             sr(i) = 0;
         end
         
+        %%%%% 这一句是与 sa = ones(size(ann,1),1); 配对的,
+        %%%%% 因为有同一ann_dt有数条相同report_period的情况所以注释掉
         % 若本行ann与上一行不一致则sign赋值为0
 %         if(ann(i,1)~=ann(i-1,1))
 %             sa(i) = 0;
