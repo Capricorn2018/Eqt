@@ -64,14 +64,18 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         
         % 把最新的四个季度对应的字段相加计算ttm
         % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
-        [~,Locb] = ismember(code,s1.s_info_windcode);
-        result(:,db_names) = s1(Locb(Locb>0),db_names);
-        [~,Locb2] = ismember(code,s2.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s2(Locb2(Locb2>0),db_names)));
-        [~,Locb3] = ismember(code,s3.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s3(Locb3(Locb3>0),db_names)));
-        [~,Locb4] = ismember(code,s4.s_info_windcode);
-        result(:,db_names) = array2table(table2array(result(:,db_names)) + table2array(s4(Locb4(Locb4>0),db_names)));
+        [Lia,Locb] = ismember(code,s1.s_info_windcode);
+        result(Lia,db_names) = s1(Locb(Locb>0),db_names);
+        result(~Lia,db_names) = nan;
+        [Lia2,Locb2] = ismember(code,s2.s_info_windcode);
+        result(Lia2,db_names) = array2table(table2array(result(Lia2,db_names)) + table2array(s2(Locb2(Locb2>0),db_names)));
+        result(~Lia2,db_names) = nan;
+        [Lia3,Locb3] = ismember(code,s3.s_info_windcode);
+        result(Lia3,db_names) = array2table(table2array(result(Lia3,db_names)) + table2array(s3(Locb3(Locb3>0),db_names)));
+        result(~Lia3,db_names) = nan;
+        [Lia4,Locb4] = ismember(code,s4.s_info_windcode);
+        result(Lia4,db_names) = array2table(table2array(result(Lia4,db_names)) + table2array(s4(Locb4(Locb4>0),db_names)));
+        result(~Lia4,db_names) = nan;
         
         
         % 找到result里面对应的列
