@@ -91,8 +91,6 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         l4s(Locb(Locb>0)) = last4season(season1(Lia));
         result(season4~=l4s,:) = nan(size(result(season4~=l4s,:)));
         
-        
-        
         % 找到result里面对应的列
         [~,cols] = ismember(code,stk_codes); 
         cols = cols(cols>0); % 去掉股票代码表stk_code里面没有的票
