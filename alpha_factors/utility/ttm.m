@@ -88,7 +88,7 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
         
         % 辨别s4对应的season是不是一年以前
         l4s = nan(size(result,1),1);
-        l4s(Locb(Locb>0)) = last4season(season1(Lia));
+        l4s(Lia) = last4season(season1(Lia));
         result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
         
         % 找到result里面对应的列
