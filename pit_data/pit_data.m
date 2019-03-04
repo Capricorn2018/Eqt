@@ -60,8 +60,7 @@ function [] = pit_data(data, start_dt, end_dt, n_rpt, ...
         lt = t; % 上一交易日
         t = round(str2double(st),0);
         
-        update = data(data.actual_ann_dt <= t & data.actual_ann_dt > lt ...
-                       & data.ann_dt <= t & data.ann_dt > lt,:);
+        update = data(data.actual_ann_dt <= t & data.actual_ann_dt > lt,:);
         
         if(size(update,1)>0)
         
