@@ -1,7 +1,7 @@
 function tbl = get_ranks(data)
 
     % œ»∞¥’’code/report/annµƒÀ≥–Ú≈≈–Ú
-    sort_data =  sortrows(data,{'s_info_windcode','report_period','actual_ann_dt','ann_dt','statement_type_int'},{'ascend','descend','descend','descend','ascend'});
+    sort_data =  sortrows(data,{'s_info_windcode','report_period','actual_ann_dt','statement_type_int'},{'ascend','descend','descend','ascend'});
 
     code = sort_data.s_info_windcode;
     rpt = sort_data.report_period;
