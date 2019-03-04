@@ -19,7 +19,9 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         out_path = 'D:/Projects/pit_data/mat/income/';
         data_file = 'D:/Projects/pit_data/origin_data/ashareincome.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_ashareincome.csv';
-        data = preprocessing(data_file,sample_file);
+        %data = preprocessing(data_file,sample_file);
+        
+        load('D:/Projects/pit_data/origin_data/ashareincome.mat');
         pit_data(data, start_dt, end_dt, n_rpt,out_path, true);
     end
 
