@@ -9,7 +9,8 @@ function [] = pit_capital(asharecapitalization, start_dt, end_dt, out_path)
     calender = cellstr(calender);
     
     % 去掉nan
-    data = asharecapitalization(~isnan(asharecapitalization.change_dt1),:);   
+    data = asharecapitalization(~isnan(asharecapitalization.change_dt1),:);  
+    data = sortrows(data,{'s_info_windcode','change_dt1'},{'ascend','descend'});
     
     % 循环对每个交易日进行筛选, 保存
     for i=1:size(calender,1)
