@@ -19,7 +19,7 @@ function [] = pit_close( ashareeodprices, start_dt, end_dt, out_path )
         
         up2date = data(data.trade_dt==t,:);
         
-        price = up2date(1,{'s_info_windcode','trade_dt','s_dq_close','s_dq_adjclose','s_dq_tradestatus'}); %#ok<NASGU>
+        price = up2date(:,{'s_info_windcode','trade_dt','s_dq_close','s_dq_adjclose','s_dq_tradestatus'}); %#ok<NASGU>
         
         save([out_path,'pit_',st,'.mat'],'price');
         

@@ -6,11 +6,12 @@
 function []=do_pit(start_dt, end_dt, n_rpt, type)
 
     % balancesheet
-    if(strcmp(type,'balance'))
+    if(strcmp(type,'balancesheet'))
         out_path = 'D:/Projects/pit_data/mat/balancesheet/';
         data_file = 'D:/Projects/pit_data/origin_data/asharebalancesheet.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_asharebalancesheet.csv';
         data = preprocessing(data_file,sample_file);
+        %load('D:/Projects/pit_data/origin_data/asharebalancesheet.mat');
         pit_data(data, start_dt, end_dt, n_rpt, out_path, false);
     end
 
@@ -19,8 +20,8 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         out_path = 'D:/Projects/pit_data/mat/income/';
         data_file = 'D:/Projects/pit_data/origin_data/ashareincome.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_ashareincome.csv';
-        %data = preprocessing(data_file,sample_file);        
-        load('D:/Projects/pit_data/origin_data/ashareincome.mat');
+        data = preprocessing(data_file,sample_file);        
+        %load('D:/Projects/pit_data/origin_data/ashareincome.mat');
         pit_data(data, start_dt, end_dt, n_rpt,out_path, true);
     end
 
@@ -30,6 +31,7 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         data_file = 'D:/Projects/pit_data/origin_data/asharecashflow.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_asharecashflow.csv'; 
         data = preprocessing(data_file,sample_file);
+        %load('D:/Projects/pit_data/origin_data/asharecashflow.mat');
         pit_data(data, start_dt, end_dt, n_rpt, out_path, true);
     end
     
@@ -38,20 +40,22 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         out_path = 'D:/Projects/pit_data/mat/capitalization/';
         data_file = 'D:/Projects/pit_data/origin_data/asharecapitalization.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_asharecapitalization.csv'; 
-        data = readtable(data_file,'TreatAsEmpty','\N','ReadVariableNames',false);
-        sample = readtable(sample_file,'TreatAsEmpty','\N');
+        data = readtable(data_file,'TreatAsEmpty','\N','ReadVariableNames',false,'FileEncoding','UTF-8');
+        sample = readtable(sample_file,'TreatAsEmpty','\N','FileEncoding','UTF-8');
         data.Properties.VariableNames = sample.Properties.VariableNames;
+        %load('D:/Projects/pit_data/origin_data/asharecapitalization.mat');
         pit_capital(data, start_dt, end_dt, out_path);
     end
     
-    % prices
+    % eodprices
     if(strcmp(type,'eodprices'))
         out_path = 'D:/Projects/pit_data/mat/eodprices/';
         data_file = 'D:/Projects/pit_data/origin_data/ashareeodprices.txt';
         sample_file = 'D:/Projects/pit_data/origin_data/sample_ashareeodprices.csv'; 
-        data = readtable(data_file,'TreatAsEmpty','\N','ReadVariableNames',false);
-        sample = readtable(sample_file,'TreatAsEmpty','\N');
+        data = readtable(data_file,'TreatAsEmpty','\N','ReadVariableNames',false,'FileEncoding','UTF-8');
+        sample = readtable(sample_file,'TreatAsEmpty','\N','FileEncoding','UTF-8');
         data.Properties.VariableNames = sample.Properties.VariableNames;
+        %load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
         pit_close(data, start_dt, end_dt, out_path);
     end
     
