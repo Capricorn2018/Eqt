@@ -12,7 +12,7 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         sample_file = 'D:/Projects/pit_data/origin_data/sample_asharebalancesheet.csv';
         data = preprocessing(data_file,sample_file);
         %load('D:/Projects/pit_data/origin_data/asharebalancesheet.mat');
-        pit_data(data, start_dt, end_dt, n_rpt, out_path, false);
+        pit_reports(data, start_dt, end_dt, n_rpt, out_path, false);
     end
 
     % income
@@ -22,7 +22,7 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         sample_file = 'D:/Projects/pit_data/origin_data/sample_ashareincome.csv';
         data = preprocessing(data_file,sample_file);        
         %load('D:/Projects/pit_data/origin_data/ashareincome.mat');
-        pit_data(data, start_dt, end_dt, n_rpt,out_path, true);
+        pit_reports(data, start_dt, end_dt, n_rpt,out_path, true);
     end
 
     % cashflow
@@ -32,7 +32,7 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         sample_file = 'D:/Projects/pit_data/origin_data/sample_asharecashflow.csv'; 
         data = preprocessing(data_file,sample_file);
         %load('D:/Projects/pit_data/origin_data/asharecashflow.mat');
-        pit_data(data, start_dt, end_dt, n_rpt, out_path, true);
+        pit_reports(data, start_dt, end_dt, n_rpt, out_path, true);
     end
     
     % capitalization
