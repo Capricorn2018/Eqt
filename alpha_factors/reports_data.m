@@ -26,3 +26,10 @@ rpt_type = 'SQ';
 latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type);
 
 
+input_folder = 'D:/Projects/pit_data/mat/income/';
+db_names = {'net_profit_excl_min_int_inc'};
+output_folder = 'D:/Projects/pit_data/mat/alpha_factors/';
+rpt_type = 'LYR';
+latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type);
+
+
