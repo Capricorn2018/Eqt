@@ -44,15 +44,15 @@ function []=do_pit(start_dt, end_dt, n_rpt, type)
         pit_capital(data, start_dt, end_dt, out_path);
     end
     
-    % prices
+    % capitalization
     if(strcmp(type,'eodprices'))
         out_path = 'D:/Projects/pit_data/mat/eodprices/';
-        data_file = 'D:/Projects/pit_data/origin_data/ashareeodprices.txt';
-        sample_file = 'D:/Projects/pit_data/origin_data/sample_ashareeodprices.csv'; 
+        data_file = 'D:/Projects/pit_data/origin_data/ashareca.txt';
+        sample_file = 'D:/Projects/pit_data/origin_data/sample_asharecapitalization.csv'; 
         data = readtable(data_file,'TreatAsEmpty','\N','ReadVariableNames',false);
         sample = readtable(sample_file,'TreatAsEmpty','\N');
         data.Properties.VariableNames = sample.Properties.VariableNames;
-        pit_close(data, start_dt, end_dt, out_path);
+        pit_capital(data, start_dt, end_dt, out_path);
     end
     
 end
