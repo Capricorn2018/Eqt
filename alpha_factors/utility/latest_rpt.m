@@ -118,13 +118,15 @@ function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_typ
     DATEN = datenum_h5(dt); %#ok<NASGU>
     
     % 防止忘了加文件夹地址符
-    if(output_folder~='/' && output_folder(end)~='\') 
+    if(output_folder(end)~='/' && output_folder(end)~='\') 
         output_folder = [output_folder,'/']; 
     end
     
     for k=1:length(db_names)
         eval([db_names{k},'.DATEN = DATEN;']);        
         eval(['save(''',output_folder,rpt_type,'_',db_names{k},'.mat'',''',db_names{k},''');']);
+        % tgt_file = [output_folder,rpt_type,'_',db_names{k},'.h5'];
+        % eval(['hdf5write(tgt_file, ''date'',dt, ''stk_code'',stk_codes,' '''',db_names{k}, ''',','' db_names{k}, ');']);  
     end
     
     

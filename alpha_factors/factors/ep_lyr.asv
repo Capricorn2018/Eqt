@@ -1,0 +1,29 @@
+function [ output_args ] = ep_lyr(a, p)
+% EP_LYR
+% p.all_trading_dates里面存了需要的日期
+    T = length(p.all_trading_dates );
+    N = length(p.stk_codes);   
+    tgt_file =  [a.output_data_path,'\ep_lyr.h5'];
+    tgt_tag = 'ep_lyr'; 
+    [S,bp] =  check_exist(tgt_file,'/ep_lyr',p,T,N);
+
+
+    if S>0
+       value = [a.input_data_path,'LYR_net_profit_excl_min_int_inc.h5'];  
+       tags = '/stk_code';
+       tagn = '/net_profit_excl_min_int_inc';
+       tagr = '/report_period';
+
+
+       X = load_single_value(S,T,N,p,value,tags,tagn,tagr);
+       total_capital = h5read([a.input_data_path,'\fdata\base_data\capital.h5'],'/total_capital')';
+       bp(S:T,:) = X(S:T,:)./total_capital(S:T,:)*10000;
+
+       if  exist(tgt_file,'file')==2
+          eval(['delete ',tgt_file]);
+       end
+       eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
+    end
+
+end
+
