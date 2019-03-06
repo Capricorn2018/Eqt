@@ -15,7 +15,7 @@ function [] = ep_lyr(a, p)
 
        profit = h5read(profit_file,'/net_profit_excl_min_int_inc')';
        total_capital = h5read(cap_file,'/total_capital')';
-       ep_lyr(S:T,:) = profit(S:T,:)./total_capital(S:T,:)*10000;
+       ep_lyr(S:T,:) = profit(S:T,:)./total_capital(S:T,:); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);
