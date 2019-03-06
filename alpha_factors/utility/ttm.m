@@ -101,7 +101,8 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
             eval(['tmp = result.',db_names{k},';']);
             eval([db_names{k},'(i,cols) = array2table(tmp'');']);
         end
-        % result(i,cols) = array2table(earn');
+        
+        % save(...);
         
         disp(i);
         
@@ -118,10 +119,10 @@ function []=ttm(input_folder, stk_codes, db_names, output_folder)
     
     % ´æ´¢½á¹û
     for k=1:length(db_names)
-        eval([db_names{k},'.DATEN = DATEN;']);        
-        eval(['save(''',output_folder,'TTM_',db_names{k},'.mat'',''',db_names{k},''');']);
-        % tgt_file = [output_folder,rpt_type,'_',db_names{k},'.h5'];
-        % eval(['hdf5write(tgt_file, ''date'',dt, ''stk_code'',stk_codes,' '''',db_names{k}, ''',','' db_names{k}, ');']); 
+%         eval([db_names{k},'.DATEN = DATEN;']);        
+%         eval(['save(''',output_folder,'TTM_',db_names{k},'.mat'',''',db_names{k},''');']);
+        tgt_file = [output_folder,rpt_type,'_',db_names{k},'.h5']; %#ok<NASGU>
+        eval(['hdf5write(tgt_file, ''date'',dt, ''stk_code'',stk_codes,' '''',db_names{k}, ''',','' db_names{k}, ');']); 
     end
     
     
