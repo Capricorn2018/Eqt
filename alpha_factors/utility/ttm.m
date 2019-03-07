@@ -39,7 +39,7 @@ function [all_stk_codes]=ttm(input_folder, stk_codes, db_names, output_folder)
     S = zeros(length(db_names),1);
     p.all_trading_dates_ = dt;
     p.all_trading_dates = ndt;
-    p.stk_codes = stk_codes;
+    p.stk_codes = stk_codes; %#ok<STRNU>
     
     % 初始化结果
     % result = nan(length(filename),length(stk_codes));
