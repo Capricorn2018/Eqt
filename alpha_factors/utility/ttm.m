@@ -32,7 +32,7 @@ function [all_stk_codes]=ttm(input_folder, stk_codes, db_names, output_folder)
     ndt = nan(length(filename),1);
     for i=1:T
         dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
-        ndt(i) = str2double(dt{i});
+        ndt(i) = datenum(dt{i},'yyyymmdd');
     end
     
     % 记录每个字段需要更新的起始日
@@ -51,7 +51,12 @@ function [all_stk_codes]=ttm(input_folder, stk_codes, db_names, output_folder)
         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
     end
     
-    Smax = max([S;1]);
+    Smax = max(S);
+    
+    if(S==0)
+        all_stk_codes = stk_codes;
+        return;
+    end
     
     % 循环从pit数据中截取最新的年报数据中需要的字段
     for i = Smax:T
