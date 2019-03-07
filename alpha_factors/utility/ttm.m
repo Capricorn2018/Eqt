@@ -53,7 +53,7 @@ function [all_stk_codes]=ttm(input_folder, stk_codes, db_names, output_folder)
     
     Smax = max(S);
     
-    if(S==0)
+    if(Smax==0)
         all_stk_codes = stk_codes;
         return;
     end
