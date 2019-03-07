@@ -1,7 +1,7 @@
 % 注意！所有的code都默认传进来的报告记录是按照
 % s_info_windcode, report_period desc, actual_ann_dt desc 排序过的
 
-function [all_stk_codes]=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type)
+function []=latest_rpt(input_folder, stk_codes, db_names, output_folder, rpt_type)
 % 最新报表数据
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
@@ -13,59 +13,40 @@ function [all_stk_codes]=latest_rpt(input_folder, stk_codes, db_names, output_fo
 % rpt_type = 'LR' 最新季(年)报数据
 
     % input_folder是存放pit_data的位置
-    files = dir(input_folder); % 取得文件列表    
-    
-    % 防止忘了加文件夹地址符
-    if(output_folder(end)~='/' && output_folder(end)~='\') 
-        output_folder = [output_folder,'/']; 
-    end
+    files = dir(input_folder); % 取得文件列表
+    N = length(files);  % 文件个数
     
     % 循环取得文件名以及是否是文件夹的标志isdir
-    filename = cell(length(files),1);
-    isdir = zeros(length(files),1);
-    for i=1:length(files)
+    filename = cell(N,1);
+    isdir = zeros(N,1);
+    for i=1:N
         filename{i} = files(i).name;
         isdir(i) = files(i).isdir;
     end
     
     % 去除所有的文件夹
     filename = filename(isdir==0);
-    T = length(filename);  % 文件个数    
-    N = length(stk_codes);
     
     % dt是用来从文件名中截取日期字符串的容器
     dt = cell(length(filename),1);
-    ndt = nan(length(filename),1);
-    for i=1:T
-        dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
-        ndt(i) = datenum(dt{i},'yyyymmdd');
-    end
     
-    % 记录每个字段需要更新的起始日
-    S = zeros(length(db_names),1);
-    p.all_trading_dates_ = dt;
-    p.all_trading_dates = ndt;
-    p.stk_codes = stk_codes; %#ok<STRNU>
+     % 从stk_codes截取数字代码并在前面加上'ST'以便用于table的列名
+    colnames = cell(length(stk_codes),1);
+    for i = 1:length(stk_codes)
+        colnames{i} = ['ST',stk_codes{i}(1:6)];
+    end
     
     % 初始化结果
-    % result = nan(length(filename),length(stk_codes));
-    tgt_file = cell(length(db_names),1);
+    %result = nan(length(filename),length(stk_codes));
     for i=1:length(db_names)
-%         eval([db_names{i},' = nan(length(filename),length(stk_codes));']);
-%         eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
-        tgt_file{i} = [output_folder,rpt_type,'_',db_names{i},'.h5'];
-        eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
+        eval([db_names{i},' = nan(length(filename),length(stk_codes));']);
+        eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
     end
-    
-    Smin = min(S);
-    
-    if(max(S)==0)
-        all_stk_codes = stk_codes;
-        return;
-    end
+    % table的列名如上
+    % result = array2table(result,'VariableNames',colnames);
     
     % 循环从pit数据中截取最新的年报数据中需要的字段
-    for i = Smin:T
+    for i = 1:length(filename)
         
         dt{i} = file2dt(filename{i}); % 从文件名截取日期字符串
         load([input_folder,filename{i}]); % 读取当日的pit_data
@@ -145,14 +126,15 @@ function [all_stk_codes]=latest_rpt(input_folder, stk_codes, db_names, output_fo
         
     end    
     
-    % 存储结果
+    
+    
     for k=1:length(db_names)
-%         eval([db_names{k},'.DATEN = DATEN;']);        
-%         eval(['save(''',output_folder,'TTM_',db_names{k},'.mat'',''',db_names{k},''');']);
-        eval(['hdf5write(tgt_file{',int2str(k),'},''date'',dt, ''stk_code'',stk_codes,' '''',db_names{k}, ''',','' db_names{k}, ');']); 
+        eval([db_names{k},'.DATEN = DATEN;']);        
+        eval(['save(''',output_folder,rpt_type,'_',db_names{k},'.mat'',''',db_names{k},''');']);
+        % tgt_file = [output_folder,rpt_type,'_',db_names{k},'.h5'];
+        % eval(['hdf5write(tgt_file, ''date'',dt, ''stk_code'',stk_codes,' '''',db_names{k}, ''',','' db_names{k}, ');']);  
     end
     
-    all_stk_codes = stk_codes;
     
 end
 

@@ -51,15 +51,15 @@ function [all_stk_codes]=ttm(input_folder, stk_codes, db_names, output_folder)
         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
     end
     
-    Smax = max(S);
+    Smin = min(S);
     
-    if(Smax==0)
+    if(max(S)==0)
         all_stk_codes = stk_codes;
         return;
     end
     
     % 循环从pit数据中截取最新的年报数据中需要的字段
-    for i = Smax:T
+    for i = Smin:T
         
         load([input_folder,filename{i}]); % 读取当日的pit_data
         
