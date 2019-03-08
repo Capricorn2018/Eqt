@@ -22,7 +22,9 @@ function [] = pit_capital(asharecapitalization, start_dt, end_dt, out_path)
         
         [~,ia,~] = unique(up2date.s_info_windcode);
         
-        cap = up2date(ia,{'s_info_windcode','tot_shr','float_a_shr'}); %#ok<NASGU>
+        cap = up2date(ia,{'s_info_windcode','change_dt1','tot_shr','float_a_shr'});
+        
+        cap = sortrows(cap,{'s_info_windcode','change_dt1'},{'ascend','descend'}); %#ok<NASGU>
         
         save([out_path,'pit_',st,'.mat'],'cap');
         

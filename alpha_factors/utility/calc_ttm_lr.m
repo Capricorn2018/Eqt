@@ -170,6 +170,8 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
         
         % 找到result里面对应的列
         [~,cols] = ismember(code,union_codes); %#ok<*ASGLU>
+        
+        % 若stk_codes不全则需要记录缺失的列以便在h5文件中补全
         if(length(stk_codes)<length(union_codes))
             [~,h5_cols] = ismember(stk_codes,union_codes);
         else
