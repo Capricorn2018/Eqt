@@ -23,7 +23,7 @@ function [] = pit_close( ashareeodprices, start_dt, end_dt, out_path )
         
         price = sortrows(price,{'s_info_windcode','trade_dt'},{'ascend','descend'}); %#ok<NASGU>
         
-        save([out_path,'pit_',st,'.mat'],'price');
+        save([out_path,'/pit_',st,'.mat'],'price');
         
         disp(st);
         

@@ -26,7 +26,7 @@ function [] = pit_capital(asharecapitalization, start_dt, end_dt, out_path)
         
         cap = sortrows(cap,{'s_info_windcode','change_dt1'},{'ascend','descend'}); %#ok<NASGU>
         
-        save([out_path,'pit_',st,'.mat'],'cap');
+        save([out_path,'/pit_',st,'.mat'],'cap');
         
         disp(st);
         

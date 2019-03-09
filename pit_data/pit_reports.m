@@ -48,10 +48,10 @@ function [] = pit_reports(data, start_dt, end_dt, n_rpt, ...
     
     if(do_single)
         single = single_season(data_last); %#ok<NASGU>
-        save([out_path,'pit_',st,'.mat'],'single','data_last');
+        save([out_path,'/pit_',st,'.mat'],'single','data_last');
     else
         %save(['D:/Projects/pit_data/mat/pit_balance_',st,'.mat'],'data_last');
-        save([out_path,'pit_',st,'.mat'],'data_last');
+        save([out_path,'/pit_',st,'.mat'],'data_last');
     end
         
     % 循环对每个交易日进行筛选, 保存
@@ -79,9 +79,9 @@ function [] = pit_reports(data, start_dt, end_dt, n_rpt, ...
         % 若需要拆单季数据
         if(do_single)
             single = single_season(data_last); %#ok<NASGU>
-            save([out_path,'pit_',st,'.mat'],'single','data_last');
+            save([out_path,'/pit_',st,'.mat'],'single','data_last');
         else
-            save([out_path,'pit_',st,'.mat'],'data_last');
+            save([out_path,'/pit_',st,'.mat'],'data_last');
         end
         
         disp(st);

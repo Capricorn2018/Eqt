@@ -15,11 +15,6 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     % input_folder是存放pit_data的位置
     files = dir(input_folder); % 取得文件列表    
     
-    % 防止忘了加文件夹地址符
-    if(output_folder(end)~='/' && output_folder(end)~='\') 
-        output_folder = [output_folder,'/']; 
-    end
-    
     % 循环取得文件名以及是否是文件夹的标志isdir
     filename = cell(length(files),1);
     isdir = zeros(length(files),1);
@@ -53,7 +48,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     for i=1:length(db_names)
 %         eval([db_names{i},' = nan(length(filename),length(stk_codes));']);
 %         eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
-        tgt_file{i} = [output_folder,rpt_type,'_',db_names{i},'.h5'];
+        tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.h5'];
         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
     end
     
@@ -161,7 +156,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
                     
             otherwise
-                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR''}');
+                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM''}');
         end
         
         % 合并传入的stk_codes和当日pit数据中的code
