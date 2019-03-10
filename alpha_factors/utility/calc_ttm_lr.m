@@ -154,7 +154,69 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 l4s = nan(size(result,1),1);
                 l4s(Lia) = last4season(season1(Lia));
                 result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
+                
+            case 'YOY'
+                                
+                 % 选最新的4期单季数据
+                data = single(single.rank_rpt==1 | single.rank_rpt==4,:);  %#ok<NODEF>
+
+                % 所有的代码
+                code = data.s_info_windcode;
+                code = unique(code);
+
+                % 最近的四个季度对应的单季数据
+                s1 = data(data.rank_rpt==1,:);
+                s4 = data(data.rank_rpt==4,:);
+                                
+                % 初始化结果
+                result = nan(size(code,1),size(data,2));
+                result = array2table(result,'VariableNames',data.Properties.VariableNames);
+
+                % 把最新的四个季度对应的字段相加计算ttm
+                % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
+                [Lia,Locb] = ismember(code,s1.s_info_windcode);
+                result(Lia,db_names) = s1(Locb(Locb>0),db_names);
+                season1 = nan(size(result,1),1);
+                season1(Lia) = s1.report_period(Locb(Locb>0));
+
+                [Lia4,Locb4] = ismember(code,s4.s_info_windcode);
+                div = array2table(nan(size(result)),'VariableNames',result.Properties.VariableNames);
+                div(Lia4,db_names) = s4(Locb4(Locb4>0),db_names);
+                result(:,db_names) = array2table(table2array(result(:,db_names)) ./ table2array(div(:,db_names)) - 1);
+                season4 = nan(size(result,1),1);
+                season4(Lia4) = s4.report_period(Locb4(Locb4>0));
+
+                % 辨别s4对应的season是不是一年以前
+                l4s = nan(size(result,1),1);
+                l4s(Lia) = last4season(season1(Lia));
+                result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
+                
+            case 'LTG'
+                  
+                 % 选最新的4期单季数据
+                data = single(single.rank_rpt<=12,:);  %#ok<NODEF> 
+                
+                % 初始化结果
+                result = nan(size(code,1),length(db_names));
+                result = array2table(result,'VariableNames',db_names);
+                
+                for j=1:length(code)
                     
+                   data_j = data(strcmp(data.s_info_windcode,code(j)),:);
+                   
+                   [~,ia,~] = unique(data_j.rank_rpt);
+                   
+                   if(length(ia)<12)
+                      result(j,:) = nan(1,length(db_names));
+                      continue;
+                   end
+                   
+                   for k = 1:length(db_names)
+                      eval(['result(j,k) = regress(data_j.',db_names{k},',data_j.rank_rpt);']);
+                   end
+                   
+                end
+                
             otherwise
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM''}');
         end
