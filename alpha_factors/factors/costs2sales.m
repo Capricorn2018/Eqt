@@ -12,9 +12,9 @@ function [] = costs2sales(a, p)
        fcost_file = [a.input_data_path,'/TTM_less_fin_exp.h5']; % 财务费用
        profit_file = [a.input_data_path,'/TTM_oper_profit.h5'];
 
-       scost = h5read(cash_file,'/less_selling_dist_exp')';
-       mcost = h5read(cash_file,'/less_gerl_admin_exp')';
-       fcost = h5read(cash_file,'/less_fin_exp')';
+       scost = h5read(scost_file,'/less_selling_dist_exp')';
+       mcost = h5read(mcost_file,'/less_gerl_admin_exp')';
+       fcost = h5read(fcost_file,'/less_fin_exp')';
        profit = h5read(profit_file,'/oper_profit')';
        costs2sales(S:T,:) = (scost(S:T,:)+mcost(S:T,:)+fcost(S:T,:))./profit(S:T,:); %#ok<NASGU>
 

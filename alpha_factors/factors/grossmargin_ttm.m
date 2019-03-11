@@ -11,7 +11,6 @@ function [] = grossmargin_ttm(a, p)
        rev_file = [a.input_data_path,'/TTM_oper_rev.h5'];
        cost_file = [a.input_data_path,'/TTM_less_oper_cost.h5'];
 
-
        rev = h5read(rev_file,'/oper_rev')';
        cost = h5read(cost_file,'/less_oper_cost')';
        grossmargin_ttm(S:T,:) = 1 - cost(S:T,:)./rev(S:T,:); %#ok<NASGU>
