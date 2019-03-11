@@ -235,7 +235,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                        if(ym<0)
                           continue;                      
                        end
-                       result(j,k) = -regress(y,x)/ym * 4;
+                       result(j,k) = -regress(y,x)/ym;
                    end
                    
                 end
