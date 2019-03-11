@@ -150,9 +150,9 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 season4 = nan(size(result,1),1);
                 season4(Lia4) = s4.report_period(Locb4(Locb4>0));
 
-                % 辨别s4对应的season是不是一年以前
+                % 辨别s4对应的season是不是三个季度以前
                 l4s = nan(size(result,1),1);
-                l4s(Lia) = last4season(season1(Lia));
+                l4s(Lia) = lastNseason(season1(Lia),3);
                 result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
                 
             case 'YOY'
@@ -166,7 +166,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
 
                 % 最近的四个季度对应的单季数据
                 s1 = data(data.rank_rpt==1,:);
-                s4 = data(data.rank_rpt==5,:);
+                s5 = data(data.rank_rpt==5,:);
                                 
                 % 初始化结果
                 result = nan(size(code,1),size(data,2));
@@ -179,50 +179,65 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 season1 = nan(size(result,1),1);
                 season1(Lia) = s1.report_period(Locb(Locb>0));
 
-                [Lia4,Locb4] = ismember(code,s4.s_info_windcode);
+                [Lia4,Locb4] = ismember(code,s5.s_info_windcode);
                 div = array2table(nan(size(result)),'VariableNames',result.Properties.VariableNames);
-                div(Lia4,db_names) = s4(Locb4(Locb4>0),db_names);
+                div(Lia4,db_names) = s5(Locb4(Locb4>0),db_names);
                 result(:,db_names) = array2table(table2array(result(:,db_names)) ./ table2array(div(:,db_names)) - 1);
                 season4 = nan(size(result,1),1);
-                season4(Lia4) = s4.report_period(Locb4(Locb4>0));
+                season4(Lia4) = s5.report_period(Locb4(Locb4>0));
 
-                % 辨别s4对应的season是不是一年以前
+                % 辨别s5对应的season是不是一年以前
                 l4s = nan(size(result,1),1);
-                l4s(Lia) = last4season(season1(Lia));
+                l4s(Lia) = lastNseason(season1(Lia),4);
                 result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
                 
-            case 'LTG'
-                  
-                 % 选最新的4期单季数据
-                data = single(single.rank_rpt<=12,:);  %#ok<NODEF> 
+            case 'LTG'                  
+                                
+                % 选最新的4期单季数据
+                data = single(single.rank_rpt<=12,:);  %#ok<NODEF>                 
+                
+                % 若data没有排序过, 先排序
+                if(~issorted(data.s_info_windcode))
+                    data = sortrows(data,{'s_info_windcode','rank_rpt','rank_ann'},{'ascend','ascend','ascend'});                                        
+                end
                 
                 % 所有的代码
                 code = data.s_info_windcode;
-                code = unique(code);
+                [code,ia,~] = unique(code);
                 
                 % 初始化结果
                 result = nan(size(code,1),length(db_names));
-                result = array2table(result,'VariableNames',db_names);
+                
+                ia(length(ia)+1) = length(data.s_info_windcode);
                 
                 for j=1:length(code)
                     
-                   data_j = data(strcmp(data.s_info_windcode,code(j)),:);
+                   data_j = data(ia(j):ia(j+1),:);
                                       
-                   [~,ia,~] = unique(data_j.rank_rpt);
+                   [~,ir,~] = unique(data_j.rank_rpt);
 
-                   if(length(ia)<12)
-                      result(j,:) = array2table(nan(1,length(db_names)));
-                      continue;
+                   if(length(ir)<12)
+                       
+                       result(j,:) = nan(1,length(db_names));
+                       continue;
                    end
 
+                   data_j = data_j(ir,:);
+                   x = data_j.rank_rpt;
+                   x = x - mean(x);
+                   
                    for k = 1:length(db_names)
-                      eval(['result(j,k) = table(regress(data_j.',db_names{k},',data_j.rank_rpt));']);
+                       eval(['y = data_j.',db_names{k},';']);                       
+                       y = y - mean(y);                       
+                       result(j,k) = regress(y,x);
                    end
-
-               end
+                   
+                end
+               
+                result = array2table(result,'VariableNames',db_names);
                 
             otherwise
-                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM''}');
+                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG''}');
         end
         
         % 合并传入的stk_codes和当日pit数据中的code
@@ -275,12 +290,16 @@ function dt = file2dt(filename)
 end
 
 % 找最新季报对应季度的三个季度之前对应的report_period
-function last_4s = last4season(season)
+function lastNs = lastNseason(season,n)
 
-    last_4s = zeros(size(season));
+    lastNs = zeros(size(season));
     
     for i=1:length(season)
-        last_4s(i) = last_season(last_season(last_season(season(i))));
+        tmp_s = season(i);
+        for j=1:n
+            tmp_s = last_season(tmp_s);
+        end
+        lastNs(i) = tmp_s;
     end
     
 end
