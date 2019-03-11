@@ -210,11 +210,11 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 % 初始化结果
                 result = nan(size(code,1),length(db_names));
                 
-                ia(length(ia)+1) = length(data.s_info_windcode);
+                ia(length(ia)+1) = length(data.s_info_windcode)+1;
                 
                 for j=1:length(code)
                     
-                   data_j = data(ia(j):ia(j+1),:);
+                   data_j = data(ia(j):(ia(j+1)-1),:);
                                       
                    [~,ir,~] = unique(data_j.rank_rpt);
 
