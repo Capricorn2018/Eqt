@@ -158,7 +158,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
             case 'YOY'
                                 
                  % 选最新的4期单季数据
-                data = single(single.rank_rpt==1 | single.rank_rpt==4,:);  %#ok<NODEF>
+                data = single(single.rank_rpt==1 | single.rank_rpt==5,:);  %#ok<NODEF>
 
                 % 所有的代码
                 code = data.s_info_windcode;
@@ -166,7 +166,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
 
                 % 最近的四个季度对应的单季数据
                 s1 = data(data.rank_rpt==1,:);
-                s4 = data(data.rank_rpt==4,:);
+                s4 = data(data.rank_rpt==5,:);
                                 
                 % 初始化结果
                 result = nan(size(code,1),size(data,2));
@@ -196,6 +196,10 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                  % 选最新的4期单季数据
                 data = single(single.rank_rpt<=12,:);  %#ok<NODEF> 
                 
+                % 所有的代码
+                code = data.s_info_windcode;
+                code = unique(code);
+                
                 % 初始化结果
                 result = nan(size(code,1),length(db_names));
                 result = array2table(result,'VariableNames',db_names);
@@ -203,19 +207,19 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 for j=1:length(code)
                     
                    data_j = data(strcmp(data.s_info_windcode,code(j)),:);
-                   
+                                      
                    [~,ia,~] = unique(data_j.rank_rpt);
-                   
+
                    if(length(ia)<12)
-                      result(j,:) = nan(1,length(db_names));
+                      result(j,:) = array2table(nan(1,length(db_names)));
                       continue;
                    end
-                   
+
                    for k = 1:length(db_names)
-                      eval(['result(j,k) = regress(data_j.',db_names{k},',data_j.rank_rpt);']);
+                      eval(['result(j,k) = table(regress(data_j.',db_names{k},',data_j.rank_rpt));']);
                    end
-                   
-                end
+
+               end
                 
             otherwise
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM''}');
