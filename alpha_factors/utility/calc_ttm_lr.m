@@ -230,8 +230,12 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                    
                    for k = 1:length(db_names)
                        eval(['y = data_j.',db_names{k},';']);                       
-                       y = y - mean(y);                       
-                       result(j,k) = regress(y,x);
+                       ym = mean(y);
+                       y = y - ym;
+                       if(ym<0)
+                          continue;                      
+                       end
+                       result(j,k) = -regress(y,x)/ym * 4;
                    end
                    
                 end
