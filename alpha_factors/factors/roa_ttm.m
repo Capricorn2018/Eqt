@@ -1,5 +1,5 @@
 function [] = roa_ttm(a, p)
-% roa_ttm 计算滚动12个月口径的 ROE
+% roa_ttm 计算滚动12个月口径的 ROA
     T = length(p.all_trading_dates );
     N = length(p.stk_codes);   
     tgt_file =  [a.output_data_path,'/roa_ttm.h5'];
