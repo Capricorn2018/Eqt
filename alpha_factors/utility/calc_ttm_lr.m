@@ -2,7 +2,7 @@
 % s_info_windcode, report_period desc, actual_ann_dt desc 排序过的
 
 function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type)
-% 最新报表数据LR, SQ, LYR, TTM等, 可能会加入 {LTG ,YOY}
+% 最新报表数据LR, SQ, LYR, TTM, YOY, LTG等
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
 % input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
@@ -62,7 +62,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     % 循环从pit数据中截取最新的年报数据中需要的字段
     for i = Smin:T
         
-        load([input_folder,filename{i}]); % 读取当日的pit_data
+        load([input_folder,'/',filename{i}]); % 读取当日的pit_data
         
         switch rpt_type
             case 'LYR'
@@ -157,7 +157,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 
             case 'YOY'
                                 
-                 % 选最新的4期单季数据
+                % 选最新的4期单季数据
                 data = single(single.rank_rpt==1 | single.rank_rpt==5,:);  %#ok<NODEF>
 
                 % 所有的代码
@@ -241,6 +241,44 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 end
                
                 result = array2table(result,'VariableNames',db_names);
+                
+            case 'MEAN'
+                
+                % 计算现值与一年前值的平均, 在计算周转率等因子时需要
+                
+                % 选最新的4期单季数据
+                data = data_last(data_last.rank_rpt==1 | data_last.rank_rpt==5,:);  %#ok<NODEF>
+
+                % 所有的代码
+                code = data.s_info_windcode;
+                code = unique(code);
+
+                % 最近的四个季度对应的单季数据
+                s1 = data(data.rank_rpt==1,:);
+                s5 = data(data.rank_rpt==5,:);
+                                
+                % 初始化结果
+                result = nan(size(code,1),size(data,2));
+                result = array2table(result,'VariableNames',data.Properties.VariableNames);
+
+                % 把最新的四个季度对应的字段相加计算ttm
+                % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
+                [Lia,Locb] = ismember(code,s1.s_info_windcode);
+                result(Lia,db_names) = s1(Locb(Locb>0),db_names);
+                season1 = nan(size(result,1),1);
+                season1(Lia) = s1.report_period(Locb(Locb>0));
+
+                [Lia5,Locb5] = ismember(code,s5.s_info_windcode);
+                add = array2table(nan(size(result)),'VariableNames',result.Properties.VariableNames);
+                add(Lia5,db_names) = s5(Locb5(Locb5>0),db_names);
+                result(:,db_names) = array2table((table2array(result(:,db_names)) + table2array(add(:,db_names)))/2);
+                season5 = nan(size(result,1),1);
+                season5(Lia5) = s5.report_period(Locb5(Locb5>0));
+
+                % 辨别s5对应的season是不是一年以前
+                l5s = nan(size(result,1),1);
+                l5s(Lia) = lastNseason(season1(Lia),4); % 4个季度之前就是去年相同季度
+                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:))));
                 
             otherwise
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG''}');
