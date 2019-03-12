@@ -34,11 +34,11 @@
 % rpt_type = 'LYR';
 % calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type);
 % 
-% input_folder = 'D:/Projects/pit_data/mat/income';
-% db_names = {'net_profit_excl_min_int_inc','oper_rev'};
-% output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
-% rpt_type = 'LTG';
-% calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type);
+input_folder = 'D:/Projects/pit_data/mat/income';
+db_names = {'net_profit_excl_min_int_inc','oper_rev'};
+output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
+rpt_type = 'LTG';
+calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type);
 %
 % input_folder = 'D:/Projects/pit_data/mat/income';
 % db_names = {'net_profit_excl_min_int_inc','oper_rev','oper_profit'};
