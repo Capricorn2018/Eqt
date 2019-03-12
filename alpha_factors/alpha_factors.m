@@ -30,11 +30,11 @@ oper_margin(a,p);
 
 oper_profit_yoy(a,p);
 
-oper_rev_ltg(a,p);
+% oper_rev_ltg(a,p);
 
 oper_rev_yoy(a,p);
 
-profit_ltg(a,p);
+% profit_ltg(a,p);
 
 profit_yoy(a,p);
 
