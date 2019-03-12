@@ -12,9 +12,19 @@ function [] = roa_ttm(a, p)
        asset_file = [a.input_data_path,'/LR_tot_assets.h5'];
 
 
-       profit = h5read(profit_file,'/net_profit_excl_min_int_inc')';
-       asset = h5read(asset_file,'/tot_assets')';
-       roa_ttm(S:T,:) = profit(S:T,:)./asset(S:T,:); %#ok<NASGU>
+       profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
+       profit_stk = h5read(profit_file,'/stk_code');
+       profit_dt = h5read(profit_file,'/date');
+       asset = h5read(asset_file,'/tot_assets');
+       asset_stk = h5read(asset_file,'/stk_code');
+       asset_dt = h5read(asset_file,'/date');
+       
+       [~,p_i,profit_i,asset_i] = intersect3(p.stk_codes,profit_stk,asset_stk);
+       [~,p_t,profit_t,asset_t] = intersect3(p.all_trading_dates(S:T),profit_dt,asset_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       roa_ttm(p_t,p_i) = profit(profit_t,profit_i)./asset(asset_t,asset_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

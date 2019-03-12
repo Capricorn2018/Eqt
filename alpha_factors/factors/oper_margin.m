@@ -12,9 +12,19 @@ function [] = oper_margin(a, p)
        profit_file = [a.input_data_path,'/TTM_oper_profit.h5'];
 
 
-       rev = h5read(rev_file,'/oper_rev')';
-       profit = h5read(profit_file,'/oper_profit')';
-       oper_margin(S:T,:) = profit(S:T,:)./rev(S:T,:); %#ok<NASGU>
+       rev = h5read(rev_file,'/oper_rev');
+       rev_stk = h5read(rev_file,'/stk_code');
+       rev_dt = h5read(rev_file,'/date');
+       profit = h5read(profit_file,'/oper_profit');
+       profit_stk = h5read(profit_file,'/stk_code');
+       profit_dt = h5read(profit_file,'/date');
+       
+       [~,p_i,rev_i,profit_i] = intersect3(p.stk_codes,rev_stk,profit_stk);
+       [~,p_t,rev_t,profit_t] = intersect3(p.all_trading_dates(S:T),rev_dt,profit_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       oper_margin(p_t,p_i) = profit(profit_t,profit_i)./rev(rev_t,rev_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

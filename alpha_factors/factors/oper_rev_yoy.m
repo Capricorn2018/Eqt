@@ -10,9 +10,16 @@ function [] = oper_rev_yoy(a, p)
         
        rev_file = [a.input_data_path,'/YOY_oper_rev.h5'];
 
-       rev = h5read(rev_file,'/oper_rev')';
+       rev = h5read(rev_file,'/oper_rev');
+       rev_stk = h5read(rev_file,'/stk_code');
+       rev_dt = h5read(rev_file,'/date');
        
-       oper_rev_yoy(S:T,:) = rev(S:T,:); %#ok<NASGU>
+       [~,p_i,rev_i] = intersect(p.stk_codes,rev_stk);
+       [~,p_t,rev_t] = intersect(p.all_trading_dates(S:T),rev_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       oper_rev_yoy(p_t,p_i) = rev(rev_t,rev_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

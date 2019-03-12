@@ -10,9 +10,16 @@ function [] = profit_ltg(a, p)
         
        profit_file = [a.input_data_path,'/LTG_net_profit_excl_min_int_inc.h5'];
 
-       profit = h5read(profit_file,'/net_profit_excl_min_int_inc')';
+       profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
+       profit_stk = h5read(profit_file,'/stk_code');
+       profit_dt = h5read(profit_file,'/date');
        
-       profit_ltg(S:T,:) = profit(S:T,:); %#ok<NASGU>
+       [~,p_i,profit_i] = intersect(p.stk_codes,profit_stk);
+       [~,p_t,profit_t] = intersect(p.all_trading_dates(S:T),profit_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       profit_ltg(p_t,p_i) = profit(profit_t,profit_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

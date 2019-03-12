@@ -10,9 +10,16 @@ function [] = oper_profit_yoy(a, p)
         
        oper_file = [a.input_data_path,'/YOY_oper_profit.h5'];
 
-       oper = h5read(oper_file,'/oper_profit')';
+       oper = h5read(oper_file,'/oper_profit');
+       oper_stk = h5read(oper_file,'/stk_code');
+       oper_dt = h5read(oper_file,'/date');
        
-       oper_profit_yoy(S:T,:) = oper(S:T,:); %#ok<NASGU>
+       [~,p_i,oper_i] = intersect(p.stk_codes,oper_stk);
+       [~,p_t,oper_t] = intersect(p.all_trading_dates(S:T),oper_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       oper_profit_yoy(p_t,p_i) = oper(oper_t,oper_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

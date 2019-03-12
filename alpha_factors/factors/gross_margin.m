@@ -11,9 +11,19 @@ function [] = gross_margin(a, p)
        rev_file = [a.input_data_path,'/TTM_oper_rev.h5'];
        cost_file = [a.input_data_path,'/TTM_less_oper_cost.h5'];
 
-       rev = h5read(rev_file,'/oper_rev')';
-       cost = h5read(cost_file,'/less_oper_cost')';
-       gross_margin(S:T,:) = 1 - cost(S:T,:)./rev(S:T,:); %#ok<NASGU>
+       rev = h5read(rev_file,'/oper_rev');
+       rev_stk = h5read(rev_file,'/stk_code');
+       rev_dt = h5read(rev_file,'/date');
+       cost = h5read(cost_file,'/less_oper_cost');
+       cost_stk = h5read(cost_file,'/stk_code');
+       cost_dt = h5read(cost_file,'/date');
+       
+       [~,p_i,rev_i,cost_i] = intersect3(p.stk_codes,rev_stk,cost_stk);
+       [~,p_t,rev_t,cost_t] = intersect3(p.all_trading_dates(S:T),rev_dt,cost_dt);
+       idx = S:T;
+       p_t = idx(p_t);
+       
+       gross_margin(p_t,p_i) = 1 - cost(cost_t,cost_i)./rev(rev_t,rev_i); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);
