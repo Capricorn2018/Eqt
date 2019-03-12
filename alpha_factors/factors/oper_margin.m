@@ -1,10 +1,10 @@
-function [] = opermargin_ttm(a, p)
-% opermargin_ttm 计算滚动12个月口径的 营业利润率
+function [] = oper_margin(a, p)
+% oper_margin 计算滚动12个月口径的 营业利润率
     T = length(p.all_trading_dates );
     N = length(p.stk_codes);   
-    tgt_file =  [a.output_data_path,'/opermargin_ttm.h5'];
-    tgt_tag = 'opermargin_ttm'; 
-    [S,opermargin_ttm] =  check_exist(tgt_file,'/opermargin_ttm',p,T,N);
+    tgt_file =  [a.output_data_path,'/oper_margin.h5'];
+    tgt_tag = 'oper_margin'; 
+    [S,oper_margin] =  check_exist(tgt_file,'/oper_margin',p,T,N);
 
 
     if S>0
@@ -14,7 +14,7 @@ function [] = opermargin_ttm(a, p)
 
        rev = h5read(rev_file,'/oper_rev')';
        profit = h5read(profit_file,'/oper_profit')';
-       opermargin_ttm(S:T,:) = profit(S:T,:)./rev(S:T,:); %#ok<NASGU>
+       oper_margin(S:T,:) = profit(S:T,:)./rev(S:T,:); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);

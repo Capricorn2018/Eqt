@@ -1,10 +1,10 @@
-function [] = grossmargin_ttm(a, p)
+function [] = gross_margin(a, p)
 % grossmargin_ttm 计算滚动12个月口径的 毛利率
     T = length(p.all_trading_dates );
     N = length(p.stk_codes);   
-    tgt_file =  [a.output_data_path,'/grossmargin_ttm.h5'];
-    tgt_tag = 'grossmargin_ttm'; 
-    [S,grossmargin_ttm] =  check_exist(tgt_file,'/grossmargin_ttm',p,T,N);
+    tgt_file =  [a.output_data_path,'/gross_margin.h5'];
+    tgt_tag = 'gross_margin'; 
+    [S,gross_margin] =  check_exist(tgt_file,'/gross_margin',p,T,N);
 
 
     if S>0
@@ -13,7 +13,7 @@ function [] = grossmargin_ttm(a, p)
 
        rev = h5read(rev_file,'/oper_rev')';
        cost = h5read(cost_file,'/less_oper_cost')';
-       grossmargin_ttm(S:T,:) = 1 - cost(S:T,:)./rev(S:T,:); %#ok<NASGU>
+       gross_margin(S:T,:) = 1 - cost(S:T,:)./rev(S:T,:); %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);
