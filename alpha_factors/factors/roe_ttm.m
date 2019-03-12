@@ -14,10 +14,10 @@ function [] = roe_ttm(a, p)
 
        profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
        profit_stk = h5read(profit_file,'/stk_code');
-       profit_dt = h5read(profit_file,'/date');
+       profit_dt = datenum_h5(h5read(profit_file,'/date'));
        eqy = h5read(eqy_file,'/tot_shrhldr_eqy_excl_min_int');
        eqy_stk = h5read(eqy_file,'/stk_code');
-       eqy_dt = h5read(eqy_file,'/date');
+       eqy_dt = datenum_h5(h5read(eqy_file,'/date'));
        
        [~,p_i,profit_i,eqy_i] = intersect3(p.stk_codes,profit_stk,eqy_stk);
        [~,p_t,profit_t,eqy_t] = intersect3(p.all_trading_dates(S:T),profit_dt,eqy_dt);

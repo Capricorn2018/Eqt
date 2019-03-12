@@ -7,15 +7,15 @@ function [] = cash2profit(a, p)
     [S,cash2profit] =  check_exist(tgt_file,'/cash2profit',p,T,N);
     
     if S>0
-       cash_file = [a.input_data_path,'/TTM_net_cash_flows_per_act.h5'];
+       cash_file = [a.input_data_path,'/TTM_net_cash_flows_oper_act.h5'];
        profit_file = [a.input_data_path,'/TTM_oper_profit.h5'];
 
-       cash = h5read(cash_file,'/net_cash_flows_per_act');
+       cash = h5read(cash_file,'/net_cash_flows_oper_act');
        cash_stk = h5read(cash_file,'/stk_code');
-       cash_dt = h5read(cash_file,'/date');
+       cash_dt = datenum_h5(h5read(cash_file,'/date'));
        profit = h5read(profit_file,'/oper_profit');
        profit_stk = h5read(profit_file,'/stk_code');
-       profit_dt = h5read(profit_file,'/date');
+       profit_dt = datenum_h5(h5read(profit_file,'/date'));
        
        [~,p_i,cash_i,profit_i] = intersect3(p.stk_codes,cash_stk,profit_stk);
        [~,p_t,cash_t,profit_t] = intersect3(p.all_trading_dates(S:T),cash_dt,profit_dt);

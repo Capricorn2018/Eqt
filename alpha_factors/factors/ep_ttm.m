@@ -13,10 +13,10 @@ function [] = ep_ttm(a, p)
 
        profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
        profit_stk = h5read(profit_file,'/stk_code');
-       profit_dt = h5read(profit_file,'/date');
+       profit_dt = datenum_h5(h5read(profit_file,'/date'));
        total_capital = h5read(cap_file,'/tot_cap');
        cap_stk = h5read(cap_file,'/stk_code');
-       cap_dt = h5read(cap_file,'/date');
+       cap_dt = datenum_h5(h5read(cap_file,'/date'));
        
        [~,p_i,profit_i,cap_i] = intersect3(p.stk_codes,profit_stk,cap_stk);
        [~,p_t,profit_t,cap_t] = intersect3(p.all_trading_dates(S:T),profit_dt,cap_dt);

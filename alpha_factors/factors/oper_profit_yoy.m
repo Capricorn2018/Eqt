@@ -12,7 +12,7 @@ function [] = oper_profit_yoy(a, p)
 
        oper = h5read(oper_file,'/oper_profit');
        oper_stk = h5read(oper_file,'/stk_code');
-       oper_dt = h5read(oper_file,'/date');
+       oper_dt = datenum_h5(h5read(oper_file,'/date'));
        
        [~,p_i,oper_i] = intersect(p.stk_codes,oper_stk);
        [~,p_t,oper_t] = intersect(p.all_trading_dates(S:T),oper_dt);

@@ -14,16 +14,16 @@ function [] = costs2sales(a, p)
 
        scost = h5read(scost_file,'/less_selling_dist_exp');
        scost_stk = h5read(scost_file,'/stk_code');
-       scost_dt = h5read(scost_file,'/date');
+       scost_dt = datenum_h5(h5read(scost_file,'/date'));
        mcost = h5read(mcost_file,'/less_gerl_admin_exp');
        mcost_stk = h5read(mcost_file,'/stk_code');
-       mcost_dt = h5read(mcost_file,'/date');
+       mcost_dt = datenum_h5(h5read(mcost_file,'/date'));
        fcost = h5read(fcost_file,'/less_fin_exp');
        fcost_stk = h5read(fcost_file,'/stk_code');
-       fcost_dt = h5read(fcost_file,'/date');
+       fcost_dt = datenum_h5(h5read(fcost_file,'/date'));
        profit = h5read(profit_file,'/oper_profit');
        profit_stk = h5read(profit_file,'/stk_code');
-       profit_dt = h5read(profit_file,'/date');
+       profit_dt = datenum_h5(h5read(profit_file,'/date'));
        
        [~,p_i,scost_i,mcost_i,fcost_i,profit_i] = intersect5(p.stk_codes,scost_stk,mcost_stk,fcost_stk,profit_stk);
        [~,p_t,scost_t,mcost_t,fcost_t,profit_t] = intersect5(p.all_trading_dates(S:T),scost_dt,mcost_dt,fcost_dt,profit_dt);

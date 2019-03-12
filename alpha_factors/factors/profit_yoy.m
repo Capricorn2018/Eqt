@@ -12,7 +12,7 @@ function [] = profit_yoy(a, p)
         
        profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
        profit_stk = h5read(profit_file,'/stk_code');
-       profit_dt = h5read(profit_file,'/date');
+       profit_dt = datenum_h5(h5read(profit_file,'/date'));
        
        [~,p_i,profit_i] = intersect(p.stk_codes,profit_stk);
        [~,p_t,profit_t] = intersect(p.all_trading_dates(S:T),profit_dt);

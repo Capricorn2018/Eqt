@@ -13,10 +13,10 @@ function [] = debt2equity(a, p)
 
        eqy = h5read(eqy_file,'/tot_shrhldr_eqy_excl_min_int');
        eqy_stk = h5read(eqy_file,'/stk_code');
-       eqy_dt = h5read(eqy_file,'/date');
+       eqy_dt = datenum_h5(h5read(eqy_file,'/date'));
        debt = h5read(debt_file,'/tot_liab');
        debt_stk = h5read(eqy_file,'/stk_code');
-       debt_dt = h5read(eqy_file,'/date');
+       debt_dt = datenum_h5(h5read(eqy_file,'/date'));
        
        [~,p_i,eqy_i,debt_i] = intersect3(p.stk_codes,eqy_stk,debt_stk);
        [~,p_t,eqy_t,debt_t] = intersect3(p.all_trading_dates(S:T),eqy_dt,debt_dt);

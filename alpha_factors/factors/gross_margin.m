@@ -13,10 +13,10 @@ function [] = gross_margin(a, p)
 
        rev = h5read(rev_file,'/oper_rev');
        rev_stk = h5read(rev_file,'/stk_code');
-       rev_dt = h5read(rev_file,'/date');
+       rev_dt = datenum_h5(h5read(rev_file,'/date'));
        cost = h5read(cost_file,'/less_oper_cost');
        cost_stk = h5read(cost_file,'/stk_code');
-       cost_dt = h5read(cost_file,'/date');
+       cost_dt = datenum_h5(h5read(cost_file,'/date'));
        
        [~,p_i,rev_i,cost_i] = intersect3(p.stk_codes,rev_stk,cost_stk);
        [~,p_t,rev_t,cost_t] = intersect3(p.all_trading_dates(S:T),rev_dt,cost_dt);

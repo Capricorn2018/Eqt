@@ -13,10 +13,10 @@ function [] = bp_lr(a, p)
 
        eqy = h5read(eqy_file,'/tot_shrhldr_eqy_excl_min_int');
        eqy_stk = h5read(eqy_file,'/stk_code');
-       eqy_dt = h5read(eqy_file,'/date');
+       eqy_dt = datenum_h5(h5read(eqy_file,'/date'));
        total_capital = h5read(cap_file,'/tot_cap');       
        cap_stk = h5read(cap_file,'/stk_code');
-       cap_dt = h5read(cap_file,'/date');
+       cap_dt = datenum_h5(h5read(cap_file,'/date'));
        
        [~,p_i,eqy_i,cap_i] = intersect3(p.stk_codes,eqy_stk,cap_stk);
        [~,p_t,eqy_t,cap_t] = intersect3(p.all_trading_dates(S:T),eqy_dt,cap_dt);

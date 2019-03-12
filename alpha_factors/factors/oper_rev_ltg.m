@@ -12,7 +12,7 @@ function [] = oper_rev_ltg(a, p)
 
        rev = h5read(rev_file,'/oper_rev');
        rev_stk = h5read(rev_file,'/stk_code');
-       rev_dt = h5read(rev_file,'/date');
+       rev_dt = datenum_h5(h5read(rev_file,'/date'));
        
        [~,p_i,rev_i] = intersect(p.stk_codes,rev_stk);
        [~,p_t,rev_t] = intersect(p.all_trading_dates(S:T),rev_dt);

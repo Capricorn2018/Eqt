@@ -10,40 +10,40 @@ p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5
 
 asset_turnover(a,p);
 
-% bp_lr(a,p);
-% 
-% cash2profit(a,p);
-% 
-% cashyield_ttm(a,p);
-% 
-% costs2sales(a,p);
-% 
-% current_ratio(a,p);
-% 
-% debt2equity_lr(a,p);
-% 
-% ep_lyr(a,p);
-% 
-% ep_sq(a,p);
-% 
-% ep_ttm(a,p);
-% 
-% gross_margin(a,p);
-% 
-% oper_margin(a,p);
-% 
-% oper_profit_yoy(a,p);
-% 
-% % oper_rev_ltg(a,p);
-% 
-% oper_rev_yoy(a,p);
-% 
-% % profit_ltg(a,p);
-% 
-% profit_yoy(a,p);
-% 
-% roa_ttm(a,p);
-% 
-% roe_ttm(a,p);
-% 
-% sp_ttm(a,p);
+bp_lr(a,p);
+
+cash2profit(a,p);
+
+cashyield_ttm(a,p);
+
+costs2sales(a,p);
+
+current_ratio(a,p);
+
+debt2equity_lr(a,p);
+
+ep_lyr(a,p);
+
+ep_sq(a,p);
+
+ep_ttm(a,p);
+
+gross_margin(a,p);
+
+oper_margin(a,p);
+
+oper_profit_yoy(a,p);
+
+% oper_rev_ltg(a,p);
+
+oper_rev_yoy(a,p);
+
+% profit_ltg(a,p);
+
+profit_yoy(a,p);
+
+roa_ttm(a,p);
+
+roe_ttm(a,p);
+
+sp_ttm(a,p);

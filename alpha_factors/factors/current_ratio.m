@@ -16,7 +16,7 @@ function [] = current_ratio(a, p)
        asset_dt = datenum_h5 (h5read(asset_file,'/date'));
        debt = h5read(debt_file,'/tot_cur_liab');
        debt_stk = h5read(debt_file,'/stk_code');
-       debt_dt = h5read(debt_file,'/date');
+       debt_dt = datenum_h5(h5read(debt_file,'/date'));
        
        [~,p_i,asset_i,debt_i] = intersect3(p.stk_codes,asset_stk,debt_stk);
        [~,p_t,asset_t,debt_t] = intersect3(p.all_trading_dates(S:T),asset_dt,debt_dt);

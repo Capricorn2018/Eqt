@@ -7,15 +7,15 @@ function [] = cashyield_ttm(a, p)
     [S,cashyield_ttm] =  check_exist(tgt_file,'/cashyield_ttm',p,T,N);
     
     if S>0
-       cash_file = [a.input_data_path,'/TTM_net_cash_flows_per_act.h5'];
+       cash_file = [a.input_data_path,'/TTM_net_cash_flows_oper_act.h5'];
        cap_file = [a.input_data_path,'/tot_cap.h5'];
 
-       cash = h5read(cash_file,'/net_cash_flows_per_act');
+       cash = h5read(cash_file,'/net_cash_flows_oper_act');
        cash_stk = h5read(cash_file,'/stk_code');
-       cash_dt = h5read(cash_file,'/date');
+       cash_dt = datenum_h5(h5read(cash_file,'/date'));
        total_capital = h5read(cap_file,'/tot_cap');
        cap_stk = h5read(cap_file,'/stk_code');
-       cap_dt = h5read(cap_file,'/date');
+       cap_dt = datenum_h5(h5read(cap_file,'/date'));
        
        [~,p_i,cash_i,cap_i] = intersect3(p.stk_codes,cash_stk,cap_stk);
        [~,p_t,cash_t,cap_t] = intersect3(p.all_trading_dates(S:T),cash_dt,cap_dt);
