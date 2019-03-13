@@ -4,7 +4,7 @@ a.input_data_path = 'D:/Projects/pit_data/mat/alpha_factors';
 
 %%  模型的基准;T和N，都由securites_dates.h5 来决定
 p.all_trading_dates_ = h5read([a.data,'\base_data\securites_dates.h5'],'/date');
-p.all_trading_dates = datenum_h5 (h5read([a.data,'\base_data\securites_dates.h5'],'/date'));      T = length(p.model.all_trading_dates);
+p.all_trading_dates = datenum_h5 (h5read([a.data,'\base_data\securites_dates.h5'],'/date'));
 p.stk_codes_         = h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code'); 
 p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code')); 
 
@@ -18,9 +18,9 @@ cashyield_ttm(a,p);
 
 costs2sales(a,p);
 
-% current_ratio(a,p);
+current_ratio(a,p);
 
-% debt2equity(a,p);
+debt2equity(a,p);
 
 ep_lyr(a,p);
 
@@ -46,6 +46,6 @@ roa_ttm(a,p);
 
 roe_ttm(a,p);
 
-% sales2ev(a,p);
+sales2ev(a,p);
 
 sp_ttm(a,p);

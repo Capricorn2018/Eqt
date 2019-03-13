@@ -10,7 +10,7 @@ function [] = sales2ev(a, p)
        rev_file = [a.input_data_path,'/TTM_oper_rev.h5'];
        cap_file = [a.input_data_path,'/tot_cap.h5'];
        liab_file = [a.input_data_path,'/LR_tot_non_cur_liab.h5'];
-       money_file = [a.input_data_path,'/LR_moneytary_cap.h5'];
+       money_file = [a.input_data_path,'/LR_monetary_cap.h5'];
 
        rev = h5read(rev_file,'/oper_rev');
        rev_stk = h5read(rev_file,'/stk_code');
@@ -18,12 +18,12 @@ function [] = sales2ev(a, p)
        total_capital = h5read(cap_file,'/tot_cap');
        cap_stk = h5read(cap_file,'/stk_code');
        cap_dt = datenum_h5(h5read(cap_file,'/date'));
-       liab = h5read(cap_file,'/tot_non_cur_liab');
-       liab_stk = h5read(cap_file,'/stk_code');
-       liab_dt = h5read(cap_file,'/date');
-       money = h5read(cap_file,'/monetary_cap');
-       money_stk = h5read(cap_file,'/stk_code');
-       money_dt = h5read(cap_file,'/date');
+       liab = h5read(liab_file,'/tot_non_cur_liab');
+       liab_stk = h5read(liab_file,'/stk_code');
+       liab_dt = datenum_h5(h5read(liab_file,'/date'));
+       money = h5read(money_file,'/monetary_cap');
+       money_stk = h5read(money_file,'/stk_code');
+       money_dt = datenum_h5(h5read(money_file,'/date'));
        
        [~,p_i,rev_i,cap_i,liab_i,money_i] = intersect5(p.stk_codes,rev_stk,cap_stk,liab_stk,money_stk);
        [~,p_t,rev_t,cap_t,liab_t,money_t] = intersect5(p.all_trading_dates(S:T),rev_dt,cap_dt,liab_dt,money_dt);
