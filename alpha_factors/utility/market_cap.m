@@ -1,4 +1,6 @@
-function [] = tot_cap( capital_folder, close_folder, stk_codes, output_folder)
+function [] = market_cap( capital_folder, close_folder, stk_codes, output_folder, cap_type)
+% 计算总市值和A股流通市值
+% cap_type = 'tot_cap' or 'float_cap'
 
     % capital_folder是存放pit_data的位置
     capital_files = dir(capital_folder); % 取得文件列表 
@@ -50,13 +52,13 @@ function [] = tot_cap( capital_folder, close_folder, stk_codes, output_folder)
     % 设置用在check_exist里面的struct p
     p.all_trading_dates_ = dt;
     p.all_trading_dates = ndt;
-    p.stk_codes = stk_codes;
+    p.stk_codes = stk_codes; %#ok<STRNU>
     
-    N = length(stk_codes);
+    N = length(stk_codes); %#ok<NASGU>
     
     % 查询原先的tot_cap文件确定需要更新的起始日
-    tgt_file = [output_folder,'tot_cap.h5'];
-    [S,tot_cap] = check_exist(tgt_file,'tot_cap',p,T,N);
+    tgt_file = [output_folder,'/',cap_type,'.h5']; %#ok<NASGU>
+    eval(['[S,',cap_type,'] = check_exist(tgt_file,cap_type,p,T,N);']);
     
     if(S==0)
         return;
@@ -64,8 +66,8 @@ function [] = tot_cap( capital_folder, close_folder, stk_codes, output_folder)
     
     for i=S:T
         
-        load([capital_folder,cap_filename{i}]); % 读取当日的pit_data
-        load([close_folder,close_filename{i}]);
+        load([capital_folder,'/',cap_filename{i}]); % 读取当日的pit_data
+        load([close_folder,'/',close_filename{i}]);
         
         cap_codes = cap.s_info_windcode;
         close_codes = price.s_info_windcode;
@@ -77,20 +79,28 @@ function [] = tot_cap( capital_folder, close_folder, stk_codes, output_folder)
         
         result_cap = nan(1,length(union_codes));
         result_close = nan(1,length(union_codes));
-        result_cap(1,cap_cols) = cap.tot_shr;
+        if(strcmp(cap_type,'tot_cap'))
+            result_cap(1,cap_cols) = cap.tot_shr;
+        else
+            if(strcmp(cap_type,'float_cap'))
+                result_cap(1,cap_cols) = cap.float_a_shr;
+            else
+                disp('tot_cap.m: cap_type is not in {''tot_cap'',''float_cap''}');
+            end
+        end
         result_close(1,close_cols) = price.s_dq_close;
         
-        result = result_cap .* result_close .* 10000;
+        result = result_cap .* result_close .* 10000; %#ok<NASGU>
         
         % 若stk_codes不全则需要记录缺失的列以便在h5文件中补全
-        [~,h5_cols] = ismember(stk_codes,union_codes);
+        [~,h5_cols] = ismember(stk_codes,union_codes); %#ok<ASGLU>
         
         if(length(stk_codes) < length(union_codes))
-            tmp_tbl = nan(size(tot_cap,1),length(union_codes));
-            tmp_tbl(:,h5_cols) = tot_cap;
-            tot_cap = tmp_tbl;
+            eval(['tmp_tbl = nan(size(',cap_type,',1),length(union_codes));']);
+            eval(['tmp_tbl(:,h5_cols) = ',cap_type,';']);
+            eval([cap_type,' = tmp_tbl;']);
         end
-        tot_cap(i,:) = result;
+        eval([cap_type,'(i,:) = result;']);
         
         % 扩展stk_codes
         stk_codes = union_codes;
@@ -99,7 +109,7 @@ function [] = tot_cap( capital_folder, close_folder, stk_codes, output_folder)
         
     end
    
-    hdf5write(tgt_file,'date',dt, 'stk_code',stk_codes,'tot_cap',tot_cap);
+    eval(['hdf5write(tgt_file,''date'',dt, ''stk_code'',stk_codes,''',cap_type,''',',cap_type,');']);
     
     
 end
