@@ -30,6 +30,8 @@ ep_ttm(a,p);
 
 gross_margin(a,p);
 
+ln_floatcap(a,p);
+
 oper_margin(a,p);
 
 oper_profit_yoy(a,p);
