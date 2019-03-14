@@ -39,7 +39,7 @@ function  cal_stk_rtn(p,a,D1,D2,if_mix)
                 % y(isnan(y))= 0;
                  z = cumprod(1 + y);
                  tao = sum(sus)/length(sus);%  Í£ÅÆÂÊ
-                 if tao==1
+                 if tao~=1
                      if if_mix
                          rtn(i,j) = (1-tao*tao*tao)*(z(D2-D1)-1) + tao*tao*tao*vi(i,j);
                      else
