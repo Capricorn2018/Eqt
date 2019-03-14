@@ -3,15 +3,15 @@
 % load('D:/Projects/pit_data/mat/income/pit_20190201.mat');
 % stk_codes = data_last.s_info_windcode;
 % stk_codes = unique(stk_codes);
-
-capital_folder = 'D:/Projects/pit_data/mat/capitalization';
-close_folder = 'D:/Projects/pit_data/mat/eodprices';
-output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
-cap_type = 'tot_cap';
-tot_cap( capital_folder, close_folder, stk_codes, output_folder, cap_type);
-cap_type = 'float_cap';
-tot_cap( capital_folder, close_folder, stk_codes, output_folder, cap_type);
-
+% 
+% capital_folder = 'D:/Projects/pit_data/mat/capitalization';
+% close_folder = 'D:/Projects/pit_data/mat/eodprices';
+% output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
+% cap_type = 'tot_cap';
+% tot_cap( capital_folder, close_folder, stk_codes, output_folder, cap_type);
+% cap_type = 'float_cap';
+% tot_cap( capital_folder, close_folder, stk_codes, output_folder, cap_type);
+% 
 % input_folder = 'D:/Projects/pit_data/mat/income';
 % db_names = {'net_profit_excl_min_int_inc','net_profit_incl_min_int_inc','oper_profit',...
 %                 'oper_rev','less_oper_cost','less_selling_dist_exp','less_gerl_admin_exp','less_fin_exp'};

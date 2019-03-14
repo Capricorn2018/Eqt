@@ -1,5 +1,6 @@
 function  cal_stk_rtn2turn(p,a,D,if_mix)
-   
+% return over turnover   
+
    T = length(p.all_trading_dates);
    N = length(p.stk_codes);
    tgt_tag  = 'rtncorrturn';  

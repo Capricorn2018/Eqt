@@ -5,9 +5,9 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
 % 最新报表数据LR, SQ, LYR, TTM, YOY, LTG等
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
-% input_folder = 'D:/Projects/pit_data/mat/income/'; 是存放pit_data的位置
+% input_folder = 'D:/Projects/pit_data/mat/income'; 是存放pit_data的位置
 % stk_codes就是wind表里面的s_info_windcode
-% output_folder = 'D:/Projects_pit_data/mat/alpha_factors/'; 是用来存放结果的地址
+% output_folder = 'D:/Projects_pit_data/mat/alpha_factors'; 是用来存放结果的地址
 % rpt_type = 'LYR' 最新年报数据
 % rpt_type = 'SQ' 最新报表单季数据
 % rpt_type = 'LR' 最新季(年)报数据

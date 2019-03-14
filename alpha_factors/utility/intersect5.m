@@ -1,5 +1,5 @@
 function [G,ia,ib,ic,id,ie] = intersect5(a,b,c,d,e)
-% 5个组之间的intersect
+% a,b,c,d,e之间的重合项
     
      if(iscell(a))
         if(ischar(a{1}))

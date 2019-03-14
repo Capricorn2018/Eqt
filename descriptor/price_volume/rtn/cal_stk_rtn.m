@@ -1,5 +1,5 @@
 function  cal_stk_rtn(p,a,D1,D2,if_mix)
-% D1至D2之间的股票收益
+% D1至D2之间的股票收益, 例如从60日前到30日前的区间收益
 
    T = length(p.all_trading_dates);
    N = length(p.stk_codes);

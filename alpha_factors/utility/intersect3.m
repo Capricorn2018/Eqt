@@ -1,5 +1,5 @@
 function [D,ia,ib,ic] = intersect3(a,b,c)
-% 找三个vector的重合项
+% 找a,b,c的重合项
     
     if(iscell(a))
         if(ischar(a{1}))
