@@ -2,7 +2,7 @@ function [] = momentum_60m(p,a)
 % 近6个月return
 
     D1 = 0;
-    D2 = 21*60; % 假设21交易日一个月
+    D2 = 20*60; % 假设21交易日一个月
     if_mix = false; % 不用行业平均做shrinkage
 
     % 后面基本都是cal_stk_rtn.m的代码
