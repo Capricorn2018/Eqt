@@ -3,7 +3,7 @@ function  cal_econ_np_chg_ratio(p,a,K0)
        T = length(p.all_trading_dates );
        N = length(p.stk_codes);          
        tgt_tag = 'enp_ratio';
-       tgt_tag1 = [tgt_tag,'_',num2str(K0)];   % （当期营业收入一致预期 - n个月前营业收入一致预期）/abs（n个月前营业收入一致预期）
+       tgt_tag1 = [tgt_tag,'_',num2str(K0)];   
        tgt_file =  [a.output_data_path,'\',tgt_tag1 ,'.h5'];
        [S,enp_ratio] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
        
@@ -11,6 +11,7 @@ function  cal_econ_np_chg_ratio(p,a,K0)
        table_name = 'con_forecast_stk';
        
        if S>0
+           % （当期营业收入一致预期 - n个月前营业收入一致预期）/abs（n个月前营业收入一致预期）
            enp_ratio = update_ratio_zyyx_tables_inclue_con_year(S,T,enp_ratio,p,a,table_name,tagn);
            if  exist(tgt_file,'file')==2
                eval(['delete ',tgt_file]);

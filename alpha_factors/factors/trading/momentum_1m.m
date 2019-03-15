@@ -2,8 +2,7 @@ function [] = momentum_1m(p,a)
 % 近1个月return
     
     D1 = 0;
-    D2 = 20; % 假设21交易日
-    if_mix = false; % 不用行业平均做shrinkage
+    D2 = 20; % 假设20交易日
 
     % 后面基本都是cal_stk_rtn.m的代码
     
@@ -14,10 +13,7 @@ function [] = momentum_1m(p,a)
 
     [S,momentum_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 
-    if S>0      
-       if if_mix
-          vi = sector_rtn(a,D1,D2,S,T,momentum_1m); %#ok<UNRCH>
-       end
+    if S>0
 
        adj_prices   = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')'; 
        stk_status   = h5read([a.input_data_path,'\fdata\base_data\stk_status.h5'],'/stk_status')'; 
@@ -36,31 +32,22 @@ function [] = momentum_1m(p,a)
        adj_prices = adj_prices(1:T,:);  
        adj_prices  = adj_table(adj_prices);
 
-       for  i  = S  : T
-           for j = 1: N
-              if p.all_trading_dates(i)>ipo_dates(j)
-                 Y     = adj_prices(i-D2:i,j);
-                 sus   = is_suspended(i-D2+1:i,j);
-                 y     = Y(2:end)./Y(1:end-1)-1;  
-                % y(isnan(y))= 0;
-                 z = cumprod(1 + y);
-                 tao = sum(sus)/length(sus);%  停牌率
-                 if tao~=1
-                     if if_mix
-                         momentum_1m(i,j) = (1-tao*tao*tao)*(z(D2-D1)-1) + tao*tao*tao*vi(i,j); %#ok<UNRCH>
-                     else
-                         momentum_1m(i,j) = z(D2-D1)-1;
-                     end      
-                 else
-                     if if_mix
-                         momentum_1m(i,j) = vi(i,j); %#ok<UNRCH>
-                     else
-                         momentum_1m(i,j) = NaN;
-                     end      
-                 end
-              end
-           end
-       end
+        for  i  = S  : T
+            for j = 1: N
+                if p.all_trading_dates(i)>ipo_dates(j)
+                    Y     = adj_prices(i-D2:i,j);
+                    sus   = is_suspended(i-D2+1:i,j);
+                    y     = Y(2:end)./Y(1:end-1)-1; 
+                    z = cumprod(1 + y);
+                    tao = sum(sus)/length(sus);%  停牌率
+                    if tao~=1
+                        momentum_1m(i,j) = z(D2-D1)-1;    
+                    else
+                        momentum_1m(i,j) = NaN;
+                    end
+                end
+            end
+        end
 
 
        eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',...

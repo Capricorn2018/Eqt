@@ -72,7 +72,11 @@ function [] = lottary_1m(p,a)
 
 end
 
+
+% 用递归方法计算时段内的区间最大涨幅
 function [ret,m] = max_interval(prices)
+% ret是价格序列中子区间的最大涨幅
+% m是区间最小值
 
     if(length(prices)<2)
         disp('max_interval: length(prices)<2');
@@ -80,12 +84,20 @@ function [ret,m] = max_interval(prices)
     end
 
     if(length(prices)==2)
+        % 序列长度是2则直接返回
         ret = max(0,prices(2)/prices(1)-1);
         m = min(prices);
     else
+        % 序列长度超过2用递归
+        
+        % 先降长度递归
         [ret1,m1] = max_interval(prices(1:end-1));
+        
+        % 最新的价格
         new = prices(end);
         
+        % 比较price(1:end-1)区间的最大涨幅
+        % 以及更新区间最小值
         ret = max(ret1,new/m1-1);
         m = min(m1,new);
     end
