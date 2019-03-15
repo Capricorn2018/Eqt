@@ -1,5 +1,5 @@
 function  cal_stk_rtn2amt(p,a,D,if_mix)
-% return over volumn
+% return over amount
    
    T = length(p.all_trading_dates);
    N = length(p.stk_codes);

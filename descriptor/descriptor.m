@@ -125,7 +125,7 @@ report_num_q(p,a)
 %  cal_stk_turnratio(p,a,21,63,1)
 %  cal_stk_turnratio(p,a,21,252,1)
  
-%  cal_stk_rtn2amt(p,a,21,1)  % return/volumn
+%  cal_stk_rtn2amt(p,a,21,1)  % return/volume
 %  cal_stk_rtn2amt(p,a,63,1)
  
 %  cal_stk_rtn2turn(p,a,21,1) % return/turnover
