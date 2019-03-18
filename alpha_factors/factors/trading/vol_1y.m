@@ -7,10 +7,10 @@ function [] = vol_1y(a,p)
     
     T = length(p.all_trading_dates);
     N = length(p.stk_codes);
-    tgt_tag  = 'skew_1m'; % 这里改了下
-    tgt_file = [a.output_data_path,'/','skew_1m.h5']; % 这里改了下
+    tgt_tag  = 'vol_1y'; % 这里改了下
+    tgt_file = [a.output_data_path,'/','vol_1y.h5']; % 这里改了下
 
-    [S,skew_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
+    [S,vol_1y] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 
     if S>0
 
@@ -42,9 +42,9 @@ function [] = vol_1y(a,p)
                  z = std(y);
                  tao = sum(sus)/length(sus);%  停牌率
                  if tao~=1
-                     skew_1m(i,j) = z;
+                     vol_1y(i,j) = z;
                  else
-                     skew_1m(i,j) = NaN;
+                     vol_1y(i,j) = NaN;
                  end
               end
            end

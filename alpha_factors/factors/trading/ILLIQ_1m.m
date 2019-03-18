@@ -6,7 +6,7 @@ function [] = ILLIQ_1m(a,p)
     T = length(p.all_trading_dates);
     N = length(p.stk_codes);
     tgt_tag  = 'ILLIQ_1m';  
-    tgt_file = [a.output_data_path,'\','ILLIQ_1m_',num2str(D),'-',num2str(if_mix),'.h5'];
+    tgt_file = [a.output_data_path,'/','ILLIQ_1m.h5'];
 
     [S,ILLIQ_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 

@@ -1,9 +1,8 @@
-function [] = momentum_60m(p,a)
+function [] = momentum_60m(a,p)
 % 近6个月return
 
     D1 = 0;
     D2 = 20*60; % 假设21交易日一个月
-    if_mix = false; % 不用行业平均做shrinkage
 
     % 后面基本都是cal_stk_rtn.m的代码
     
@@ -15,9 +14,6 @@ function [] = momentum_60m(p,a)
     [S,momentum_60m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 
     if S>0
-       if if_mix
-          vi = sector_rtn(a,D1,D2,S,T,momentum_3m); %#ok<UNRCH>
-       end
 
        adj_prices   = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')'; 
        stk_status   = h5read([a.input_data_path,'\fdata\base_data\stk_status.h5'],'/stk_status')'; 
@@ -46,17 +42,9 @@ function [] = momentum_60m(p,a)
                  z = cumprod(1 + y);
                  tao = sum(sus)/length(sus);%  停牌率
                  if tao~=1
-                     if if_mix
-                         momentum_60m(i,j) = (1-tao*tao*tao)*(z(D2-D1)-1) + tao*tao*tao*vi(i,j); %#ok<UNRCH>
-                     else
-                         momentum_60m(i,j) = z(D2-D1)-1;
-                     end      
+                     momentum_60m(i,j) = z(D2-D1)-1;
                  else
-                     if if_mix
-                         momentum_60m(i,j) = vi(i,j); %#ok<UNRCH>
-                     else
-                         momentum_60m(i,j) = NaN;
-                     end      
+                     momentum_60m(i,j) = NaN;  
                  end
               end
            end

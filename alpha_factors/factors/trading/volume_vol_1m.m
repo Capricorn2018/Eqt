@@ -28,7 +28,7 @@ function [] = volume_vol_1m(a,p)
               if p.all_trading_dates(i)>ipo_dates(j)
                  V = trading_volume(i-D+1:i,j);
                  sus = is_suspended(i-D+1:i,j);
-                 v = V1(sus==0);
+                 v = V(sus==0);
                  c = std(v)/mean(v);
                  tao = sum(sus)/length(sus); % 一个月内的停牌率
                  if tao~=1

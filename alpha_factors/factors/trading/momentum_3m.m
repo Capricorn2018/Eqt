@@ -1,4 +1,4 @@
-function [] = momentum_3m(p,a)
+function [] = momentum_3m(a,p)
 % ½ü3¸öÔÂreturn
 
     D1 = 0;
