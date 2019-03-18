@@ -1,5 +1,5 @@
 function [] = ep_fwd12m(a,p)
-% ep_fwd12m 未来12个月预期eps
+% ep_fwd12m 未来12个月预期ep
 
     T = length(p.all_trading_dates );
     N = length(p.stk_codes);   
@@ -13,25 +13,35 @@ function [] = ep_fwd12m(a,p)
         
         for i=S:T
             
-            dt = p.all_trading_dates(i);
-            sdt = int2str(dt);
+            sdt = p.all_trading_dates_{i};
+            %sdt = int2str(dt);
             sdt = [sdt(1:4),'-',sdt(5:6),'-',sdt(7:8)];
             
-            load('D:\Capricorn\DB\zyyx\daily\con_forecast_roll_stk\con_forecast_roll_stk_',sdt,'.mat');
+            file = ['D:\Capricorn\DB\zyyx\daily\con_forecast_roll_stk\con_forecast_roll_stk_',sdt,'.mat'];
+            
+            if exist(file,'file')==2
+                load(file);
+            else
+                continue;
+            end
             
             eps_stk = cell_s2l(t.STOCK_CODE); % 把朝阳永续里的股票代码补齐
-            eps = t.CON_EPS_ROLL;
             
-            [all_stk,eps_i,stk_i] = union(eps_stk,stk_code);
+            % 一致预期净利润增长率
+            eps = t.CON_EPS_ROLL; % 要替换的是这里
             
-            if length(all_stk) > length(code)
+            [all_stk,~,~] = union(eps_stk,stk_code);
+            [~,eps_i] = ismember(eps_stk,all_stk);
+            [~,stk_i] = ismember(stk_code,all_stk);
+            
+            if length(all_stk) > length(stk_code)
                 tmp = nan(size(ep_fwd12m,1),length(all_stk));
                 tmp(:,stk_i) = ep_fwd12m;
                 ep_fwd12m = tmp;
                 stk_code = all_stk;                
             end
             
-            ep_fwd12m(i,stk_i) = eps(eps_i);
+            ep_fwd12m(i,eps_i) = eps;
                     
         end        
         
@@ -41,7 +51,6 @@ function [] = ep_fwd12m(a,p)
         
         eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',stk_code,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
     end
-    
 
 end
 
@@ -49,11 +58,12 @@ function cell_lcode=cell_s2l(cell_scode)
 
     cell_lcode = cell(size(cell_scode,1),1);
     for i=1:length(cell_scode)
-        cell_lcode{i} = scode2lcode(cell_scode{i});
+        cell_lcode{i} = s2l(cell_scode{i});
     end
 
 end
 
+% 短代码转换为长代码
 % 从'000001'变化为'000001.SZ'
 function lcode = s2l(scode)
 

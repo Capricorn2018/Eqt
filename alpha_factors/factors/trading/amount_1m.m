@@ -1,4 +1,4 @@
-function [] = amount_1m(p,a)
+function [] = amount_1m(a,p)
 % 1个月日均成交额
 
     D= 20;

@@ -1,11 +1,11 @@
-function [] = earning_sfg(a,p)
-% earning_sfg 未来12个月预期净利润增长率
+function [] = sales_sfg(a,p)
+% sales_sfg 未来12个月预期营业收入增长率
 
     T = length(p.all_trading_dates );
     N = length(p.stk_codes);   
-    tgt_file =  [a.output_data_path,'/earning_sfg.h5'];
-    tgt_tag = 'earning_sfg'; 
-    [S,earning_sfg] =  check_exist(tgt_file,'/earning_sfg',p,T,N);
+    tgt_file =  [a.output_data_path,'/sales_sfg.h5'];
+    tgt_tag = 'sales_sfg'; 
+    [S,sales_sfg] =  check_exist(tgt_file,'/sales_sfg',p,T,N);
     
     if S>0
         
@@ -27,21 +27,21 @@ function [] = earning_sfg(a,p)
             
             eps_stk = cell_s2l(t.STOCK_CODE); % 把朝阳永续里的股票代码补齐
             
-            % 一致预期净利润增长率
-            eps = t.CON_NP_YOY_ROLL; % 要替换的是这里
+            % 一致预期营业收入增长率
+            eps = t.CON_OR_YOY_ROLL; % 要替换的是这里
             
             [all_stk,~,~] = union(eps_stk,stk_code);
             [~,eps_i] = ismember(eps_stk,all_stk);
             [~,stk_i] = ismember(stk_code,all_stk);
             
             if length(all_stk) > length(stk_code)
-                tmp = nan(size(earning_sfg,1),length(all_stk));
-                tmp(:,stk_i) = earning_sfg;
-                earning_sfg = tmp;
+                tmp = nan(size(sales_sfg,1),length(all_stk));
+                tmp(:,stk_i) = sales_sfg;
+                sales_sfg = tmp;
                 stk_code = all_stk;                
             end
             
-            earning_sfg(i,eps_i) = eps;
+            sales_sfg(i,eps_i) = eps;
                     
         end        
         
