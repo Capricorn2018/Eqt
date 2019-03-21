@@ -15,8 +15,8 @@ function [] = pit_reports(data, start_dt, end_dt, n_rpt, ...
     % 去掉nan
     data = data(~isnan(data.actual_ann_dt) & ~isnan(data.report_period) & ~isnan(data.ann_dt),:);
     
-    % 2007年附近新老报表交替时有ann_dt > actual_ann_dt的问题
-    data.actual_ann_dt = max(data.actual_ann_dt, data.ann_dt);
+    % 2007年附近新老报表交替时有ann_dt > actual_ann_dt的问题？？？
+    % data.actual_ann_dt = max(data.actual_ann_dt, data.ann_dt);
     
     % 只选合并报表
     data = data(data.statement_type==408001000 | data.statement_type==408004000 | ...
@@ -90,8 +90,8 @@ function [] = pit_reports(data, start_dt, end_dt, n_rpt, ...
     
 end
 
-
-function pit = gen_latest_pit(data_last,update)
+% 这个是预留在这里以备今后做实时更新时使用的
+function pit = gen_latest_pit(data_last,update) %#ok<DEFNU>
 
     if(size(update,1)>0)        
         
