@@ -91,8 +91,11 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        active_bound = ones(size(factors,1),1) * 0.02;
        lambda = 20;
        
-       weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,risk_factors,factor_rtn',...
-                                                                        cov,factors,spec,exp_bound,active_bound)');
+%        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,risk_factors,factor_rtn',...
+%                                                                         cov,factors,spec,exp_bound,active_bound)');
+
+        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,risk_factors,factor_rtn',...
+                                                                          cov,factors,spec,exp_bound,active_bound)');
         
        disp(date);
     end

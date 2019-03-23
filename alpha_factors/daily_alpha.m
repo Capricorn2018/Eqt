@@ -1,4 +1,4 @@
-function alpha = eq_weight(stk_codes,trading_dates,input_folder,cap_folder)
+function alpha = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output_folder)
 % eq_weight 汇总alpha_factors 等权
     
     % input_folder是存放pit_data的位置
@@ -26,14 +26,12 @@ function alpha = eq_weight(stk_codes,trading_dates,input_folder,cap_folder)
 
     cap(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0)); 
     
-    alpha = zeros(length(trading_dates),length(stk_codes));
-    num = zeros(length(trading_dates),1); % 用来记录每一天有多少个有效factor
-    
     for i=1:length(filename)
         
         f = filename{i};
+        factor_name = get_tag(f);
         
-        m = h5read([input_folder,'/',f],['/',get_tag(f)]);
+        m = h5read([input_folder,'/',f],['/',factor_name]);
         stk = xblank(h5read([input_folder,'/',f],'/stk_code'));
         dt =xblank( h5read([input_folder,'/',f],'/date'));
         
@@ -45,12 +43,22 @@ function alpha = eq_weight(stk_codes,trading_dates,input_folder,cap_folder)
         factor(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0));
         
         for j=1:length(trading_dates)
-            v = cal_zscore(factor(j,:),cap(j,:)/1e10);
-            if all(isnan(v))
-                continue;
+            
+            v = cal_zscore(factor(j,:),cap(j,:)/1e10); % 市值加权因子正规化
+            
+            % 这里需要加上exist的判断，如果不存在则建立新文件
+            alpha_file = [output_folder,'/alpha_',trading_dates(j),'.mat'];
+            if exist(alpha_file,'file')==2
+                % 这个文件里面只有一个变量叫alpha，用来存储当日正规化后因子值
+                load(alpha_file); 
+                alpha_stk = alpha.stk_codes;
+                [Lia,Locb] = ismember(stk_codes,alpha_stk); %#ok<ASGLU>
+                eval(['alpha.',factor_name,'(Locb)=v(Lia)']);
+                save(alpha_file,alpha);
+            else
+                alpha = table(stk_codes,v,'VariableNames',{'stk_codes',factor_name});
+                save(alpha_file,alpha);
             end
-            num(j) = num(j) + 1;
-            alpha(j,:) = (alpha(j,:).*(num(j)-1) + v)./num(j);            
         end
         
     end
