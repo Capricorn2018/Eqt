@@ -86,15 +86,16 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        spec = tbl_spec(stk_codes,1);
        spec = table2array(spec);
        
-       % 优化求解
+       % 优化求解参数
        exp_bound = zeros(size(cov,1),1);
        active_bound = ones(size(factors,1),1) * 0.02;
        lambda = 20;
        
-%        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,risk_factors,factor_rtn',...
-%                                                                         cov,factors,spec,exp_bound,active_bound)');
-
-        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,risk_factors,factor_rtn',...
+       % 这里要读入alpha_factors和当日假设的alpha_factor_rtn
+       alpha_factors = risk_factors;
+       alpha_factor_rtn = factor_rtn;
+       % load_alpha(date,stk_codes)
+       weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,alpha_factors,alpha_factor_rtn',...
                                                                           cov,factors,spec,exp_bound,active_bound)');
         
        disp(date);
