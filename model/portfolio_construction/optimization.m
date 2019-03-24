@@ -5,6 +5,7 @@
 % 还有个问题, 这里style是单独做的正态化, risk factors却是做risk之前在全市场范围做的正态化
 %%
 function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
+% rebalance_dates默认是matlab的整数日期
 
     % 初始化weight
     weight = nan(length(rebalance_dates),length(p.optimization.stk_codes));    
@@ -94,7 +95,7 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        % 这里要读入alpha_factors和当日假设的alpha_factor_rtn
        alpha_factors = risk_factors;
        alpha_factor_rtn = factor_rtn;
-       % load_alpha(date,stk_codes)
+       % load_alpha(date,stk_codes,alpha_folder)
        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,alpha_factors,alpha_factor_rtn',...
                                                                           cov,factors,spec,exp_bound,active_bound)');
         
@@ -102,6 +103,14 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
     end
         
 end
+
+
+% 从文件读取当日alpha_factors和alpha_factor_rtn(或者因子权重）
+function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder)
+    filename = [alpha_folder,'/alpha_',date,'.mat'];
+    load(filename);
+end
+
 
 % 给定alpha因子暴露, 因子收益, 风险因子暴露, 风险因子cov, 特质风险向量
 % 给定exposure bound及因子暴露上下限, active_bound即单只股票偏离基准上限
