@@ -95,7 +95,11 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        % 这里要读入alpha_factors和当日假设的alpha_factor_rtn
        alpha_factors = risk_factors;
        alpha_factor_rtn = factor_rtn;
-       % load_alpha(date,stk_codes,alpha_folder)
+       
+       %%                                         %%
+       %% load_alpha(date,stk_codes,alpha_folder) %%
+       %%                                         %%
+       
        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,alpha_factors,alpha_factor_rtn',...
                                                                           cov,factors,spec,exp_bound,active_bound)');
         
@@ -106,12 +110,12 @@ end
 
 
 % 从文件读取当日alpha_factors和alpha_factor_rtn(或者因子权重）
-function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder)
+function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder) %#ok<DEFNU>
     
     filename = [alpha_folder,'/alpha_',date,'.mat'];
     load(filename); % 读取当日alpha, 和alpha_weight
     
-    alpha_stk = alpha.stk_codes;
+    alpha_stk = alpha.stk_codes; %#ok<NODEF>
     
     for i=1:length(alpha_stk)
         
