@@ -5,7 +5,7 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
     % boxplot去outlier并正态化, 参见东方证券研报
     
     weight_vector(weight_vector<=0) = NaN; 
-    idx_nan  = isnan(input_vector);
+    idx_nan  = isnan(input_vector) | input_vector==-Inf | input_vector==Inf;
     not_nan  = input_vector(~idx_nan);
     
     

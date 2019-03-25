@@ -1,7 +1,11 @@
-function alpha = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output_folder)
+function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output_folder)
 % eq_weight 汇总alpha_factors 等权
+% input_folder是存储计算好的因子h5文件的地址
+% cap_folder是存放tot_cap.h5的地址
+% output_folder是准备存放每日alpha数据的地址
+% trading_dates是准备更新的alpha因子文件日期, 存在cell里的string格式
     
-    % input_folder是存放pit_data的位置
+    % input_folder是存储计算好的因子h5文件的地址
     files = dir(input_folder); % 取得文件列表  
     % 循环取得文件名以及是否是文件夹的标志isdir
     filename = cell(length(files),1);
@@ -44,20 +48,26 @@ function alpha = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,out
         
         for j=1:length(trading_dates)
             
-            v = cal_zscore(factor(j,:),cap(j,:)/1e10); % 市值加权因子正规化
+            % 市值加权因子正规化
+            v = (cal_zscore(factor(j,:),cap(j,:)/1e10))'; % 转置 
             
             % 这里需要加上exist的判断，如果不存在则建立新文件
-            alpha_file = [output_folder,'/alpha_',trading_dates(j),'.mat'];
+            alpha_file = [output_folder,'/alpha_',trading_dates{j},'.mat'];
             if exist(alpha_file,'file')==2
                 % 这个文件里面只有一个变量叫alpha，用来存储当日正规化后因子值
                 load(alpha_file); 
                 alpha_stk = alpha.stk_codes;
                 [Lia,Locb] = ismember(stk_codes,alpha_stk); %#ok<ASGLU>
-                eval(['alpha.',factor_name,'(Locb)=v(Lia)']);
-                save(alpha_file,alpha);
+                eval(['alpha.',factor_name,'=nan(size(alpha,1),1);']);
+                try
+                    eval(['alpha.',factor_name,'(Locb)=v(Lia);']);
+                catch
+                    disp('CNM');
+                end
+                save(alpha_file,'alpha');
             else
                 alpha = table(stk_codes,v,'VariableNames',{'stk_codes',factor_name});
-                save(alpha_file,alpha);
+                save(alpha_file,'alpha');
             end
         end
         
