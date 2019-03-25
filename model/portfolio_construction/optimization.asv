@@ -109,7 +109,7 @@ end
 function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder)
     
     filename = [alpha_folder,'/alpha_',date,'.mat'];
-    load(filename); % 读取当日alpha, 和alpha_weight
+    load(filename); % 读取当日alpha因子
     
     alpha_stk = alpha.stk_codes;
     
@@ -126,18 +126,14 @@ function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder)
     [Lia,Locb] = ismember(alpha_stk,stk_codes);
     alpha_factors(Locb(Locb>0),:) = alpha(Lia,:);
     
-    if ~exist(alpha_weight,'var') %#ok<NODEF>
+    if exist(alpha_weight,'var')
         N = size(alpha,2);
-        flag = nan(1,N);
         for j = 1:N
-            flag(j) = true;
             if all(isnan(alpha(:,j)))
-                N = N-1;
-                flag(j) = false;
+                
             end
         end
-        alpha_weight = ones(size(alpha,2),1)/N;
-        alpha_weight(~flag) = 0;
+        alpha_weight = ones(size(alpha,2),1)/size(alpha,2);
     end
     
 end

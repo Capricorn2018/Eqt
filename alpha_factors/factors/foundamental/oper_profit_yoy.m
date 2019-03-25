@@ -11,7 +11,7 @@ function [] = oper_profit_yoy(a, p)
        oper_file = [a.input_data_path,'/YOY_oper_profit.h5'];
 
        oper = h5read(oper_file,'/oper_profit');
-       oper_stk = h5read(oper_file,'/stk_code');
+       oper_stk = xblank(h5read(oper_file,'/stk_code'));
        oper_dt = datenum_h5(h5read(oper_file,'/date'));
        
        [~,p_i,oper_i] = intersect(p.stk_codes,oper_stk);

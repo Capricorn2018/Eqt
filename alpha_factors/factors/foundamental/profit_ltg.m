@@ -11,7 +11,7 @@ function [] = profit_ltg(a, p)
        profit_file = [a.input_data_path,'/LTG_net_profit_excl_min_int_inc.h5'];
 
        profit = h5read(profit_file,'/net_profit_excl_min_int_inc');
-       profit_stk = h5read(profit_file,'/stk_code');
+       profit_stk = xblank(h5read(profit_file,'/stk_code'));
        profit_dt = datenum_h5(h5read(profit_file,'/date'));
        
        [~,p_i,profit_i] = intersect(p.stk_codes,profit_stk);

@@ -11,7 +11,7 @@ function [] = oper_rev_yoy(a, p)
        rev_file = [a.input_data_path,'/YOY_oper_rev.h5'];
 
        rev = h5read(rev_file,'/oper_rev');
-       rev_stk = h5read(rev_file,'/stk_code');
+       rev_stk = xblank(h5read(rev_file,'/stk_code'));
        rev_dt = datenum_h5(h5read(rev_file,'/date'));
        
        [~,p_i,rev_i] = intersect(p.stk_codes,rev_stk);

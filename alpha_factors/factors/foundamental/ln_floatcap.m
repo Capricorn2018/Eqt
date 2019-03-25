@@ -12,7 +12,7 @@ function [] = ln_floatcap(a,p)
        cap_file = [a.input_data_path,'/float_cap.h5'];
         
        cap = h5read(cap_file,'/float_cap');
-       cap_stk = h5read(cap_file,'/stk_code');
+       cap_stk = xblank(h5read(cap_file,'/stk_code'));
        cap_dt = datenum_h5(h5read(cap_file,'/date'));
        
        [~,p_i,cap_i] = intersect(p.stk_codes,cap_stk);

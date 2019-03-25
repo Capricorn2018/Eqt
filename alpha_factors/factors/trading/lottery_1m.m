@@ -1,4 +1,4 @@
-function [] = lottary_1m(a,p)
+function [] = lottery_1m(a,p)
 % 1个月内最大涨幅
 
     D1 = 0;
@@ -8,10 +8,10 @@ function [] = lottary_1m(a,p)
     
     T = length(p.all_trading_dates);
     N = length(p.stk_codes);
-    tgt_tag  = 'lottary_1m'; % 这里改了下
-    tgt_file = [a.output_data_path,'/','lottary_1m.h5']; % 这里改了下
+    tgt_tag  = 'lottery_1m'; % 这里改了下
+    tgt_file = [a.output_data_path,'/','lottery_1m.h5']; % 这里改了下
 
-    [S,lottary_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
+    [S,lottery_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 
     if S>0
 
@@ -40,10 +40,10 @@ function [] = lottary_1m(a,p)
                  [z,~] = max_interval(Y);
                  tao = sum(sus)/length(sus);%  停牌率
                  
-                 if tao==1
-                     lottary_1m(i,j) = z;
+                 if tao~=1
+                     lottery_1m(i,j) = z;
                  else
-                     lottary_1m(i,j) = NaN;   
+                     lottery_1m(i,j) = NaN;   
                  end
               end
            end

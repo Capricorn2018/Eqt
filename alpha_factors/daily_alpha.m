@@ -30,6 +30,7 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
 
     cap(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0)); 
     
+    
     for i=1:length(filename)
         
         f = filename{i};
@@ -75,17 +76,7 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
 
 end
 
-function v = xblank(x)
 
-    v = cell(length(x),1);
-
-    for i=1:length(x)
-        
-        v{i} = deblank(x{i});
-        
-    end
-
-end
 
 function tag = get_tag(file)
 
