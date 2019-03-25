@@ -30,6 +30,9 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
 
         input_vector(input_vector<lb) = lb;
         input_vector(input_vector>ub) = ub;
+    else
+        zscores = nan(size(input_vector));
+        return;
     end
      
     if sigma>0
