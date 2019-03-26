@@ -7,14 +7,10 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
     weight_vector(weight_vector<=0) = NaN; 
     idx_nan  = isnan(input_vector) | input_vector==-Inf | input_vector==Inf;
     not_nan  = input_vector(~idx_nan);
-            
-    mu     = nansum(input_vector(~idx_nan).*weight_vector(~idx_nan)/nansum(weight_vector(~idx_nan)));
-    sigma  = std(input_vector(~idx_nan));
     
     zscores  = nan(size(input_vector,1),1);
     outliers = nan(size(input_vector,1),1);
     
-
     if  ~isempty(not_nan)
         % outlier treatment 
         % mad = median(abs(fi- median_f))
@@ -32,10 +28,14 @@ function [ zscores ,outliers] = cal_zscore(input_vector,weight_vector)
     else
         zscores = nan(size(input_vector));
         return;
-    end
-     
+    end    
+    
+    mu     = nansum(input_vector(~idx_nan).*weight_vector(~idx_nan)/nansum(weight_vector(~idx_nan)));
+    sigma  = std(input_vector(~idx_nan));
+    
     if sigma>0
        zscores = (input_vector - mu)/sigma;
        zscores(input_vector==Inf | input_vector==-Inf) = 0; %%%%%%%%%%%%% 让所有Inf都变0,以后再说！
     end
+    
 end
