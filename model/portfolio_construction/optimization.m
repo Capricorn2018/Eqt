@@ -93,12 +93,12 @@ function weight_table = optimization(a,p,rebalance_dates,risk_factor_names)
        lambda = 20;
        
        % 这里要读入alpha_factors和当日假设的alpha_factor_rtn
-       alpha_factors = risk_factors;
-       alpha_factor_rtn = factor_rtn;
+       % alpha_factors = risk_factors;
+       % alpha_factor_rtn = factor_rtn;
        
-       %%                                         %%
-       %% load_alpha(date,stk_codes,alpha_folder) %%
-       %%                                         %%
+       %%                                                                        %%
+        [alpha_factors,alpha_factor_rtn] = load_alpha(date,stk_codes,a.optimization.alpha); 
+       %%                                                                        %%
        
        weight_table(i,stk_codes) = array2table(portfolio_construction(lambda,alpha_factors,alpha_factor_rtn',...
                                                                           cov,factors,spec,exp_bound,active_bound)');
@@ -110,37 +110,54 @@ end
 
 
 % 从文件读取当日alpha_factors和alpha_factor_rtn(或者因子权重）
-function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder) %#ok<DEFNU>
+function [alpha_factors,alpha_weight] = load_alpha(date,stk_codes,alpha_folder)
     
     filename = [alpha_folder,'/alpha_',date,'.mat'];
+    
+    if ~exist(filename,'file')
+        alpha_factors = zeros(length(stk_codes),1);
+        alpha_weight = 1;
+        disp([filename,' does not exist.']);
+        return;
+    end
+    
     load(filename); % 读取当日alpha, 和alpha_weight
     
-    alpha_stk = alpha.stk_codes; %#ok<NODEF>
+    alpha_stk = alpha.stk_codes; %#ok<USENS>
     
     for i=1:length(alpha_stk)
         
-        alpha_stk{i} = alpha_stk{i}(1:6); % 取前6位数字
+        code = alpha_stk{i}(1:6); % 取前6位数字
+        mkt = alpha_stk{i}(8:9);
+        
+        switch mkt
+            case 'SZ'
+                alpha_stk{i} = ['SZ',code];
+            case 'SH'
+                alpha_stk{i} = ['SH',code];
+        end
         
     end
     
-    alpha_stk = df_stk_codes(alpha_stk);
-    
-    alpha_factors = nan(length(stk_codes),size(alpha,2));
+    alpha_factors = nan(length(stk_codes),size(alpha,2)-1);
     
     [Lia,Locb] = ismember(alpha_stk,stk_codes);
-    alpha_factors(Locb(Locb>0),:) = alpha(Lia,:);
+    alpha_factors(Locb(Locb>0),:) = table2array(alpha(Lia,2:end));
     
-    if ~exist(alpha_weight,'var') %#ok<NODEF>
-        N = size(alpha,2);
-        flag = nan(1,N);
+    %%%%%%%% 把NaN都变0
+    alpha_factors(isnan(alpha_factors)) = 0;
+    
+    if ~exist('alpha_weight','var')
+        N = size(alpha,2)-1;
+        flag = nan(N,1);
         for j = 1:N
             flag(j) = true;
-            if all(isnan(alpha(:,j)))
+            if all(isnan(alpha{:,j+1}))
                 N = N-1;
                 flag(j) = false;
             end
         end
-        alpha_weight = ones(size(alpha,2),1)/N;
+        alpha_weight = ones(1,size(alpha,2)-1)/N; % 为了迁就之前的code, 弄成行
         alpha_weight(~flag) = 0;
     end
     
@@ -164,6 +181,10 @@ function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rt
     exposure = exposure(not_nan,:);
     spk = spk(not_nan);
     alpha_factors = alpha_factors(not_nan,:);
+    
+    %%%%%
+    alpha_factors(isnan(alpha_factors)) = 0;
+    %%%%%
     
     active_bound = active_bound(not_nan);
         

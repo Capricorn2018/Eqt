@@ -38,7 +38,7 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
         
         m = h5read([input_folder,'/',f],['/',factor_name]);
         stk = xblank(h5read([input_folder,'/',f],'/stk_code'));
-        dt =xblank( h5read([input_folder,'/',f],'/date'));
+        dt = xblank( h5read([input_folder,'/',f],'/date'));
         
         [Lia_stk,Locb_stk] = ismember(stk_codes,stk);
         [Lia_dt,Locb_dt] = ismember(trading_dates,dt);
@@ -47,7 +47,7 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
         
         factor(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0));
         
-        for j=1:length(trading_dates)
+        for j= 1:length(trading_dates)
             
             % 市值加权因子正规化
             v = (cal_zscore(factor(j,:),cap(j,:)/1e10))'; % 转置 

@@ -8,10 +8,11 @@ p.all_trading_dates = datenum_h5 (h5read([a.data,'\base_data\securites_dates.h5'
 p.stk_codes_         = h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code'); 
 p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5'],'/stk_code')); 
 
-% foundamental
+%% foundamental
+
 % asset_turnover(a,p); 
 % bp_lr(a,p); 
-% cash2profit(a,p); 
+ cash2profit(a,p); 
 % cashyield_ttm(a,p); 
 % costs2sales(a,p); 
 % current_ratio(a,p); 
@@ -32,17 +33,22 @@ p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5
 % sales2ev(a,p); 
 % sp_ttm(a,p); 
 
-% analyst
+
+
+%% analyst
+
 % earning_sfg(a,p);
 % ep_fwd12m(a,p);
 % sales_sfg(a,p);
 
-% trading
+
+%% trading
+
 a.input_data_path = 'D:/Capricorn'; % 先用王晨的交易数据
 
 % amount_1m(a,p);
 % ILLIQ_1m(a,p);
-lottery_1m(a,p);
+% lottery_1m(a,p);
 % momentum_1m(a,p);
 % momentum_3m(a,p);
 % momentum_60m(a,p);

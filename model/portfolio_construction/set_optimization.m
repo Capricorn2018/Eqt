@@ -11,6 +11,7 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     a.optimization.style = 'D:\Capricorn\model\risk\style'; % 读取risk model中style/sector factor的路径
     a.optimization.regression = 'D:\Capricorn\model\risk\regression'; % 读取risk model中regression结果的路径
     a.optimization.dfquant_risk = 'D:\Capricorn\model\dfquant_risk'; % 读取东方证券risk model结果的路径
+    a.optimization.alpha = 'D:/Projects/pit_data/mat/alpha_factors/daily';
 
     %%
 
@@ -32,7 +33,7 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     
     
     % 设置CVX和Mosek
-    cvx_solver Mosek;
+    %%cvx_solver Mosek;
     javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
 
 end

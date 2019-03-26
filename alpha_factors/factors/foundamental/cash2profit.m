@@ -22,7 +22,11 @@ function [] = cash2profit(a, p)
        idx = S:T;
        p_t = idx(p_t); 
        
-       cash2profit(p_t,p_i) = cash(cash_t,cash_i)./profit(profit_t,profit_i); %#ok<NASGU>
+       cash = cash(cash_t,cash_i);
+       profit = profit(profit_t,profit_i);
+       profit(profit<0) = NaN; % 避免分母小于0导致错误的现金流占比
+       
+       cash2profit(p_t,p_i) = cash./profit; %#ok<NASGU>
 
        if  exist(tgt_file,'file')==2
           eval(['delete ',tgt_file]);
