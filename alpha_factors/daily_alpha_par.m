@@ -32,17 +32,24 @@ function [] = daily_alpha_par(stk_codes,trading_dates,input_folder,cap_folder,ou
 
     cap(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0)); 
     
+    % 用来存储所有的alpha因子,cell的每一个元素是一个factor的matrix
     cl_alpha = cell(length(filename),1);
     
-    parpool(4);
+    factorname = cell(length(filename),1);
+    for i=1:length(filename)
+        
+        factorname{i} = get_tag(filename{i});
+        
+    end
     
+    parpool(4); % 4线程并行循环    
     
     parfor i=1:length(filename)
         
         f = filename{i};
-        factor_name = get_tag(f);
+        fn = factorname{i};
         
-        m = h5read([input_folder,'/',f],['/',factor_name]);
+        m = h5read([input_folder,'/',f],['/',fn]);
         stk = xblank(h5read([input_folder,'/',f],'/stk_code'));
         dt = xblank( h5read([input_folder,'/',f],'/date'));
         
@@ -53,7 +60,7 @@ function [] = daily_alpha_par(stk_codes,trading_dates,input_folder,cap_folder,ou
         
         factor(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0));
         cl_alpha{i} = nan(size(factor));
-        tmp_cap = cap;
+        tmp_cap = cap; % 为了并行在每次循环建立一个临时变量副本
         
         for j= 1:length(trading_dates)
             
@@ -65,6 +72,7 @@ function [] = daily_alpha_par(stk_codes,trading_dates,input_folder,cap_folder,ou
         
     end
     
+    % 将alpha factors按日写入预设的文件夹中
     for j = 1:length(trading_dates)
         
         alpha_file = [output_folder,'/alpha_',trading_dates{j},'.mat'];
@@ -76,9 +84,14 @@ function [] = daily_alpha_par(stk_codes,trading_dates,input_folder,cap_folder,ou
             
         end
         
+        alpha = [stk_codes,array2table(alpha)];
+        alpha.Properties.VariableNames = [{'stk_codes'},factorname'];
+        
         save(alpha_file,'alpha');
         
     end
+    
+    delete(gcp('nocreate'));
 
 end
 
