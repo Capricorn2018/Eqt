@@ -91,7 +91,7 @@ function [] = daily_alpha_par(stk_codes,trading_dates,input_folder,cap_folder,ou
         
     end
     
-    delete(gcp('nocreate'));
+    delete(gcp('nocreate')); % ÊÍ·Å¶àÓàµÄcpu
 
 end
 
