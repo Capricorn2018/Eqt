@@ -31,13 +31,22 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
 
     cap(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0)); 
     
+    % 用来存储所有的alpha因子,cell的每一个元素是一个factor的matrix
+    cl_alpha = cell(length(filename),1);
+    
+    factorname = cell(length(filename),1);
+    for i=1:length(filename)
+        
+        factorname{i} = get_tag(filename{i});
+        
+    end
     
     for i=1:length(filename)
         
         f = filename{i};
-        factor_name = get_tag(f);
+        fn = factorname{i};
         
-        m = h5read([input_folder,'/',f],['/',factor_name]);
+        m = h5read([input_folder,'/',f],['/',fn]);
         stk = xblank(h5read([input_folder,'/',f],'/stk_code'));
         dt = xblank( h5read([input_folder,'/',f],'/date'));
         
@@ -47,34 +56,38 @@ function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output
         factor = nan(length(trading_dates),length(stk_codes));
         
         factor(Lia_dt,Lia_stk) = m(Locb_dt(Locb_dt>0),Locb_stk(Locb_stk>0));
+        cl_alpha{i} = nan(size(factor));
+        tmp_cap = cap; % 为了并行在每次循环建立一个临时变量副本
         
         for j= 1:length(trading_dates)
             
             % 市值加权因子正规化
-            v = (cal_zscore(factor(j,:),cap(j,:)/1e10))'; % 转置 
-            
-            % 这里需要加上exist的判断，如果不存在则建立新文件
-            alpha_file = [output_folder,'/alpha_',trading_dates{j},'.mat'];
-            if exist(alpha_file,'file')==2
-                % 这个文件里面只有一个变量叫alpha，用来存储当日正规化后因子值
-                load(alpha_file); 
-                alpha_stk = alpha.stk_codes;
-                [Lia,Locb] = ismember(stk_codes,alpha_stk); %#ok<ASGLU>
-                eval(['alpha.',factor_name,'=nan(size(alpha,1),1);']);
-                try
-                    eval(['alpha.',factor_name,'(Locb)=v(Lia);']);
-                catch
-                    disp('CNM');
-                end
-                save(alpha_file,'alpha');
-            else
-                alpha = table(stk_codes,v,'VariableNames',{'stk_codes',factor_name});
-                save(alpha_file,'alpha');
-            end
+            v = (cal_zscore(factor(j,:),tmp_cap(j,:)/1e10))';% 转置
+            cl_alpha{i}(j,:) = v;
+
         end
         
     end
-
+    
+    % 将alpha factors按日写入预设的文件夹中
+    for j = 1:length(trading_dates)
+        
+        alpha_file = [output_folder,'/alpha_',trading_dates{j},'.mat'];
+        alpha = nan(length(stk_codes),length(filename));
+        
+        for i = 1:length(filename)
+            
+            alpha(:,i) = cl_alpha{i}(j,:)';
+            
+        end
+        
+        alpha = [stk_codes,array2table(alpha)];
+        alpha.Properties.VariableNames = [{'stk_codes'},factorname'];
+        
+        save(alpha_file,'alpha');
+        
+    end
+    
 end
 
 
@@ -86,3 +99,4 @@ function tag = get_tag(file)
     tag = str{1};
 
 end
+
