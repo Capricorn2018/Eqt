@@ -31,4 +31,13 @@ is_suspended_table = h5_table('D:/Capricorn/fdata/base_data','suspended.h5','is_
 % 把异常点改为NaN
 rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
 
+N = width(rtn_table)-1;
+   
+% 调仓日个数
+N_reb = size(rebalance_dates,1);
+
+% 第grp组的交易成本table
+cost_table =[array2table(rebalance_dates),array2table(zeros(N_reb,N))];
+cost_table.Properties.VariableNames = rtn_table.Properties.VariableNames;
+
 [simulated_nav,weight] = simulator(rtn_table,weight_table,cost_table);
