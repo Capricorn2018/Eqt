@@ -91,9 +91,9 @@ function weight_table = optimization(a,p,rebalance_dates)
         spec = table2array(spec);
        
         % 优化求解参数
-        exp_bound = zeros(size(cov,1),1);
+        exp_bound = ones(size(cov,1),1) * 0.1;
         active_bound = ones(size(factors,1),1) * 0.02;
-        lambda = 20;
+        lambda = 1;
 
         % 这里要读入alpha_factors和当日假设的alpha_factor_rtn
         % alpha_factors = risk_factors;
@@ -203,8 +203,8 @@ function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rt
         variable x(n)
         maximize(alpha_factors_rtn' * alpha_factors' * x - lambda * quad_form(exposure' * x,factor_cov) - lambda * sum(spk .* x .* x))
         subject to
-        	%x >= 0; %#ok<VUNUS>
-            sum(x) == 0; %#ok<EQEFF>
+        	x >= 0; %#ok<VUNUS>
+            %%sum(x) == 0; %#ok<EQEFF>
             -bound <= bound_mtx' * x <= bound; %#ok<VUNUS>
             -active_bound <= x <= active_bound; %#ok<VUNUS>
     cvx_end
