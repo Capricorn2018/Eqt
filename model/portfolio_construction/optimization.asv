@@ -82,7 +82,7 @@ function weight_table = optimization(a,p,rebalance_dates)
 %        stk_codes = pre_reg.Properties.RowNames;
         stk_codes = p.optimization.stk_codes1;
         
-        stk_codes = intersect(stk_codes,tbl_factors.Properties.RowNames);
+        stk_codes = ismember(stk_codes,
        
         % 用stk_codes给东方金工的因子暴露阵和特异风险向量做indexing
         factors = tbl_factors(stk_codes,:);

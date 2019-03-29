@@ -33,7 +33,7 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     
     
     % …Ë÷√CVX∫ÕMosek
-    %%cvx_solver Mosek;
+    cvx_solver Mosek;
     javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
 
 end
