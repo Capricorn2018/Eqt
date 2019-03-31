@@ -204,7 +204,7 @@ function weight = portfolio_construction(lambda, alpha_factors, alpha_factors_rt
         maximize(alpha_factors_rtn' * alpha_factors' * x - lambda * quad_form(exposure' * x,factor_cov) - lambda * sum(spk .* x .* x))
         subject to
         	x >= 0; %#ok<VUNUS>
-            %%sum(x) == 0; %#ok<EQEFF>
+            sum(x) == 1; %#ok<EQEFF>
             -bound <= bound_mtx' * x <= bound; %#ok<VUNUS>
             -active_bound <= x <= active_bound; %#ok<VUNUS>
     cvx_end
