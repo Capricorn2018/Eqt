@@ -23,6 +23,7 @@ weight_table = optimization(a,p,rebalance_dates);
 % 读取复权价格表
 price_table = h5_table('D:/Capricorn/fdata/base_data','stk_prices.h5','adj_prices');
 rtn_table = price2rtn(price_table); % 从复权价格计算return, 在停牌日等异常点为0
+rtn_stk = h5read('D:/Capricorn/fdata/base_data/stk_prices.h5','/stk_code');
 
 % 读取股票交易状态
 stk_status_table = h5_table('D:/Capricorn/fdata/base_data','stk_status.h5','stk_status');
@@ -30,6 +31,14 @@ is_suspended_table = h5_table('D:/Capricorn/fdata/base_data','suspended.h5','is_
 
 % 把异常点改为NaN
 rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
+
+tmp_rtn = [rtn_table(:,'DATEN'), array2table(nan(height(rtn_table),width(weight_table)-1))];
+tmp_rtn.Properties.VariableNames = weight_table.Properties.VariableNames;
+
+[Lia,Locb] = ismember(tmp_rtn.Properties.VariableNames,rtn_table.Properties.VariableNames);
+
+tmp_rtn(:,Lia) = rtn_table(:,Locb(Locb>0)); 
+rtn_table = tmp_rtn;
 
 N = width(rtn_table)-1;
    
