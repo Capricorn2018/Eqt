@@ -34,9 +34,6 @@ function [] = amount_1m(a,p)
            adj_prices(idx:idx + 21,i)  = NaN; % first 1 month set to NaN
        end
 
-       adj_prices = adj_prices(1:T,:);  
-       adj_prices  = adj_table(adj_prices);
-
        for  i  = S  : T
            for j = 1: N
               if p.all_trading_dates(i)>ipo_dates(j)
