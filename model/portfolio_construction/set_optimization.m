@@ -11,7 +11,7 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     a.optimization.style = 'D:\Capricorn\model\risk\style'; % 读取risk model中style/sector factor的路径
     a.optimization.regression = 'D:\Capricorn\model\risk\regression'; % 读取risk model中regression结果的路径
     a.optimization.dfquant_risk = 'D:\Capricorn\model\dfquant_risk'; % 读取东方证券risk model结果的路径
-    a.optimization.alpha = 'D:/Projects/pit_data/mat/alpha_factors/daily';
+    a.optimization.alpha = 'D:/Projects/pit_data/mat/alpha_factors/daily2';
 
     %%
 
@@ -30,10 +30,6 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     %% 选择计算起始日的下标和间隔 %%
     rebalance_dates = trading_dates(trading_dates>=start_dt);
     [rebalance_dates,~] = find_month_dates(1,rebalance_dates,'first'); % 每个月的第一个交易日
-    
-    % 临时加一行
-    rebalance_dates = rebalance_dates(1:end-1);
-    
     
     % 设置CVX和Mosek
     cvx_solver Mosek;
