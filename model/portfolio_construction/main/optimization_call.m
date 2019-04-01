@@ -30,7 +30,7 @@ stk_status_table = h5_table('D:/Capricorn/fdata/base_data','stk_status.h5','stk_
 is_suspended_table = h5_table('D:/Capricorn/fdata/base_data','suspended.h5','is_suspended');
 
 % 把异常点改为NaN
-rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
+% rtn_table = del_suspended(rtn_table,stk_status_table,is_suspended_table);
 
 tmp_rtn = [rtn_table(:,'DATEN'), array2table(nan(height(rtn_table),width(weight_table)-1))];
 tmp_rtn.Properties.VariableNames = weight_table.Properties.VariableNames;

@@ -64,7 +64,7 @@ function [simulated_nav,weight] = simulator(rtn_table,weight_table,cost_table)
               if simulated_nav(idx_this,:)*(1- nansum(w(i,:)))-c >0
                  tmp_nav_this(1,:) =  [simulated_nav(idx_this,:)*w(i,:),simulated_nav(idx_this,:)*(1- nansum(w(i,:)))-c];  % 每个资产上实际投资了多少钱，现金账户里面有多少钱
               else
-                 tmp_nav_this(1,:) =  [simulated_nav(idx_this,:)*w(i,:)- c*w(i,:)/sum(w(i,:)),simulated_nav(idx_this,:)*(1- nansum(w(i,:)))]; 
+                 tmp_nav_this(1,:) =  [simulated_nav(idx_this,:)*w(i,:)- c*w(i,:)/nansum(w(i,:)),simulated_nav(idx_this,:)*(1- nansum(w(i,:)))]; 
               end
               transaction_cost(i,1) = nansum(abs((simulated_nav(idx_this,:)*w(i,:) - tmp_nav_last(end,1:N)))) /simulated_nav(idx_this,:); % 计算换手率
               if size(tmp_nav_this,1)>1
