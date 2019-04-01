@@ -31,9 +31,12 @@ function [a,p,rebalance_dates] = set_optimization(start_dt)
     rebalance_dates = trading_dates(trading_dates>=start_dt);
     [rebalance_dates,~] = find_month_dates(1,rebalance_dates,'first'); % 每个月的第一个交易日
     
+    % 临时加一行
+    rebalance_dates = rebalance_dates(1:end-1);
+    
     
     % 设置CVX和Mosek
-    %%cvx_solver Mosek;
+    cvx_solver Mosek;
     javaaddpath 'D:\Program Files\Mosek\8\tools\platform\win64x86\bin\mosekmatlab.jar'
 
 end
