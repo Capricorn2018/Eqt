@@ -44,9 +44,9 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
     for i=1:length(db_names)
 %         eval([db_names{i},' = nan(length(filename),length(stk_codes));']);
 %         eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
-        tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.h5'];
+        tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.mat'];
 %         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
-        if exist(tgt_file{i},'file')==2
+        if ~exist(tgt_file{i},'file')==2
             x = load(tgt_file{i});
             x_date = eval(['x.',db_names{i},'.date;']);
             x_date = yyyy2datenum(x_date);
@@ -333,7 +333,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
         eval(['save(''',tgt_file{k},''',''',db_names{k},''');']);
     end
     
-    all_stk_codes = stk_codes;
+%     all_stk_codes = stk_codes;
     
 end
 
