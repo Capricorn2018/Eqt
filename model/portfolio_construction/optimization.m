@@ -14,29 +14,6 @@ function weight_table = optimization(a,p,rebalance_dates)
 
     % 按日循环
     for i=1:length(rebalance_dates)
-
-%         % 日期字符串
-%         date = datestr(rebalance_dates(i),'yyyy-mm-dd'); 
-        % a.regression是读取回归所用矩阵的文件夹地址
-        % 暂时看是D:\Capricorn\model\risk\regression\
-%        filename = [a.optimization.regression,'\Index0_',date,'.mat'];
-%        
-%        % 判断文件是否存在
-%        if(exist(filename,'file')==2)
-%            load(filename);
-%        else
-%            disp([filename,': not exist']);
-%            continue;
-%        end
-%        
-%        % try catch避免当日对应的风险因子不存在
-%        try
-%            risk_factors = table2array(pre_reg(:,risk_factor_names));  %#ok<NODEF>
-%            factor_rtn = table2array(factor_rtn(1,risk_factor_names));
-%        catch
-%            disp('risk_factor_names: some factors are not in pre_reg or factor_rtn')
-%            continue;
-%        end
        
         % 东方金工风险因子数据文件名, 是用py扒下来的
         % cov存在D;\Capricorn\model\dfquant_risk\cov\中

@@ -1,5 +1,4 @@
 function [] = daily_alpha(stk_codes,trading_dates,input_folder,cap_folder,output_folder)
-% eq_weight 汇总alpha_factors 等权
 % input_folder是存储计算好的因子h5文件的地址,需要增加factor的时候只需要换个folder放新alpha因子数据即可
 % cap_folder是存放tot_cap.h5的地址
 % output_folder是准备存放每日alpha数据的地址
