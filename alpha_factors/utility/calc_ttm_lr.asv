@@ -51,9 +51,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
         tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.h5'];
 %         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
         if exist(tgt_file{i},'file')==2
-            
         else
-            S(i)=0;
         end
     end
     
