@@ -102,6 +102,7 @@ function [] = daily_alpha_universe(trading_dates,universe_folder,factor_folder,c
         
     end
     
+    try
     % 将alpha factors按日写入预设的文件夹中
     for j = 1:length(trading_dates)
         
@@ -113,6 +114,9 @@ function [] = daily_alpha_universe(trading_dates,universe_folder,factor_folder,c
         
         save(alpha_file,'alpha');
         
+    end
+    catch
+        disp('cao ni da ye');
     end
     
 end
