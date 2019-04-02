@@ -1,7 +1,7 @@
 % 注意！所有的code都默认传进来的报告记录是按照
 % s_info_windcode, report_period desc, actual_ann_dt desc 排序过的
 
-function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type)
+function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 % 最新报表数据LR, SQ, LYR, TTM, YOY, LTG等
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
@@ -26,7 +26,6 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     % 去除所有的文件夹
     filename = filename(isdir==0);
     T = length(filename);  % 文件个数    
-    N = length(stk_codes);
     
     % dt是用来从文件名中截取日期字符串的容器
     dt = cell(length(filename),1);
@@ -38,9 +37,6 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     
     % 记录每个字段需要更新的起始日
     S = zeros(length(db_names),1);
-    p.all_trading_dates_ = dt;
-    p.all_trading_dates = ndt;
-    p.stk_codes = stk_codes; %#ok<STRNU>
     
     % 初始化结果
     % result = nan(length(filename),length(stk_codes));
@@ -51,16 +47,22 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
         tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.h5'];
 %         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
         if exist(tgt_file{i},'file')==2
-            
+            x = load(tgt_file{i});
+            x_date = eval(['x.',db_names{i},'.date;']);
+            x_date = yyyy2datenum(x_date);
+            S(i) = find(ndt>max(x_date),1);
+            if isempty(S(i)) S(i)=0; end
+            eval([db_names{i},'=x.',db_names{i},';']);
         else
-            S(i)=0;
+            S(i) = 1;
+            eval([db_names{i},'=table();']);
         end
     end
     
     Smin = min(S(S>0));
     
     if(max(S)==0)
-        all_stk_codes = stk_codes;
+        disp('cal_ttm_lr.m: no need to update.');
         return;
     end
     
@@ -286,7 +288,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
                 result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:))));
                 
             otherwise
-                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG''}');
+                warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG'',''MEAN''}');
         end
         
         % 合并传入的stk_codes和当日pit数据中的code
@@ -304,18 +306,21 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
         end
         
         % 把得到的结果储存在以字段名命名的变量中的一行
-        for k=1:length(db_names)            
-            eval(['tmp = result.',db_names{k},';']);
-            if(length(stk_codes) < length(union_codes))
-                eval(['tmp_tbl = nan(size(',db_names{k},',1),length(union_codes));']);
-                eval(['tmp_tbl(:,h5_cols) = ',db_names{k},';']);
-                eval([db_names{k},' = tmp_tbl;']);
-            end
-            eval([db_names{k},'(i,cols) = tmp'';']);
+        for k=1:length(db_names)          
+            eval(['tmp = result(:,{''s_info_windcode'',''',db_names{k},'''});']);
+            tmp = [cellstr(repmat(dt,height(tmp))),tmp];
+            eval([db_names{k},'=[',db_names{k},';tmp]']);
+%             eval(['tmp = result.',db_names{k},';']);
+%             if(length(stk_codes) < length(union_codes))
+%                 eval(['tmp_tbl = nan(size(',db_names{k},',1),length(union_codes));']);
+%                 eval(['tmp_tbl(:,h5_cols) = ',db_names{k},';']);
+%                 eval([db_names{k},' = tmp_tbl;']);
+%             end
+%             eval([db_names{k},'(i,cols) = tmp'';']);
         end
         
         % 扩展stk_codes
-        stk_codes = union_codes;
+%         stk_codes = union_codes;
         
         disp(i);
         
@@ -323,8 +328,9 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, stk_codes, db_names, output_f
     
     % 存储结果
     for k=1:length(db_names)
-        eval(['hdf5write(tgt_file{',int2str(k),'},''date'',dt, ''stk_code'',stk_codes,' '''', ...
-                db_names{k}, ''',','' db_names{k}, ');']); 
+%         eval(['hdf5write(tgt_file{',int2str(k),'},''date'',dt, ''stk_code'',stk_codes,' '''', ...
+%                 db_names{k}, ''',','' db_names{k}, ');']); 
+        eval(['save(''',tgt_file{k},''',''',db_names{k},''');']);
     end
     
     all_stk_codes = stk_codes;

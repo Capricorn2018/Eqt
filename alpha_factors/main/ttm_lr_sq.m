@@ -29,7 +29,7 @@ input_folder = 'D:/Projects/pit_data/mat/balancesheet';
 db_names = {'tot_shrhldr_eqy_excl_min_int','tot_non_cur_liab','monetary_cap','tot_assets','tot_cur_assets','tot_cur_liab','tot_liab'};
 output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
 rpt_type = 'LR';
-calc_ttm_lr(input_folder, stk_codes, db_names, output_folder, rpt_type);
+calc_ttm_lr(input_folder, db_names, output_folder, rpt_type);
 
 
 % input_folder = 'D:/Projects/pit_data/mat/income';
