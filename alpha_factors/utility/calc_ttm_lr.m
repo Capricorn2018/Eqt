@@ -1,7 +1,7 @@
 % 注意！所有的code都默认传进来的报告记录是按照
 % s_info_windcode, report_period desc, actual_ann_dt desc 排序过的
 
-function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
+function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 % 最新报表数据LR, SQ, LYR, TTM, YOY, LTG等
 % 从每天的pit_data中截取需用字段，存在单独的文件中
 % db_names是数据库字段名, 比如AShareIncome里面的net_profit_excl_min_int_inc
@@ -47,11 +47,13 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
         tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.mat'];
 %         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
         if ~exist(tgt_file{i},'file')==2
-            x = load(tgt_file{i});
+            x = load(tgt_file{i}); %#ok<NASGU>
             x_date = eval(['x.',db_names{i},'.date;']);
             x_date = yyyy2datenum(x_date);
             S(i) = find(ndt>max(x_date),1);
-            if isempty(S(i)) S(i)=0; end
+            if isempty(S(i)) 
+                S(i)=0;
+            end
             eval([db_names{i},'=x.',db_names{i},';']);
         else
             S(i) = 1;
@@ -90,7 +92,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 为防止data里面出现同一股票代码有两条记录的状况
                 % 每个股票只选最靠上那条记录
                 [~,Locb] = ismember(code,result.s_info_windcode);
-                result = result(Locb,:);
+                result = result(Locb,:); %#ok<NASGU>
             
             case 'SQ'
                 
@@ -104,7 +106,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 为防止data里面出现同一股票代码有两条记录的状况
                 % 每个股票只选最靠上那条记录
                 [~,Locb] = ismember(code,result.s_info_windcode);
-                result = result(Locb,:);
+                result = result(Locb,:); %#ok<NASGU>
                 
              case 'LR'
                  
@@ -118,7 +120,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 为防止data里面出现同一股票代码有两条记录的状况
                 % 每个股票只选最靠上那条记录
                 [~,Locb] = ismember(code,result.s_info_windcode);
-                result = result(Locb,:);
+                result = result(Locb,:); %#ok<NASGU>
                 
             case 'TTM'
                 
@@ -166,7 +168,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 辨别s4对应的season是不是三个季度以前
                 l4s = nan(size(result,1),1);
                 l4s(Lia) = lastNseason(season1(Lia),3);
-                result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:))));
+                result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:)))); %#ok<NASGU>
                 
             case 'YOY'
                                 
@@ -204,7 +206,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 辨别s5对应的season是不是一年以前
                 l5s = nan(size(result,1),1);
                 l5s(Lia) = lastNseason(season1(Lia),4); % 4个季度之前就是去年相同季度
-                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:))));
+                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:)))); %#ok<NASGU>
                 
             case 'LTG'                  
                                 
@@ -253,7 +255,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                    
                 end
                
-                result = array2table(result,'VariableNames',db_names);
+                result = array2table(result,'VariableNames',db_names); %#ok<NASGU>
                 
             case 'MEAN'
                 
@@ -291,7 +293,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 辨别s5对应的season是不是一年以前
                 l5s = nan(size(result,1),1);
                 l5s(Lia) = lastNseason(season1(Lia),4); % 4个季度之前就是去年相同季度
-                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:))));
+                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:)))); %#ok<NASGU>
                 
             otherwise
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG'',''MEAN''}');
@@ -345,9 +347,11 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
     for k = 1:length(db_names)
         
         h = eval(['height(',db_names{k},')']);
-        w = eval(['width(',db_names{k},')']);
-        tmp = nan(tot_height(k),w);
-        eval(['tmp(1:h,:) = ',db_names{k},';']);
+        w = 3; %#ok<NASGU>
+        tmp = table(cell(tot_height(k),1),cell(tot_height(k),1),nan(tot_height(k),1),'VariableNames',eval(['{''s_info_windcode'',''date'',''',db_names{k},'''}'])); %#ok<NASGU>
+        if h>0
+            eval(['tmp(1:h,:) = ',db_names{k},';']);
+        end
         eval([db_names{k},'= tmp;']);
         
         for i=Smin:T
