@@ -1,9 +1,9 @@
-    % 从pit_data中提取TTM和最新报表数据
+% 从pit_data中提取TTM和最新报表数据
 % stk_code 在运行前自行读取, 比如：
 % load('D:/Projects/pit_data/mat/income/pit_20190201.mat');
 % stk_codes = data_last.s_info_windcode;
 % stk_codes = unique(stk_codes);
-% 
+
 % capital_folder = 'D:/Projects/pit_data/mat/capitalization';
 % close_folder = 'D:/Projects/pit_data/mat/eodprices';
 % output_folder = 'D:/Projects/pit_data/mat/alpha_factors';

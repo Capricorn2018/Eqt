@@ -70,12 +70,11 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
     for i = Smin:T
         
         x = load([input_folder,'/',filename{i}]); % 读取当日的pit_data
-        data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode']);
+        data_last = x.data_last(:,db_names);
         data_last.date = cellstr(repmat(dt{i},height(data_last),1));
-        if exist('single','var')==2
-            single = x.single(:,[db_names,'rank_rpt','s_info_windcode']);
-            single.date = cellstr(repmat(dt{i},height(single),1));
-        end
+        
+        single = x.single(:,db_names);
+        single.date = cellstr(repmat(dt{i},height(single),1));
         
         switch rpt_type
             case 'LYR'
@@ -260,7 +259,7 @@ function [all_stk_codes]=calc_ttm_lr(input_folder, db_names, output_folder, rpt_
                 % 计算现值与一年前值的平均, 在计算周转率等因子时需要
                 
                 % 选最新的4期单季数据
-                data = data_last(data_last.rank_rpt==1 | data_last.rank_rpt==5,:);
+                data = data_last(data_last.rank_rpt==1 | data_last.rank_rpt==5,:);  %#ok<NODEF>
 
                 % 所有的代码
                 code = data.s_info_windcode;
