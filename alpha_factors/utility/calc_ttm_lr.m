@@ -74,7 +74,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
         x = load([input_folder,'/',filename{i}]); % 读取当日的pit_data
         fn = fieldnames(x);
         if ~isempty(find(strcmp(fn,'data_last'),1))
-            data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode']);
+            data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode','report_period']);
             data_last.date = cellstr(repmat(dt{i},height(data_last),1));
         else
             if ~isempty(find(strcmp(fn,'cap'),1))
@@ -87,7 +87,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
             end
         end
         if ~isempty(find(strcmp(fn,'single'),1))
-            single = x.single(:,[db_names,'rank_rpt','s_info_windcode']);
+            single = x.single(:,[db_names,'rank_rpt','s_info_windcode','report_period']);
             single.date = cellstr(repmat(dt{i},height(single),1));
         end
         

@@ -4,14 +4,14 @@
 % stk_codes = data_last.s_info_windcode;
 % stk_codes = unique(stk_codes);
 
-capital_folder = 'D:/Projects/pit_data/mat/capitalization';
-close_folder = 'D:/Projects/pit_data/mat/eodprices';
-output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
-db_names = {'tot_shr','float_a_shr'};
-rpt_type = 'LR';
-calc_ttm_lr(capital_folder, db_names, output_folder, rpt_type);
-db_names = {'s_dq_adjclose'};
-calc_ttm_lr(close_folder, db_names, output_folder, rpt_type);
+% capital_folder = 'D:/Projects/pit_data/mat/capitalization';
+% close_folder = 'D:/Projects/pit_data/mat/eodprices';
+% output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
+% db_names = {'tot_shr','float_a_shr'};
+% rpt_type = 'LR';
+% calc_ttm_lr(capital_folder, db_names, output_folder, rpt_type);
+% db_names = {'s_dq_adjclose'};
+% calc_ttm_lr(close_folder, db_names, output_folder, rpt_type);
 
 input_folder = 'D:/Projects/pit_data/mat/income';
 db_names = {'net_profit_excl_min_int_inc','net_profit_incl_min_int_inc','oper_profit',...
