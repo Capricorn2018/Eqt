@@ -72,12 +72,25 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
     for i = Smin:T
         
         x = load([input_folder,'/',filename{i}]); % 读取当日的pit_data
-        data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode']);
-        data_last.date = cellstr(repmat(dt{i},height(data_last),1));
-        if exist('single','var')==2
+        fn = fieldnames(x);
+        if ~isempty(find(strcmp(fn,'data_last'),1))
+            data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode']);
+            data_last.date = cellstr(repmat(dt{i},height(data_last),1));
+        else
+            if ~isempty(find(strcmp(fn,'cap'),1))
+                data_last = x.cap(:,[db_names,'rank_rpt','s_info_windcode']);
+                data_last.date = cellstr(repmat(dt{i},height(data_last),1));
+            end
+            if ~isempty(find(strcmp(fn,'price'),1))
+                data_last = x.price(:,[db_names,'rank_rpt','s_info_windcode']);
+                data_last.date = cellstr(repmat(dt{i},height(data_last),1));
+            end
+        end
+        if ~isempty(find(strcmp(fn,'single'),1))
             single = x.single(:,[db_names,'rank_rpt','s_info_windcode']);
             single.date = cellstr(repmat(dt{i},height(single),1));
         end
+        
         
         switch rpt_type
             case 'LYR'
@@ -314,8 +327,9 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 %         end
         
         % 把得到的结果储存在以字段名命名的变量中的一行
-        for k=1:length(db_names)          
-            eval([db_names{k},'_',dt{i},' = result(:,{''s_info_windcode'',''date'',''',db_names{k},'''});']);
+        for k=1:length(db_names)
+            eval(['tmp = result(:,{''s_info_windcode'',''date'',''',db_names{k},'''});']);
+            eval([db_names{k},'=[',db_names{k},';tmp];']);
 %             eval(['tmp = result.',db_names{k},';']);
 %             if(length(stk_codes) < length(union_codes))
 %                 eval(['tmp_tbl = nan(size(',db_names{k},',1),length(union_codes));']);
@@ -332,35 +346,35 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
         
     end 
     
-    tot_height = zeros(length(db_names),1);
-    
-    for k = 1:length(db_names)
-        
-        for i = Smin:T
-            eval(['tot_height(k) = tot_height(k) + height(',db_names{k},'_',dt{i},');'])
-        end
-        
-        tot_height(k) = tot_height(k) + eval(['height(',db_names{k},');']);
-        
-    end
-    
-    for k = 1:length(db_names)
-        
-        h = eval(['height(',db_names{k},')']);
-        w = 3; %#ok<NASGU>
-        tmp = table(cell(tot_height(k),1),cell(tot_height(k),1),nan(tot_height(k),1),'VariableNames',eval(['{''s_info_windcode'',''date'',''',db_names{k},'''}'])); %#ok<NASGU>
-        if h>0
-            eval(['tmp(1:h,:) = ',db_names{k},';']);
-        end
-        eval([db_names{k},'= tmp;']);
-        
-        for i=Smin:T
-            hi = eval(['height(',db_names{k},'_',dt{i},')']);
-            eval([db_names{k},'((h+1):(h+hi),:) = ',db_names{k},'_',dt{i},';']);
-            h = h+hi;
-        end
-        
-    end
+%     tot_height = zeros(length(db_names),1);
+%     
+%     for k = 1:length(db_names)
+%         
+%         for i = Smin:T
+%             eval(['tot_height(k) = tot_height(k) + height(',db_names{k},'_',dt{i},');'])
+%         end
+%         
+%         tot_height(k) = tot_height(k) + eval(['height(',db_names{k},');']);
+%         
+%     end
+%     
+%     for k = 1:length(db_names)
+%         
+%         h = eval(['height(',db_names{k},')']);
+%         w = 3; %#ok<NASGU>
+%         tmp = table(cell(tot_height(k),1),cell(tot_height(k),1),nan(tot_height(k),1),'VariableNames',eval(['{''s_info_windcode'',''date'',''',db_names{k},'''}'])); %#ok<NASGU>
+%         if h>0
+%             eval(['tmp(1:h,:) = ',db_names{k},';']);
+%         end
+%         eval([db_names{k},'= tmp;']);
+%         
+%         for i=Smin:T
+%             hi = eval(['height(',db_names{k},'_',dt{i},')']);
+%             eval([db_names{k},'((h+1):(h+hi),:) = ',db_names{k},'_',dt{i},';']);
+%             h = h+hi;
+%         end
+%         
+%     end
     
     
     % 存储结果

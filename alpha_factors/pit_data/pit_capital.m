@@ -24,7 +24,9 @@ function [] = pit_capital(asharecapitalization, start_dt, end_dt, out_path)
         
         cap = up2date(ia,{'s_info_windcode','change_dt1','tot_shr','float_a_shr'});
         
-        cap = sortrows(cap,{'s_info_windcode','change_dt1'},{'ascend','descend'}); %#ok<NASGU>
+        cap = sortrows(cap,{'s_info_windcode','change_dt1'},{'ascend','descend'});
+        
+        cap.rank_rpt = ones(height(cap),1);
         
         save([out_path,'/pit_',st,'.mat'],'cap');
         

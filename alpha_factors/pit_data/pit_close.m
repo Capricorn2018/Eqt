@@ -21,7 +21,9 @@ function [] = pit_close( ashareeodprices, start_dt, end_dt, out_path )
         
         price = up2date(:,{'s_info_windcode','trade_dt','s_dq_close','s_dq_adjclose','s_dq_tradestatus'});
         
-        price = sortrows(price,{'s_info_windcode','trade_dt'},{'ascend','descend'}); %#ok<NASGU>
+        price = sortrows(price,{'s_info_windcode','trade_dt'},{'ascend','descend'}); 
+        
+        price.rank_rpt = ones(height(price),1);
         
         save([out_path,'/pit_',st,'.mat'],'price');
         
