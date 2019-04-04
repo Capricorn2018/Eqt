@@ -11,8 +11,8 @@ p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5
 %% foundamental
 
 % asset_turnover(a,p); 
-% bp_lr(a,p); 
- cash2profit(a,p); 
+ bp_lr(a,p); 
+% cash2profit(a,p); 
 % cashyield_ttm(a,p); 
 % costs2sales(a,p); 
 % current_ratio(a,p); 
