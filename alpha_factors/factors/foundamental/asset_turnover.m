@@ -57,7 +57,7 @@ function [] = asset_turnover(a, p)
         
         append.asset_turnover = append.oper_rev/append.tot_assets;
         
-        asset_turnover = [asset_turnover;append(:,asset_turnover.Properties.VariableNames)];
+        asset_turnover = [asset_turnover;append(:,asset_turnover.Properties.VariableNames)]; %#ok<NASGU>
         
         eval(['save(''',tgt_file,''',''asset_turnover'');]']);
         
