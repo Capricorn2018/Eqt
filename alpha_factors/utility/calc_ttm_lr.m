@@ -144,7 +144,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 
                 % 所有的代码
                 code = data.s_info_windcode;
-                code = unique(code);
+                [code,ia,~] = unique(code);
 
                 % 最近的四个季度对应的单季数据
                 s1 = data(data.rank_rpt==1,:);
@@ -153,8 +153,9 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
                 s4 = data(data.rank_rpt==4,:);
 
                 % 初始化结果
-                result = nan(size(code,1),size(data,2));
-                result = array2table(result,'VariableNames',data.Properties.VariableNames);
+                result = data(ia,:);
+                result(:,db_names) = array2table(nan(size(code,1),length(db_names)));
+                
 
                 % 把最新的四个季度对应的字段相加计算ttm
                 % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
@@ -183,7 +184,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
                 % 辨别s4对应的season是不是三个季度以前
                 l4s = nan(size(result,1),1);
                 l4s(Lia) = lastNseason(season1(Lia),3);
-                result(season4~=l4s,:) = array2table(nan(size(result(season4~=l4s,:)))); %#ok<NASGU>
+                result(season4~=l4s,db_names) = array2table(nan(size(result(season4~=l4s,db_names)))); %#ok<NASGU>
                 
             case 'YOY'
                                 
@@ -192,15 +193,15 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 
                 % 所有的代码
                 code = data.s_info_windcode;
-                code = unique(code);
+                [code,ia,~] = unique(code);
 
                 % 最近的四个季度对应的单季数据
                 s1 = data(data.rank_rpt==1,:);
                 s5 = data(data.rank_rpt==5,:);
                                 
                 % 初始化结果
-                result = nan(size(code,1),size(data,2));
-                result = array2table(result,'VariableNames',data.Properties.VariableNames);
+                result = data(ia,:);
+                result(:,db_names) = array2table(nan(size(code,1),length(db_names)));
 
                 % 把最新的四个季度对应的字段相加计算ttm
                 % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
@@ -221,7 +222,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
                 % 辨别s5对应的season是不是一年以前
                 l5s = nan(size(result,1),1);
                 l5s(Lia) = lastNseason(season1(Lia),4); % 4个季度之前就是去年相同季度
-                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:)))); %#ok<NASGU>
+                result(season5~=l5s,db_names) = array2table(nan(size(result(season5~=l5s,db_names)))); %#ok<NASGU>
                 
             case 'LTG'                  
                                 
@@ -283,15 +284,15 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 
                 % 所有的代码
                 code = data.s_info_windcode;
-                code = unique(code);
+                [code,ia,~] = unique(code);
 
                 % 最近的四个季度对应的单季数据
                 s1 = data(data.rank_rpt==1,:);
                 s5 = data(data.rank_rpt==5,:);
                                 
                 % 初始化结果
-                result = nan(size(code,1),size(data,2));
-                result = array2table(result,'VariableNames',data.Properties.VariableNames);
+                result = data(ia,:);
+                result(:,db_names) = array2table(nan(size(code,1),length(db_names)));
 
                 % 把最新的四个季度对应的字段相加计算ttm
                 % 这里如有同一季(年)报在同一actual_ann_dt有多条记录的情况，则只用的最上面那条
@@ -310,7 +311,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
                 % 辨别s5对应的season是不是一年以前
                 l5s = nan(size(result,1),1);
                 l5s(Lia) = lastNseason(season1(Lia),4); % 4个季度之前就是去年相同季度
-                result(season5~=l5s,:) = array2table(nan(size(result(season5~=l5s,:)))); %#ok<NASGU>
+                result(season5~=l5s,db_names) = array2table(nan(size(result(season5~=l5s,db_names)))); %#ok<NASGU>
                 
             otherwise
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG'',''MEAN''}');
@@ -352,6 +353,8 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
             tmp = table2array(tmp);
                         
             eval([db_names{k},'{i+1}=tmp;']);
+            eval([db_names{k},'_code_map = table(stk_codes,stk_num);']);
+            
 %             eval(['tmp = result.',db_names{k},';']);
 %             if(length(stk_codes) < length(union_codes))
 %                 eval(['tmp_tbl = nan(size(',db_names{k},',1),length(union_codes));']);
