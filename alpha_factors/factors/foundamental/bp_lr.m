@@ -51,22 +51,27 @@ function [] = bp_lr(a, p)
         shr = load([a.input_data_path,'/LR_tot_shr.mat']);
         p = load([a.input_data_path,'/LR_s_dq_adjclose.mat']);
         
-        eqy_date = yyyy2datenum(eqy.date);
-        shr_date = yyyy2datenum(shr.date);
-        p_date = yyyy2datenum(p.date);
+        eqy.data = eqy.data(eqy.data.DATEN>dt_max,:);
+        shr.data = shr.data(shr.data.DATEN>dt_max,:);
+        p.data = p.data(p.data.DATEN>dt_max,:);
         
-        append = join(eqy(eqy_date>dt_max,:),shr(shr_date>dt_max,:),'Keys',{'s_info_windcode','date'});
-        append = join(append,p(p_date>dt_max),'Keys',{'s_info_windcode','date'});
-                
-        append.bp_lr = append.tot_shrhldr_eqy_excl_min_int/append.tot_shr/append.s_dq_adjclose;
+        x = factor_join(eqy,shr,{'tot_shrhldr_eqy_excl_min_int'},{'tot_shr'});
+        append = factor_join(x,p,{'tot_shrhldr_eqy_excl_min_int','tot_shr'},{'s_dq_adjclose'});
+        
+        append.data.bp_lr = append.data.tot_shrhldr_eqy_excl_min_int ...
+                                ./ append.data.tot_shr ...
+                                ./ append.data.s_dq_adjclose;
+                            
+        append.data = append.data(:,{'DATEN','stk_num','bp_lr'});
+
         
         if bool
-            bp_lr = [bp_lr;append(:,bp_lr.Properties.VariableNames)]; %#ok<NASGU>
+            bp_lr = factor_append(bp_lr,append); %#ok<NASGU>
         else
-            bp_lr = append(:,{'date','s_info_windcode','bp_lr'}); %#ok<NASGU>
+            bp_lr = append; %#ok<NASGU>
         end
             
-        eval(['save(''',tgt_file,''',''bp_lr'');]']);
+        eval(['save(''',tgt_file,''',''bp_lr'');']);
         
     end
 

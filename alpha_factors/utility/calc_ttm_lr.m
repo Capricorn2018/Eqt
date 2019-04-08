@@ -343,8 +343,11 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
             end
             
             Lia = ismember(tmp.s_info_windcode,stk_codes);
+            count = length(tmp.s_info_windcode(~Lia));
             stk_codes = [stk_codes;tmp.s_info_windcode(~Lia)]; %#ok<AGROW>
-            stk_num = [stk_num;((max([stk_num;0])+1):length(stk_codes))']; %#ok<AGROW>
+            if count>0
+                stk_num = [stk_num;((max([stk_num;0])+1):(max([stk_num;0])+count))']; %#ok<AGROW>
+            end
             
             [~,Locb] = ismember(tmp.s_info_windcode,stk_codes);
             tmp.stk_num = stk_num(Locb);
@@ -408,7 +411,7 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
 %                 db_names{k}, ''',','' db_names{k}, ');']); 
 
         eval([db_names{k},'=cell2mat(',db_names{k},''');']);
-        eval([db_names{k},'=array2table(',db_names{k},',''VariableNames'',{''DATEN'',''stk_num'',''',db_names{k},'''});']);
+        eval(['data =array2table(',db_names{k},',''VariableNames'',{''DATEN'',''stk_num'',''',db_names{k},'''});']);
         code_map = eval([db_names{k},'_code_map;']); %#ok<NASGU>
         eval(['save(''',tgt_file{k},''',''',db_names{k},''',''code_map'');']);
     end
