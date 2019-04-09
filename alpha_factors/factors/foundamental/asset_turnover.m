@@ -31,35 +31,44 @@ function [] = asset_turnover(a, p)
 %        end
 %        eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
 %     end
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     tgt_file = [a.output_data_path,'/asset_turnover.mat'];
-    x = load(tgt_file);
-    asset_turnover = x.asset_turnover;    
-    dt = yyyy2datenum(asset_turnover.date);
-    dt_max = max(dt);
+    if exist(tgt_file,'file')==2
+        asset_turnover = load(tgt_file);
+        dt = asset_turnover.data.DATEN;
+        dt_max = max(dt);
+        bool = true;
+    else
+        dt_max = 0;
+        bool = false;
+    end    
     
     if dt_max<p.all_trading_dates(end)
         
         rev = load([a.input_data_path,'/TTM_oper_rev.mat']);
         asset = load([a.input_data_path,'/MEAN_tot_assets.mat']);
         
-        rev_date = yyyy2datenum(rev.date);
-        asset_date = yyyy2datenum(asset.date);
+        rev.data = rev.data(rev.data.DATEN>dt_max,:);
+        asset.data = asset.data(asset.data.DATEN>dt_max,:);
         
-        append = join(rev(rev_date>dt_max,:),asset(asset_date>dt_max,:),'Keys',{'s_info_windcode','date'});
+        append = factor_join(rev,asset,{'oper_rev'},{'tot_assets'});
         
-        append.asset_turnover = append.oper_rev/append.tot_assets;
+        append.data.asset_turnover = append.data.oper_rev ...
+                                        ./ append.data.tot_assets;
+                            
+        append.data = append.data(:,{'DATEN','stk_num','asset_turnover'});
+
         
-        asset_turnover = [asset_turnover;append(:,asset_turnover.Properties.VariableNames)]; %#ok<NASGU>
-        
-        eval(['save(''',tgt_file,''',''asset_turnover'');]']);
+        if bool
+            asset_turnover = factor_append(asset_turnover,append);
+        else
+            asset_turnover = append;
+        end
+            
+        data = asset_turnover.data; %#ok<NASGU>
+        code_map = asset_turnover.code_map; %#ok<NASGU>
+        eval(['save(''',tgt_file,''',''data'',''code_map'');']);
         
     end
 

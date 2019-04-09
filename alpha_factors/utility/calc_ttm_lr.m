@@ -38,35 +38,46 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
     % 记录每个字段需要更新的起始日
     S = zeros(length(db_names),1);
     
-    % 初始化结果
-    % result = nan(length(filename),length(stk_codes));
+    % 读取存放结果的文件, 确认每个文件更新到的日期对应的日期下标
     tgt_file = cell(length(db_names),1);
     for i=1:length(db_names)
-%         eval([db_names{i},' = nan(length(filename),length(stk_codes));']);
-%         eval([db_names{i},' = array2table(',db_names{i},',''VariableNames'',colnames);']);
+        
+        % 目标衍生数据文件
         tgt_file{i} = [output_folder,'/',rpt_type,'_',db_names{i},'.mat'];
-%         eval(['[S(',int2str(i),'),',db_names{i},'] = check_exist(''',tgt_file{i},''',''/',db_names{i},''',p,T,N);']);
-        if ~exist(tgt_file{i},'file')==2
-            x = load(tgt_file{i}); %#ok<NASGU>
-            x_DATEN = eval(['x.',db_names{i},'.DATEN;']);
+        
+        if exist(tgt_file{i},'file')==2 % 如果该文件存在 
+            
+            x = load(tgt_file{i});
+            x_DATEN = x.data.DATEN;
+            
+            % 该文件的股票代码对照表
             eval([db_names{i},'_code_map=x.code_map;']);
-            S(i) = find(ndt>max(x_DATEN),1);
-            if isempty(S(i)) 
-                S(i)=0;
+            
+            % 找出该衍生数据文件更新到的日期对应下标
+            idx = find(ndt>max(x_DATEN),1);
+            
+            if isempty(idx) %若该文件没有需要更新的日期
+                S(i) = 0;
+            else
+                S(i) = idx;
             end
             eval([db_names{i},'=cell(0);']);
-            eval([db_names{i},'{1}=x.',db_names{i},';']);
+            % 在存放结果的变量第一个元素中存放原先文件中的数据
+            eval([db_names{i},'{1}=table2array(x.data);']); 
         else
+            % 若没有发现该文件则S(i)=1即需要从头来算
             S(i) = 1;
             eval([db_names{i},'=cell(0);']);
             eval([db_names{i},'_code_map=table();']);
         end
     end
     
+    % 需要更新的日期中取最小值即需要开始更新的下标
     Smin = min(S(S>0));
     
+    % 若不需要更新则直接返回
     if(max(S)==0)
-        disp('cal_ttm_lr.m: no need to update.');
+        disp('cal_ttm_lr.m: no need to be updated.');
         return;
     end
     
@@ -74,10 +85,12 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
     for i = Smin:T
         
         x = load([input_folder,'/',filename{i}]); % 读取当日的pit_data
-        fn = fieldnames(x);
+        fn = fieldnames(x); % 不含地址的文件名称
+        
+        % 这里需要区分一下数据文件中的变量名
         if ~isempty(find(strcmp(fn,'data_last'),1))
             data_last = x.data_last(:,[db_names,'rank_rpt','s_info_windcode','report_period','season']);
-            data_last.DATEN = repmat(ndt(i),height(data_last),1);
+            data_last.DATEN = repmat(ndt(i),height(data_last),1); % 加一列数据对应日期
         else
             if ~isempty(find(strcmp(fn,'cap'),1))
                 data_last = x.cap(:,[db_names,'rank_rpt','s_info_windcode']);
@@ -317,106 +330,66 @@ function calc_ttm_lr(input_folder, db_names, output_folder, rpt_type)
                 warning('Error: rpt_type is not in {''LR'',''SQ'',''LYR'',''TTM'',''YOY'',''LTG'',''MEAN''}');
         end
         
-        % 合并传入的stk_codes和当日pit数据中的code
-        % 以便后续处理stk_codes扩充
-%         union_codes = union(code,stk_codes);
         
-        % 找到result里面对应的列
-%         [~,cols] = ismember(code,union_codes); %#ok<*ASGLU>
-        
-        % 若stk_codes不全则需要记录缺失的列以便在h5文件中补全
-%         if(length(stk_codes)<length(union_codes))
-%             [~,h5_cols] = ismember(stk_codes,union_codes);
-%         else
-%             h5_cols = 1:length(stk_codes); %#ok<*NASGU>
-%         end
-        
-        % 把得到的结果储存在以字段名命名的变量中的一行
+        % 把上面得到的当日数据按照衍生数据的名称存在cell的一格里
         for k=1:length(db_names)
-            eval(['tmp = result(:,{''s_info_windcode'',''DATEN'',''',db_names{k},'''});']);
-            try
-                eval(['stk_codes = ',db_names{k},'_code_map.stk_codes;']);
-                eval(['stk_num = ',db_names{k},'_code_map.stk_num;']);
-            catch
-                stk_codes = cell(0);
-                stk_num = nan(0);
+            
+            if i>S(k)
+                
+                % 在结果中截取对应的衍生数据列
+                eval(['tmp = result(:,{''s_info_windcode'',''DATEN'',''',db_names{k},'''});']);
+                
+                % 拿到股票代码对照表
+                try
+                    eval(['stk_codes = ',db_names{k},'_code_map.stk_codes;']);
+                    eval(['stk_num = ',db_names{k},'_code_map.stk_num;']);
+                catch
+                    stk_codes = cell(0);
+                    stk_num = nan(0);
+                end
+
+                % 在对照表里面找是否有当日结果中的股票代码不在其中
+                Lia = ismember(tmp.s_info_windcode,stk_codes);
+                count = length(tmp.s_info_windcode(~Lia)); % 不在对照表中的股票个数
+                % 把不在对照表中的代码加在后面
+                stk_codes = [stk_codes;tmp.s_info_windcode(~Lia)]; %#ok<AGROW>
+                if count>0
+                    % 如果在后面加了代码, 对照表需要按照顺序扩充编号, 注意前面的编号不能动
+                    stk_num = [stk_num;((max([stk_num;0])+1):(max([stk_num;0])+count))']; %#ok<AGROW>
+                end
+
+                % 在新的股票代码对照表中寻找对应的stk_num编号并填入当日结果
+                [~,Locb] = ismember(tmp.s_info_windcode,stk_codes);
+                tmp.stk_num = stk_num(Locb); % 将对照stk_num填入当日结果
+                tmp = tmp(:,{'DATEN','stk_num',db_names{k}});
+
+                tmp = table2array(tmp);
+
+                % 把当日结果存在cell中的一格, 并存下新的code_map
+                eval([db_names{k},'{i+1}=tmp;']);
+                eval([db_names{k},'_code_map = table(stk_codes,stk_num);']);
+
             end
             
-            Lia = ismember(tmp.s_info_windcode,stk_codes);
-            count = length(tmp.s_info_windcode(~Lia));
-            stk_codes = [stk_codes;tmp.s_info_windcode(~Lia)]; %#ok<AGROW>
-            if count>0
-                stk_num = [stk_num;((max([stk_num;0])+1):(max([stk_num;0])+count))']; %#ok<AGROW>
-            end
-            
-            [~,Locb] = ismember(tmp.s_info_windcode,stk_codes);
-            tmp.stk_num = stk_num(Locb);
-            tmp = tmp(:,{'DATEN','stk_num',db_names{k}});
-            
-            tmp = table2array(tmp);
-                        
-            eval([db_names{k},'{i+1}=tmp;']);
-            eval([db_names{k},'_code_map = table(stk_codes,stk_num);']);
-            
-%             eval(['tmp = result.',db_names{k},';']);
-%             if(length(stk_codes) < length(union_codes))
-%                 eval(['tmp_tbl = nan(size(',db_names{k},',1),length(union_codes));']);
-%                 eval(['tmp_tbl(:,h5_cols) = ',db_names{k},';']);
-%                 eval([db_names{k},' = tmp_tbl;']);
-%             end
-%             eval([db_names{k},'(i,cols) = tmp'';']);
         end
-        
-        % 扩展stk_codes
-%         stk_codes = union_codes;
-        
-        disp(i);
+                
+        disp([rpt_type,dt(i)]);
         
     end 
-    
-%     tot_height = zeros(length(db_names),1);
-%     
-%     for k = 1:length(db_names)
-%         
-%         for i = Smin:T
-%             eval(['tot_height(k) = tot_height(k) + height(',db_names{k},'_',dt{i},');'])
-%         end
-%         
-%         tot_height(k) = tot_height(k) + eval(['height(',db_names{k},');']);
-%         
-%     end
-%     
-%     for k = 1:length(db_names)
-%         
-%         h = eval(['height(',db_names{k},')']);
-%         w = 3; %#ok<NASGU>
-%         tmp = table(cell(tot_height(k),1),cell(tot_height(k),1),nan(tot_height(k),1),'VariableNames',eval(['{''s_info_windcode'',''date'',''',db_names{k},'''}'])); %#ok<NASGU>
-%         if h>0
-%             eval(['tmp(1:h,:) = ',db_names{k},';']);
-%         end
-%         eval([db_names{k},'= tmp;']);
-%         
-%         for i=Smin:T
-%             hi = eval(['height(',db_names{k},'_',dt{i},')']);
-%             eval([db_names{k},'((h+1):(h+hi),:) = ',db_names{k},'_',dt{i},';']);
-%             h = h+hi;
-%         end
-%         
-%     end
-    
-    
-    % 存储结果
-    for k=1:length(db_names)
-%         eval(['hdf5write(tgt_file{',int2str(k),'},''date'',dt, ''stk_code'',stk_codes,' '''', ...
-%                 db_names{k}, ''',','' db_names{k}, ');']); 
 
+    % 将所有结果存入mat文件
+    for k=1:length(db_names)
+
+        % 用cell2mat拼接cell的每个格
         eval([db_names{k},'=cell2mat(',db_names{k},''');']);
+        % 然后转table, 上列名
         eval(['data =array2table(',db_names{k},',''VariableNames'',{''DATEN'',''stk_num'',''',db_names{k},'''});']);
+        % 对应该衍生数据的代码对照表
         code_map = eval([db_names{k},'_code_map;']); %#ok<NASGU>
-        eval(['save(''',tgt_file{k},''',''',db_names{k},''',''code_map'');']);
+        % 存储文件
+        eval(['save(''',tgt_file{k},''',''data'',''code_map'');']);
     end
     
-%     all_stk_codes = stk_codes;
     
 end
 
@@ -427,7 +400,8 @@ function dt = file2dt(filename)
 
 end
 
-% 寻找season之前n个季度的对应日期
+% 寻找某个季末日期之前n个季度的对应日期
+% 用来判断TTM或者同比指标中用的rpt_period是否正确
 function lastNs = lastNseason(season,n)
 
     lastNs = zeros(size(season));

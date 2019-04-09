@@ -10,7 +10,7 @@ output_folder = 'D:/Projects/pit_data/mat/alpha_factors';
 db_names = {'tot_shr','float_a_shr'};
 rpt_type = 'LR';
 calc_ttm_lr(capital_folder, db_names, output_folder, rpt_type);
-db_names = {'s_dq_adjclose'};
+db_names = {'s_dq_adjclose','s_dq_close'};
 calc_ttm_lr(close_folder, db_names, output_folder, rpt_type);
 % 
 % input_folder = 'D:/Projects/pit_data/mat/income';
