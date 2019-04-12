@@ -44,8 +44,8 @@ p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5
 a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 
 earning_sfg(a,p);
-% ep_fwd12m(a,p);
-% sales_sfg(a,p);
+ep_fwd12m(a,p);
+sales_sfg(a,p);
 
 
 %% trading
