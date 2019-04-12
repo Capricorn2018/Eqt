@@ -43,7 +43,7 @@ function [] = sp_ttm(a, p)
     
     if dt_max<p.all_trading_dates(end)
         
-        rev = load([a.input_data_path,'/oper_rev.mat']);
+        rev = load([a.input_data_path,'/TTM_oper_rev.mat']);
         cap = load([a.input_data_path,'/LR_tot_cap.mat']);
         
         rev.data = rev.data(rev.data.DATEN>dt_max,:);
