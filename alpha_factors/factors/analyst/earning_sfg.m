@@ -57,10 +57,8 @@ function [] = earning_sfg(a,p)
         earning_sfg = load(tgt_file);
         dt = earning_sfg.data.DATEN;
         dt_max = max(dt);
-        bool = true;
     else
         dt_max = 0;
-        bool = false;
     end    
     
     
