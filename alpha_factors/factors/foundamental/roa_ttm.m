@@ -32,5 +32,44 @@ function [] = roa_ttm(a, p)
 %        eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
 %     end
 
+    tgt_file = [a.output_data_path,'/roa_ttm.mat'];
+    if exist(tgt_file,'file')==2
+        roa_ttm = load(tgt_file);
+        dt = roa_ttm.data.DATEN;
+        dt_max = max(dt);
+        bool = true;
+    else
+        dt_max = 0;
+        bool = false;
+    end    
+    
+    if dt_max<p.all_trading_dates(end)
+        
+        profit = load([a.input_data_path,'/TTM_net_profit_excl_min_int_inc.mat']);
+        asset = load([a.input_data_path,'/LR_tot_assets.mat']);
+        
+        profit.data = profit.data(profit.data.DATEN>dt_max,:);
+        asset.data = asset.data(asset.data.DATEN>dt_max,:);
+        
+        append = factor_join(profit,asset,{'net_profit_excl_min_int_inc'},{'tot_assets'});
+        
+        append.data.roa_ttm = append.data.net_profit_excl_min_int_inc ...
+                                                ./ append.data.tot_assets;
+                            
+        append.data = append.data(:,{'DATEN','stk_num','roa_ttm'});
+
+        
+        if bool
+            roa_ttm = factor_append(roa_ttm,append);
+        else
+            roa_ttm = append;
+        end
+            
+        data = roa_ttm.data; %#ok<NASGU>
+        code_map = roa_ttm.code_map; %#ok<NASGU>
+        eval(['save(''',tgt_file,''',''data'',''code_map'');']);
+        
+    end
+
 end
 
