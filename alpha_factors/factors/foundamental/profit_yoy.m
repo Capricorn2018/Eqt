@@ -43,8 +43,9 @@ function [] = profit_yoy(a, p)
         profit = load([a.input_data_path,'/YOY_net_profit_excl_min_int_inc.mat']);
         
         profit.data = profit.data(profit.data.DATEN>dt_max,:);
-                
-        append.data.profit_yoy = profit.data.net_profit_excl_min_int_inc;
+        
+        append = profit;        
+        append.data.profit_yoy = append.data.net_profit_excl_min_int_inc;
                             
         append.data = append.data(:,{'DATEN','stk_num','profit_yoy'});
         

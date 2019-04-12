@@ -46,9 +46,10 @@ function [] = ln_floatcap(a,p)
         
         cap = load([a.input_data_path,'/LR_float_cap.mat']);
         
-         cap.data = cap.data(cap.data.DATEN>dt_max,:);
+        cap.data = cap.data(cap.data.DATEN>dt_max,:);
         
-        append.data.ln_floatcap = log(cap.data.float_cap);
+        append = cap;
+        append.data.ln_floatcap = log(append.data.float_cap);
                             
         append.data = append.data(:,{'DATEN','stk_num','ln_floatcap'});
 

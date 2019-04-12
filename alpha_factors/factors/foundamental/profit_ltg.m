@@ -44,8 +44,9 @@ function [] = profit_ltg(a, p)
         profit = load([a.input_data_path,'/LTG_net_profit_excl_min_int_inc.mat']);
         
         profit.data = profit.data(profit.data.DATEN>dt_max,:);
-                
-        append.data.profit_ltg = profit.data.net_profit_excl_min_int_inc;
+        
+        append = profit;        
+        append.data.profit_ltg = append.data.net_profit_excl_min_int_inc;
                             
         append.data = append.data(:,{'DATEN','stk_num','profit_ltg'});
         

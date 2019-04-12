@@ -43,8 +43,9 @@ function [] = oper_rev_yoy(a, p)
         rev = load([a.input_data_path,'/YOY_oper_rev.mat']);
         
         rev.data = rev.data(rev.data.DATEN>dt_max,:);
-                
-        append.data.oper_rev_yoy = rev.data.oper_rev;
+            
+        append = rev;
+        append.data.oper_rev_yoy = append.data.oper_rev;
                             
         append.data = append.data(:,{'DATEN','stk_num','oper_rev_yoy'});
         

@@ -49,9 +49,9 @@ function [] = ep_sq(a, p)
         profit.data = profit.data(profit.data.DATEN>dt_max,:);
         cap.data = cap.data(cap.data.DATEN>dt_max,:);
         
-        append = factor_join(profit,cap,{'SQ_net_profit_excl_min_int_inc'},{'tot_cap'});
+        append = factor_join(profit,cap,{'net_profit_excl_min_int_inc'},{'tot_cap'});
         
-        append.data.ep_sq = append.data.SQ_net_profit_excl_min_int_inc ...
+        append.data.ep_sq = append.data.net_profit_excl_min_int_inc ...
                                         ./ append.data.tot_cap;
                             
         append.data = append.data(:,{'DATEN','stk_num','ep_sq'});

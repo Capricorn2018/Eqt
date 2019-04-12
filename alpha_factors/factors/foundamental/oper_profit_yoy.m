@@ -44,7 +44,8 @@ function [] = oper_profit_yoy(a, p)
         
         oper.data = oper.data(oper.data.DATEN>dt_max,:);
                 
-        append.data.oper_profit_yoy = oper.data.oper_profit;
+        append = oper;
+        append.data.oper_profit_yoy = append.data.oper_profit;
                             
         append.data = append.data(:,{'DATEN','stk_num','oper_profit_yoy'});
         

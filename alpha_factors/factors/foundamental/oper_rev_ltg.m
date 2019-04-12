@@ -44,7 +44,8 @@ function [] = oper_rev_ltg(a, p)
         
         rev.data = rev.data(rev.data.DATEN>dt_max,:);
                 
-        append.data.oper_rev_ltg = rev.data.oper_rev;
+        append = rev;
+        append.data.oper_rev_ltg = append.data.oper_rev;
                             
         append.data = append.data(:,{'DATEN','stk_num','oper_rev_ltg'});
         
