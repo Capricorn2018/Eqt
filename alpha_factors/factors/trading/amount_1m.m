@@ -77,7 +77,13 @@ function [] = amount_1m(a,p)
     if dt_max<p.all_trading_dates(end)
         
         x = load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
-        data = x.data(x.data.DATEN > dt_max,:);
+        new = x.data(x.data.DATEN > dt_max,:);
+        
+        new.amount_1m = nan(height(new),1);
+        new = new(:,amount_1m.Properties.VariableNames);
+        
+        data = factor_append(amount_1m,new);
+        
         
         
     end
