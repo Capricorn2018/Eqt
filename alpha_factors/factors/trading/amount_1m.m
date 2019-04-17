@@ -76,7 +76,9 @@ function [] = amount_1m(a,p)
 
     if dt_max<p.all_trading_dates(end)
         
-        x = load('D:/Projects/pit_data/origin_data/eodprices.mat');
+        x = load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
+        data = x.data(x.data.DATEN > dt_max,:);
+        
         
     end
 
