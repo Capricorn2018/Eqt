@@ -43,16 +43,16 @@ p.stk_codes          = stk_code_h5(h5read([a.data,'\base_data\securites_dates.h5
 
 a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 
-earning_sfg(a,p);
-ep_fwd12m(a,p);
-sales_sfg(a,p);
+% earning_sfg(a,p);
+% ep_fwd12m(a,p);
+% sales_sfg(a,p);
 
 
 %% trading
 
 % a.input_data_path = 'D:/Capricorn'; % 先用王晨的交易数据
 
-% amount_1m(a,p);
+amount_1m(a,p);
 % ILLIQ_1m(a,p);
 % lottery_1m(a,p);
 % momentum_1m(a,p);
