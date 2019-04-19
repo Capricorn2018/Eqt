@@ -52,8 +52,8 @@ a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 
 % a.input_data_path = 'D:/Capricorn'; % 先用王晨的交易数据
 
-amount_1m(a,p);
-% ILLIQ_1m(a,p);
+% amount_1m(a,p);
+ILLIQ_1m(a,p);
 % lottery_1m(a,p);
 % momentum_1m(a,p);
 % momentum_3m(a,p);

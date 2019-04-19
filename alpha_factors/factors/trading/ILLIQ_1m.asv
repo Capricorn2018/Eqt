@@ -63,10 +63,10 @@ function [] = ILLIQ_1m(a,p)
     key = 'pct_over_amount';
     col = {'s_dq_amount','s_dq_pctchange'};
     
-    tgt_file = [a.output_data_path,'/ILLIQ_1m.mat'];
+    tgt_file = [a.output_data_path,'/amount_1m.mat'];
     if exist(tgt_file,'file')==2
-        ILLIQ_1m = load(tgt_file);
-        dt = ILLIQ_1m.data.DATEN;
+        amount_1m = load(tgt_file);
+        dt = amount_1m.data.DATEN;
         dt_max = max(dt);
         bool = true;
     else
@@ -79,15 +79,7 @@ function [] = ILLIQ_1m(a,p)
         x = load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
         
         new = struct();
-        new.data = x.data(x.data.DATEN > dt_max,:); 
-        
-        
-        
-        %%%%%%%%%
-        new.data.s_dq_amount = ones(height(new.data),1);
-        new.data.s_dq_pctchange = ones(height(new.data),1);
-        
-        
+        new.data = x.data(x.data.DATEN > dt_max,:);        
         
         eval(['new.data.',factor,' = nan(height(new.data),1);']);
         new.data = new.data(:,['stk_num','DATEN',col,factor]);
@@ -99,25 +91,22 @@ function [] = ILLIQ_1m(a,p)
         am = td.s_dq_amount;
         pct = td.s_dq_pctchange;
         
-        deriv = nan(length(am),1);
-        deriv(am~=0) = pct(am~=0)./am(am~=0); %#ok<NASGU>
-        
-        eval(['new.data.',key,'=deriv;']);
-        new.data = new.data(:,{'stk_num','DATEN',key,factor});
+         = nan(length(am),1);
+        key(am~=0) = pct(am~=0)/am(am~=0);
         
        %%
         
         if bool
-            result = factor_append(ILLIQ_1m,new);
+            result = factor_append(amount_1m,new);
         else
             result = new;
         end
 
         data = sortrows(result.data,{'stk_num','DATEN'},{'ascend','ascend'});
-        
+
         all_dates = unique(data.DATEN);
         all_dates = sort(all_dates,'ascend');
-        key = eval(['data.',key,';']);
+
         factor = eval(['data.',factor,';']);
         
        
@@ -125,8 +114,8 @@ function [] = ILLIQ_1m(a,p)
        %%
         stk_num = data.stk_num;
         DATEN = data.DATEN;
-        
-        data.ILLIQ_1m = average(stk_num,DATEN,key,factor,all_dates,dt_max,len);
+
+        data.amount_1m = average(stk_num,DATEN,key,factor,all_dates,dt_max,len);
         code_map = result.code_map; %#ok<NASGU>
             
         
