@@ -82,12 +82,6 @@ function [] = amount_1m(a,p)
         
         x = load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
         
-        
-        %% temp
-        x.data.s_dq_amount = ones(height(x.data),1);
-        
-        
-        
         new = struct();
         new.data = x.data(x.data.DATEN > dt_max,:);        
         
