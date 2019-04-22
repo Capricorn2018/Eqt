@@ -87,7 +87,7 @@ function [] = turnover_1m(a,p)
         shr = td.float_a_shr;
         
         deriv = nan(length(vol),1);
-        deriv(vol~=0 & shr~=0) = vol(vol~=0 & shr~=0)./shr(vol~=0 & shr~=0); %#ok<NASGU>
+        deriv(vol~=0 & shr~=0) = vol(vol~=0 & shr~=0)./shr(vol~=0 & shr~=0)/10000; %#ok<NASGU>
         
         eval(['new.data.',key,'=deriv;']);
         new.data = new.data(:,{'stk_num','DATEN',key,factor});
