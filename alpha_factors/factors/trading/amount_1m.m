@@ -117,6 +117,10 @@ function [] = amount_1m(a,p)
 end
 
 
+% 求均值
+% key一类需要求均值的数据，为DATEN>dt_max的数据求均值，len是均值窗口长度
+% factor是结论数据比如momentum_1m, amount_1m
+% all_dates用来对齐不同股票代码的数据以防某些票的数据缺失
 function x = average(stk_num,DATEN,key,factor,all_dates,dt_max,len)
 
     idx = find(DATEN > dt_max);

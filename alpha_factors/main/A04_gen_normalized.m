@@ -1,4 +1,4 @@
-% daily_alpha_call
+% gen_normalized
 % 取每日的alpha因子并进行去极值和正态化
 
 output_folder = 'D:/Projects/pit_data/mat/alpha_factors/daily2'; % 输出folder
