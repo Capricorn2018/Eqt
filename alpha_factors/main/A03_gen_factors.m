@@ -50,7 +50,8 @@ a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 
 %% trading
 
-% a.input_data_path = 'D:/Capricorn'; % 先用王晨的交易数据
+% a.input_data_path = 'D:/Projects/pit_data/origin_data';  %
+% 修改之后用直接从wind扒下来的数据
 
 % amount_1m(a,p);
 % ILLIQ_1m(a,p);
@@ -58,7 +59,7 @@ a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 % momentum_1m(a,p);
 % momentum_3m(a,p);
 % momentum_60m(a,p);
-skew_1m(a,p);
+% skew_1m(a,p);
 % turnover_1m(a,p);
 % vol_1y(a,p);
 % volume_1m_12m(a,p);

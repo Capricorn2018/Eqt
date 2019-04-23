@@ -74,7 +74,7 @@ function [] = skew_1m(a,p)
 
     if dt_max<p.all_trading_dates(end)
         
-        x = load('D:/Projects/pit_data/origin_data/ashareeodprices.mat');
+        x = load([a.input_data_path,'/ashareeodprices.mat']);
         
         new = struct();
         new.data = x.data(x.data.DATEN > dt_max,:);        
