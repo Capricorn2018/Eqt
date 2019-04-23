@@ -1,24 +1,23 @@
-function [] = ILLIQ_1m(a,p)
-% ILLIQ_1m 一个月ILLIQ因子
-%     
-%     D = 20;
+function [] = lottery_1m(a,p)
+% 1个月内最大涨幅
+
+%     D1 = 0;
+%     D2 = 20; % 假设20交易日
 % 
+%     % 后面基本都是cal_stk_rtn.m的代码
+%     
 %     T = length(p.all_trading_dates);
 %     N = length(p.stk_codes);
-%     tgt_tag  = 'ILLIQ_1m';  
-%     tgt_file = [a.output_data_path,'/','ILLIQ_1m.h5'];
+%     tgt_tag  = 'lottery_1m'; % 这里改了下
+%     tgt_file = [a.output_data_path,'/','lottery_1m.h5']; % 这里改了下
 % 
-%     [S,ILLIQ_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
+%     [S,lottery_1m] =  check_exist(tgt_file,['/',tgt_tag],p,T,N);
 % 
 %     if S>0
 % 
-%        trading_amount   = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/trading_amount')';
-%        trading_amount(isnan(trading_amount)) = 0;
-% 
+%        adj_prices   = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')'; 
 %        stk_status   = h5read([a.input_data_path,'\fdata\base_data\stk_status.h5'],'/stk_status')'; 
 %        is_suspended = double(h5read([a.input_data_path,'\fdata\base_data\suspended.h5'],'/is_suspended')');
-% 
-%        adj_prices   = h5read([a.input_data_path,'\fdata\base_data\stk_prices.h5'],'/adj_prices')'; 
 %        ipo_dates    = datenum_h5(h5read([a.input_data_path,'\fdata\base_data\securites_terms.h5'],'/ipo_date')); 
 % 
 %        is_suspended(isnan(stk_status)) = NaN;
@@ -36,37 +35,34 @@ function [] = ILLIQ_1m(a,p)
 %        for  i  = S  : T
 %            for j = 1: N
 %               if p.all_trading_dates(i)>ipo_dates(j)
-%                  P     = adj_prices(i-D:i,j);
-%                  R     = P(2:end)./P(1:end-1)-1;
-%                  A     = trading_amount(i-D+1:i,j);
-%                  sus   = is_suspended(i-D+1:i,j);
-%                  a     = A(sus==0);  
-%                  r     = R(sus==0);
-%                  c     = mean(abs(r)./a);
+%                  Y     = adj_prices(i-D2:i,j);
+%                  sus   = is_suspended(i-D2+1:i,j);
+%                  [z,~] = max_interval(Y);
 %                  tao = sum(sus)/length(sus);%  停牌率
+%                  
 %                  if tao~=1
-%                      ILLIQ_1m(i,j) = c;
+%                      lottery_1m(i,j) = z;
 %                  else
-%                      ILLIQ_1m(i,j) = NaN;
+%                      lottery_1m(i,j) = NaN;   
 %                  end
 %               end
 %            end
 %        end
 % 
-%        eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',tgt_tag, ''',','' tgt_tag, ');']);  
+% 
+%        eval(['hdf5write(tgt_file, ''date'',p.all_trading_dates_, ''stk_code'',p.stk_codes_,' '''',...
+%                 tgt_tag, ''',','' tgt_tag, ');']);  
 %     end
-
 
     % settings
     len = 20;
-    factor = 'ILLIQ_1m';
-    key = 'pct_over_amount';
-    col = {'s_dq_amount','s_dq_pctchange'};
-    
-    tgt_file = [a.output_data_path,'/ILLIQ_1m.mat'];
+    factor = 'lottery_1m';
+    key = 's_dq_adjclose';
+
+    tgt_file = [a.output_data_path,'/lottery_1m.mat'];
     if exist(tgt_file,'file')==2
-        ILLIQ_1m = load(tgt_file);
-        dt = ILLIQ_1m.data.DATEN;
+        lottery_1m = load(tgt_file);
+        dt = lottery_1m.data.DATEN;
         dt_max = max(dt);
         bool = true;
     else
@@ -79,46 +75,30 @@ function [] = ILLIQ_1m(a,p)
         x = load([a.input_data_path,'/ashareeodprices.mat']);
         
         new = struct();
-        new.data = x.data(x.data.DATEN > dt_max,:); 
+        new.data = x.data(x.data.DATEN > dt_max,:);        
         
         eval(['new.data.',factor,' = nan(height(new.data),1);']);
-        new.data = new.data(:,['stk_num','DATEN',col,factor]);
+        new.data = new.data(:,{'stk_num','DATEN',key,factor});
 
         new.code_map = x.code_map;
         
-       %% 这里是需要根据因子本身修改的
-        td = new.data(:,col);
-        am = td.s_dq_amount;
-        pct = td.s_dq_pctchange;
-        
-        deriv = nan(length(am),1);
-        deriv(am~=0) = pct(am~=0)./am(am~=0); %#ok<NASGU>
-        
-        eval(['new.data.',key,'=deriv;']);
-        new.data = new.data(:,{'stk_num','DATEN',key,factor});
-        
-       %%
-        
         if bool
-            result = factor_append(ILLIQ_1m,new);
+            result = factor_append(lottery_1m,new);
         else
             result = new;
         end
 
         data = sortrows(result.data,{'stk_num','DATEN'},{'ascend','ascend'});
-        
+
         all_dates = unique(data.DATEN);
         all_dates = sort(all_dates,'ascend');
-        key = eval(['data.',key,';']);
+
         factor = eval(['data.',factor,';']);
-        
-       
-        
-       %%
+        key = eval(['data.',key,';']);
         stk_num = data.stk_num;
         DATEN = data.DATEN;
-        
-        data.ILLIQ_1m = average(stk_num,DATEN,key,factor,all_dates,dt_max,len);
+
+        data.lottery_1m = lottery(stk_num,DATEN,key,factor,all_dates,dt_max,len);
         code_map = result.code_map; %#ok<NASGU>
             
         
@@ -127,7 +107,6 @@ function [] = ILLIQ_1m(a,p)
     end
 
 end
-
 
 % 求均值
 % key一类需要求均值的数据，为DATEN>dt_max的数据求均值，len是均值窗口长度
@@ -164,9 +143,45 @@ function x = average(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         if(n(1)~=n(end))
             x(r) = NaN;
         else
-            x(r) = mean(p(d>=start_dt),'omitnan');            
+            x(r) = max_interval(p(d>=start_dt));            
         end
     end
     
 end
 
+% 用递归方法计算时段内的区间最大涨幅
+function [ret,m] = max_interval(prices)
+% ret是价格序列中子区间的最大涨幅
+% m是区间最小值
+
+    if(length(prices)<2)
+        disp('max_interval: length(prices)<2');
+        return;
+    end
+
+    if(length(prices)==2)
+        % 序列长度是2则直接返回
+        ret = max(0,prices(2)/prices(1)-1);
+        m = min(prices);
+    else
+        % 序列长度超过2用递归
+        
+        % 先降长度递归
+        [ret1,m1] = max_interval(prices(1:end-1));
+        
+        % 最新的价格
+        new = prices(end);
+        
+        % 比较price(1:end-1)区间的最大涨幅
+        % 以及更新区间最小值
+        ret = max(ret1,new/m1-1);
+        m = min(m1,new);
+    end
+
+end
+
+
+function fillnan(price)
+
+
+end

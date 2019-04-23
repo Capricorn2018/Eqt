@@ -98,9 +98,8 @@ function [] = lottery_1m(a,p)
         stk_num = data.stk_num;
         DATEN = data.DATEN;
 
-        data.lottery_1m = average(stk_num,DATEN,key,factor,all_dates,dt_max,len);
-        code_map = result.code_map; %#ok<NASGU>
-            
+        data.lottery_1m = lottery(stk_num,DATEN,key,factor,all_dates,dt_max,len);
+        code_map = result.code_map; %#ok<NASGU>            
         
         save(tgt_file,'data','code_map');
         
@@ -108,12 +107,55 @@ function [] = lottery_1m(a,p)
 
 end
 
+% 求均值
+% key一类需要求均值的数据，为DATEN>dt_max的数据求均值，len是均值窗口长度
+% factor是结论数据比如momentum_1m, amount_1m
+% all_dates用来对齐不同股票代码的数据以防某些票的数据缺失
+function x = lottery(stk_num,DATEN,key,factor,all_dates,dt_max,len)
+
+    idx = find(DATEN > dt_max);
+    x = factor;
+    
+    for i=1:length(idx)
+        
+        r = idx(i);
+        
+        if r<len
+            x(r) = NaN;
+            continue;
+        end
+        
+        end_dt = DATEN(r);
+        n = find(all_dates==end_dt);
+        
+        if n<len
+            x(r)=NaN;
+            continue;
+        end
+        
+        start_dt = all_dates(n-len+1);        
+        
+        n = stk_num((r-len+1):r);
+        p = key((r-len+1):r);
+        d = DATEN((r-len+1):r);
+        
+        if(n(1)~=n(end))
+            x(r) = NaN;
+        else
+            x(r) = max_interval(p(d>=start_dt));            
+        end
+    end
+    
+end
 
 % 用递归方法计算时段内的区间最大涨幅
 function [ret,m] = max_interval(prices)
 % ret是价格序列中子区间的最大涨幅
 % m是区间最小值
 
+    % 先把nan都按照前值填充
+    prices = fillnan(prices);
+    
     if(length(prices)<2)
         disp('max_interval: length(prices)<2');
         return;
@@ -136,6 +178,33 @@ function [ret,m] = max_interval(prices)
         % 以及更新区间最小值
         ret = max(ret1,new/m1-1);
         m = min(m1,new);
+    end
+
+end
+
+
+function y = fillnan(x)
+
+    idx = 1:length(x);
+    
+    idx(isnan(x)) = NaN;
+    
+    y = nan(length(x),1);
+    
+    for i=1:length(x)
+        
+        if isnan(price(i))
+            
+            prev = nanmax(idx(1:i));
+            
+            if ~isnan(prev)
+                y(i) = price(prev);
+            end
+            
+        else
+            y(i) = price(i);            
+        end            
+        
     end
 
 end
