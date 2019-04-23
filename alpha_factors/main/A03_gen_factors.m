@@ -50,12 +50,12 @@ a.zyyx_path = 'D:/Capricorn/DB/zyyx/daily';
 
 %% trading
 
-% a.input_data_path = 'D:/Projects/pit_data/origin_data';  %
+a.input_data_path = 'D:/Projects/pit_data/origin_data';  %
 % 修改之后用直接从wind扒下来的数据
 
 % amount_1m(a,p);
 % ILLIQ_1m(a,p);
-% lottery_1m(a,p);
+lottery_1m(a,p);
 % momentum_1m(a,p);
 % momentum_3m(a,p);
 % momentum_60m(a,p);

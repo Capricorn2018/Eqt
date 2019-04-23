@@ -134,7 +134,7 @@ function x = stdev(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         if(n(1)~=n(end))
             x(r) = NaN;
         else
-            x(r) = std(p(d>=start_dt),'omitnan');            
+            x(r) = nanstd(p(d>=start_dt));            
         end
     end
     

@@ -142,7 +142,7 @@ function x = lottery(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         if(n(1)~=n(end))
             x(r) = NaN;
         else
-            x(r) = max_interval(p(d>=start_dt));            
+            [x(r),~]  = max_interval(p(d>=start_dt));            
         end
     end
     
@@ -158,6 +158,8 @@ function [ret,m] = max_interval(prices)
     
     if(length(prices)<2)
         disp('max_interval: length(prices)<2');
+        ret = NaN;
+        m = NaN;
         return;
     end
 
@@ -183,28 +185,4 @@ function [ret,m] = max_interval(prices)
 end
 
 
-function y = fillnan(x)
 
-    idx = 1:length(x);
-    
-    idx(isnan(x)) = NaN;
-    
-    y = nan(length(x),1);
-    
-    for i=1:length(x)
-        
-        if isnan(price(i))
-            
-            prev = nanmax(idx(1:i));
-            
-            if ~isnan(prev)
-                y(i) = price(prev);
-            end
-            
-        else
-            y(i) = price(i);            
-        end            
-        
-    end
-
-end

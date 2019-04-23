@@ -145,7 +145,7 @@ function x = average(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         if(n(1)~=n(end))
             x(r) = NaN;
         else
-            x(r) = mean(p(d>=start_dt),'omitnan');            
+            x(r) = nanmean(p(d>=start_dt));            
         end
     end
     
