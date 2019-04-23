@@ -60,7 +60,10 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         
         x = load('D:/Projects/pit_data/origin_data/asharecapitalization.mat');
         cap = x.data;
-        data = join(data,cap,'Keys',{'s_info_windcode'},'RightVariables',{'float_a_shr'});
+        data = outerjoin(data,cap,'LeftKeys',{'s_info_windcode','trade_dt'},'RightKeys',{'s_info_windcode','change_dt'},'RightVariables',{'float_a_shr'});
+        
+        data = sortrows(data,{'s_info_windcode','trade_dt'},{'descend','ascend'});
+        data.float_a_cap = fill_cap(data.s_info_windcode,data.float_a_cap);
         
         data.s_dq_pctchange(data.s_dq_amount==0) = NaN;
         stk_codes = data.s_info_windcode;
@@ -72,6 +75,25 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         data = data(:,~Lia); %#ok<NASGU>
         
         save('D:/Projects/pit_data/origin_data/ashareeodprices.mat','data','code_map');
+    end
+    
+end
+
+
+function y = fill_cap(stk_codes,cap)
+
+    y = nan(length(cap),1);
+
+    [~,ia,ic] = unique(stk_codes);
+    
+    for i=1:length(ia)
+        
+        flag = (ic == ia(i));
+        
+        f = cap(flag);
+        
+        y(flag) = fillnan(f);
+        
     end
     
 end
