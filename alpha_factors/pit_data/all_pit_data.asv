@@ -60,7 +60,7 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         
         x = load('D:/Projects/pit_data/origin_data/asharecapitalization.mat');
         cap = x.data;
-        data = join(data,cap,'Keys',{'s_info_windcode'},'RightVariables',{'float_a_shr'});
+        data = outerjoin(data,cap,'Keys',{'s_info_windcode'},'RightVariables',{'float_a_shr'});
         
         data.s_dq_pctchange(data.s_dq_amount==0) = NaN;
         stk_codes = data.s_info_windcode;
