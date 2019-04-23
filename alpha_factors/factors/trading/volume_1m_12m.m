@@ -98,7 +98,7 @@ function [] = volume_1m_60m_12m(a,p)
         stk_num = data.stk_num;
         DATEN = data.DATEN;
 
-        data.volume_1m_60m = av1_over_av2(stk_num,DATEN,key,factor,all_dates,dt_max,len);
+        data.volume_1m_60m = av1_over_av2(stk_num,DATEN,key,factor,all_dates,dt_max,len1,len2);
         code_map = result.code_map; %#ok<NASGU>
             
         
@@ -150,8 +150,8 @@ function x = av1_over_av2(stk_num,DATEN,key,factor,all_dates,dt_max,len1,len2)
         if(n1(1)~=n1(end) || n2(1)~=n2(end))
             x(r) = NaN;
         else
-            m1 = mean(p1(d1>=start_dt1),'omitnan');
-            m2 = mean(p2(d2>=start_dt2),'omitnan');
+            m1 = nanmean(p1(d1>=start_dt1));
+            m2 = nanmean(p2(d2>=start_dt2));
             if m2==0
                 x(r) = NaN;
             else

@@ -58,7 +58,7 @@ function [] = momentum_1m(a,p)
     % settings
     len = 20;
     factor = 'momentum_1m';
-    key = 's_dq_adjclose';
+    key = 's_dq_pctchange';
 
     tgt_file = [a.output_data_path,'/momentum_1m.mat'];
     if exist(tgt_file,'file')==2
@@ -99,7 +99,7 @@ function [] = momentum_1m(a,p)
         stk_num = data.stk_num;
         DATEN = data.DATEN;
 
-        data.momentum_1m = average(stk_num,DATEN,key,factor,all_dates,dt_max,len);
+        data.momentum_1m = cumret(stk_num,DATEN,key,factor,all_dates,dt_max,len);
         code_map = result.code_map; %#ok<NASGU>
             
         
@@ -114,7 +114,7 @@ end
 % key一类需要求均值的数据，为DATEN>dt_max的数据求均值，len是均值窗口长度
 % factor是结论数据比如momentum_1m, amount_1m
 % all_dates用来对齐不同股票代码的数据以防某些票的数据缺失
-function x = average(stk_num,DATEN,key,factor,all_dates,dt_max,len)
+function x = cumret(stk_num,DATEN,key,factor,all_dates,dt_max,len)
 
     idx = find(DATEN > dt_max);
     x = factor;
@@ -145,7 +145,9 @@ function x = average(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         if(n(1)~=n(end))
             x(r) = NaN;
         else
-            x(r) = nanmean(p(d>=start_dt));            
+            p = p(d>=start_dt);
+            p(isnan(p)) = 0;
+            x(r) = cumprod(1+p);            
         end
     end
     
