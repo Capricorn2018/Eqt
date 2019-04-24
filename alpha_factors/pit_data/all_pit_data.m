@@ -63,10 +63,12 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         data = outerjoin(data,cap,'LeftKeys',{'s_info_windcode','trade_dt'},'RightKeys',{'s_info_windcode','change_dt'},'RightVariables',{'float_a_shr','s_info_windcode','change_dt'});
         
         data.s_info_windcode = data.s_info_windcode_data;
-        data.s_info_windcode(isnan(data.s_info_windcode)) = data.s_info_windcode_cap(isnan(data.s_info_windcode));
+        bool = strcmp(data.s_info_windcode,'');
+        data.s_info_windcode(bool) = data.s_info_windcode_cap(bool);
         
         data.merge_dt = data.trade_dt;
-        data.merge_dt(isnan(data.merge_dt)) = data.change_dt(isnan(data.merge_dt));
+        bool = isnan(data.merge_dt);
+        data.merge_dt(bool) = data.change_dt(bool);
         
         data = sortrows(data,{'s_info_windcode','merge_dt'},{'descend','ascend'});
         data.float_a_shr = fill_shr(data.s_info_windcode,data.float_a_shr);
