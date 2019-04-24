@@ -14,7 +14,7 @@ function y = fillnan(x)
             prev = nanmax(idx(1:i));
             
             if ~isnan(prev)
-                y(i) = price(prev);
+                y(i) = x(prev);
             end
             
         else

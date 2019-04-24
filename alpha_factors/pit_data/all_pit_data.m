@@ -2,7 +2,7 @@
 % start_dt = '20041231';
 % end_dt = '20190201';
 % n_rpt = 21;
-% type = 'balance';
+% type = 'balancesheet';
 function []=all_pit_data(start_dt, end_dt, n_rpt, type)
 
     % balancesheet
@@ -65,10 +65,22 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         data = sortrows(data,{'s_info_windcode','trade_dt'},{'descend','ascend'});
         data.float_a_shr = fill_shr(data.s_info_windcode,data.float_a_shr);
         
-        data.DATEN = datenum(data.trade_dt,'yyyymmdd');
+        dt = data.trade_dt;
+        yr = floor(dt/10000);
+        mt = floor((dt-yr*10000)/100);
+        dy = dt-yr*10000-mt*100;
+        data.DATEN = datenum(yr,mt,dy);
+        
+        tradestatus = data.s_dq_tradestatus;
+        tradestatus = unique(tradestatus);
+        status_map = table();
+        status_map.tradestatus = tradestatus;
+        status_map.tradestatus_num = (1:height(status_map))';
+        data = outerjoin(data, status_map,'LeftKeys',{'s_dq_tradestatus'},'RightKeys',{'tradestatus'});
         
         colnames = {'s_info_windcode', ...
                         'DATEN', ...
+                        'trade_dt', ...
                         's_dq_preclose', ...
                         's_dq_open', ...
                         's_dq_high', ...
@@ -85,11 +97,10 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
                         's_dq_adjclose', ...
                         's_dq_adjfactor', ...
                         's_dq_avgprice', ...
-                        's_dq_tradestatus'};
+                        'tradestatus_num'};
           
         data = data(:,colnames);
         
-        data.s_dq_adjpctchange(data.s_dq_amount==0) = NaN;
         data.s_dq_pctchange(data.s_dq_amount==0) = NaN;
         
         stk_codes = data.s_info_windcode;
@@ -100,7 +111,7 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         Lia = ismember(data.Properties.VariableNames,{'s_info_windcode','stk_codes'});
         data = data(:,~Lia); %#ok<NASGU>
         
-        save('D:/Projects/pit_data/origin_data/ashareeodprices.mat','data','code_map');
+        save('D:/Projects/pit_data/origin_data/ashareeodprices.mat','data','code_map','status_map');
     end
     
 end
