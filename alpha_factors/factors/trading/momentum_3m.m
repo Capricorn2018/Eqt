@@ -148,7 +148,7 @@ function x = cumret(stk_num,DATEN,key,factor,all_dates,dt_max,len)
         else
             p = p(d>=start_dt);
             p(isnan(p)) = 0;
-            x(r) = cumprod(1+p);            
+            x(r) = prod(1+p);            
         end
     end
     
