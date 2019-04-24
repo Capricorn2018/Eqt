@@ -56,7 +56,7 @@ function []=all_pit_data(start_dt, end_dt, n_rpt, type)
         sample = readtable(sample_file,'TreatAsEmpty','\N','FileEncoding','UTF-8');
         data.Properties.VariableNames = sample.Properties.VariableNames;
         
-        %pit_close(data, start_dt, end_dt, out_path);
+        pit_close(data, start_dt, end_dt, out_path);
         
         x = load('D:/Projects/pit_data/origin_data/asharecapitalization.mat');
         cap = x.data;
