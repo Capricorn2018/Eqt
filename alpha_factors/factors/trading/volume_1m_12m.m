@@ -123,7 +123,7 @@ function x = av1_over_av2(stk_num,DATEN,key,factor,all_dates,dt_max,len1,len2)
         
         r = idx(i);
         
-        if r<len
+        if r<len1 || r<len2
             x(r) = NaN;
             continue;
         end
@@ -131,7 +131,7 @@ function x = av1_over_av2(stk_num,DATEN,key,factor,all_dates,dt_max,len1,len2)
         end_dt = DATEN(r);
         n = find(all_dates==end_dt);
         
-        if n<len
+        if n<len1 || n<len2
             x(r)=NaN;
             continue;
         end

@@ -69,13 +69,6 @@ function [] = turnover_1m(a,p)
         new = struct();
         new.data = x.data(x.data.DATEN > dt_max,:); 
         
-        
-        
-        %%%%%%%%%
-        new.data.s_dq_volume = ones(height(new.data),1);
-        
-        
-        
         eval(['new.data.',factor,' = nan(height(new.data),1);']);
         new.data = new.data(:,['stk_num','DATEN',col,factor]);
 

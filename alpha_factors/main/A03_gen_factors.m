@@ -56,14 +56,14 @@ a.input_data_path = 'D:/Projects/pit_data/origin_data';  %
 % amount_1m(a,p);
 % ILLIQ_1m(a,p);
 % lottery_1m(a,p);
-momentum_1m(a,p);
-momentum_3m(a,p);
-momentum_60m(a,p);
-skew_1m(a,p);
+% momentum_1m(a,p);
+% momentum_3m(a,p);
+% momentum_60m(a,p);
+% skew_1m(a,p);
 turnover_1m(a,p);
-vol_1y(a,p);
-volume_1m_12m(a,p);
-volume_vol_1m(a,p);
+% vol_1y(a,p);
+% volume_1m_12m(a,p);
+% volume_vol_1m(a,p);
 
 
 
