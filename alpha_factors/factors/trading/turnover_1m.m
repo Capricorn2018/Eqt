@@ -80,6 +80,7 @@ function [] = turnover_1m(a,p)
         shr = td.float_a_shr;
         
         deriv = nan(length(vol),1);
+        % 计算每日turnover, 这里急需要注意wind的asharecaptilization表中的单位是1万股
         deriv(vol~=0 & shr~=0) = vol(vol~=0 & shr~=0)./shr(vol~=0 & shr~=0)/10000; %#ok<NASGU>
         
         eval(['new.data.',key,'=deriv;']);
