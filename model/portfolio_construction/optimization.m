@@ -58,7 +58,7 @@ function weight_table = optimization(a,p,rebalance_dates)
        % 当日回归矩阵中的股票代码
 %        stk_codes = pre_reg.Properties.RowNames;
         stk_codes = p.optimization.stk_codes1;
-        
+         
         stk_codes = intersect(stk_codes,tbl_factors.Properties.RowNames);
        
         % 用stk_codes给东方金工的因子暴露阵和特异风险向量做indexing
