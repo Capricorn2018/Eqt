@@ -49,7 +49,7 @@ function [w,w_active] = portfolio_const( lambda, ... % ¸ú×ÙÎó²î³Í·£Ïî
                       
     cvx_end
 
-    w(not_nan) = x+w_bench;
+    w(not_nan) = x + w_bench;
     w_active(not_nan) = x;
 
 
