@@ -10,4 +10,4 @@ universe % 这个存在一个list里面, 要对应到每个rebalance_dates
 factor_names = {'ep_lyr'}; 
 
 % 按日循环算weights
-portfolio_construction
+portfolio_const
