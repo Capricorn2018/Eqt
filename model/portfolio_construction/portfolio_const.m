@@ -1,5 +1,5 @@
-function [ output_args ] = portfolio_const( lambda, ... % 跟踪误差惩罚项
-                                            c, % 换手率惩罚项
+function [w,w_active] = portfolio_const( lambda, ... % 跟踪误差惩罚项
+                                            c, ... % 换手率惩罚项
                                             w_bench, ... % 跟踪指数权重
                                             w_0, ... % 上一期持仓权重
                                             alpha_f, alpha_w, ... % alpha因子暴露和alpha因子加权比例
@@ -10,6 +10,7 @@ function [ output_args ] = portfolio_const( lambda, ... % 跟踪误差惩罚项
                                             track_err) % 跟踪误差上限
 
     w = zeros(length(res_vol),1); % 结果初始化
+    w_active = zeros(length(res_vol),1);
     
     % 去掉nan
     not_nan = ~any(isnan(risk_exp),2) & ~isnan(res_vol) & ~any(isnan(alpha_f),2);
@@ -21,7 +22,8 @@ function [ output_args ] = portfolio_const( lambda, ... % 跟踪误差惩罚项
     alpha_f(isnan(alpha_f)) = 0;
     %%%%%
     
-    max_w = max_w(not_nan);
+    w_max = w_max(not_nan);
+    w_min = w_min(not_nan);
         
     % 获取有效的因子暴露constraints, 有些因子可能不限制
     risk_idx = risk_max<Inf | risk_min>-Inf;
@@ -40,13 +42,15 @@ function [ output_args ] = portfolio_const( lambda, ... % 跟踪误差惩罚项
         subject to
             w == w_bench + x; %#ok<EQEFF>
         	w >= 0; %#ok<VUNUS>
-            quad_form(risk_exp' * x, risk_cov) <= risk_bound*risk_bound; %#ok<VUNUS>
-            % sum(w) == 1; %#ok<EQEFF>
+            quad_form(risk_exp' * x, risk_cov) <= track_err * track_err; %#ok<VUNUS>
             risk_min <= risk_mtx' * x <= risk_max; %#ok<VUNUS>
             w_min <= w <= w_max; %#ok<CHAIN,VUNUS>
+            norm(w-w_0,1) <= turn_bound; %#ok<VUNUS>
+                      
     cvx_end
 
-    w(not_nan) = x;
+    w(not_nan) = x+w_bench;
+    w_active(not_nan) = x;
 
 
 end
