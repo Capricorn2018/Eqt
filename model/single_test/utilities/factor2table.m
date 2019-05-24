@@ -30,8 +30,7 @@ function []=factor2table( data, code_map, tag, output_path)
         dt{i} = datestr(DATEN(i),'yyyymmdd');
         
     end
-    
-    
+        
     filename = [output_path,'/',tag,'.h5'];
     h5write(filename,['/',tag],tbl_style,'/stk_code',stk_code,'/date',dt);
 
