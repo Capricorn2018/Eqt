@@ -45,7 +45,6 @@ end
 % direction=='first': 寻找x的第num个元素
 % direction=='last': 寻找x的倒数第num个元素
 function y=grp_indexing(x,num,direction)
-        
 
     if(strcmp(direction,'first'))
         if(length(x)>=num)
@@ -54,8 +53,8 @@ function y=grp_indexing(x,num,direction)
             y=NaN;
         end
     elseif(strcmp(direction,'last'))
-        if(legnth(x)>=num)
-            y=x(legnth(x)-num+1); % 倒数第num个元素
+        if(length(x)>=num)
+            y=x(length(x)-num+1); % 倒数第num个元素
         else
             y=NaN;
         end

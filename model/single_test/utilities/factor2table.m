@@ -21,11 +21,9 @@ function []=factor2table( data, code_map, tag, output_path)
         
         Lia = ismember(tmp.stk_num,stk_num);
         
-        row = tmp(Lia,tag);
+        row = tmp(Lia,:);
         
-        row = row';
-        
-        tbl_style(i,:) = table2array(row);
+        tbl_style(i,:) = table2array(row)';
         
         dt{i} = datestr(DATEN(i),'yyyymmdd');
         
